@@ -12,6 +12,7 @@ import { ImportarPacoteModal } from '@renderer/features/pacotes-sprites/componen
 import { PersonagemModal } from '@renderer/features/personagens/components/PersonagemModal';
 import { IaModal } from '@renderer/features/ia/components/IaModal';
 import { ManualModal } from '@renderer/features/ajuda/components/ManualModal';
+import { EditorImagemModal } from '@renderer/features/editor-imagem/components/EditorImagemModal';
 import { EditorPersonagemModal } from '@renderer/features/pacotes-sprites/components/EditorPersonagemModal';
 import { useCargaInicial } from '@renderer/features/pacotes-sprites/hooks/useCargaInicial';
 import { RoteiroPanel } from '@renderer/features/roteiro/components/RoteiroPanel';
@@ -52,12 +53,14 @@ export function EditorPage() {
       />
       <ImportarPacoteModal />
       <EditorPersonagemModal />
+      <EditorImagemModal />
       <PersonagemModal />
       <ManualModal />
       <IaModal />
     </>
   );
 }
+
 
 
 

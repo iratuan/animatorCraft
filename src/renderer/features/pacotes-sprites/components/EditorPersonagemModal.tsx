@@ -37,7 +37,8 @@ export function EditorPersonagemModal() {
     ...EXPRESSOES.map((x) => ({ tipo: 'rosto' as const, nome: x, rotulo: x })),
     ...ROSTOS_ESPECIAIS.map((x) => ({ tipo: 'rosto' as const, nome: x, rotulo: x === 'olhos-fechados' ? 'piscada (olhos-fechados)' : `fala ${x}` })),
   ];
-  const poses: Espaco[] = [...new Set(['parado', ...tem.poses])].map((n) => ({ tipo: 'pose', nome: n, rotulo: n }));
+  // poses animadas (andar_1, andar_2…) aparecem quadro a quadro, para cada um poder ser editado
+  const poses: Espaco[] = [...new Set(['parado', ...tem.poses])].flatMap((n) => (tem.quadros[n] ? Array.from({ length: tem.quadros[n]! }, (_, i) => ({ tipo: 'pose' as const, nome: `${n}_${i + 1}`, rotulo: `${n} ${i + 1}` })) : [{ tipo: 'pose' as const, nome: n, rotulo: n }]));
   const props: Espaco[] = tem.props.map((n) => ({ tipo: 'prop', nome: n, rotulo: n }));
 
   const trocar = (e: Espaco) => { pendente.current = e; entrada.current?.click(); };
@@ -62,6 +63,14 @@ export function EditorPersonagemModal() {
     avisar(await plataforma.salvarPacoteSprites(zip, nomeDoZip(ids)));
   };
 
+  // abre o editor de imagem (camadas, pincel, seleção…) no sprite do espaço; o PNG achatado volta para o mesmo espaço
+  const editar = (e: Espaco) => set({ editorImagem: { personagem: id, tipo: e.tipo, nome: e.nome } });
+  const criarNoEditor = () => {
+    const nome = novoNome.trim().toLowerCase().replace(/\s+/g, '-');
+    if (!nomeValido(nome)) { avisar('Nome inválido: use minúsculas, números e hífen (ex.: bracos-cruzados, andar_1).'); return; }
+    setNovoNome('');
+    editar({ tipo: novoTipo, nome, rotulo: nome });
+  };
   const criar = () => {
     const nome = novoNome.trim().toLowerCase().replace(/\s+/g, '-');
     if (!nomeValido(nome)) { avisar('Nome inválido: use minúsculas, números e hífen (ex.: bracos-cruzados, andar_1).'); return; }
@@ -69,15 +78,20 @@ export function EditorPersonagemModal() {
     trocar({ tipo: novoTipo, nome, rotulo: nome });
   };
 
-  const Celula = ({ e }: { e: Espaco }) => {
-    const existe = e.tipo === 'pose' ? tem.poses.includes(e.nome) : e.tipo === 'rosto' ? tem.rostos.includes(e.nome) : tem.props.includes(e.nome);
+  // função comum (não componente): evita remontar todos os espaços a cada renderização do app (ex.: com a animação tocando)
+  const celula = (e: Espaco) => {
+    const baseDoNome = e.nome.replace(/_\d+$/, '');
+    const existe = e.tipo === 'pose' ? tem.poses.includes(baseDoNome) : e.tipo === 'rosto' ? tem.rostos.includes(e.nome) : tem.props.includes(e.nome);
     return (
-      <button key={`${e.tipo}-${e.nome}-${versao}`} className={`espaco ${existe ? '' : 'vazio'}`} title={existe ? `Trocar ${e.tipo}_${e.nome}.png` : `Criar ${e.tipo}_${e.nome}.png`} onClick={() => trocar(e)}>
-        {existe
-          ? <Miniatura ator={id} etiqueta={e.tipo === 'pose' ? e.nome : undefined} expressao={e.tipo === 'rosto' ? (e.nome as ExpressaoId) : undefined} modo={e.tipo === 'rosto' ? 'rosto' : 'corpo'} tamanho={64} />
-          : <span className="mais">+</span>}
-        <span>{e.rotulo}</span>
-      </button>
+      <div key={`${e.tipo}-${e.nome}-${versao}`} className="espaco-caixa">
+        <button className={`espaco ${existe ? '' : 'vazio'}`} data-espaco={`${e.tipo}_${e.nome}`} title={existe ? `Editar ${e.tipo}_${e.nome}.png no editor de imagem` : `Criar ${e.tipo}_${e.nome}.png no editor de imagem`} onClick={() => editar(e)}>
+          {existe
+            ? <Miniatura ator={id} etiqueta={e.tipo === 'pose' ? e.nome : undefined} expressao={e.tipo === 'rosto' ? (e.nome as ExpressaoId) : undefined} modo={e.tipo === 'rosto' ? 'rosto' : 'corpo'} tamanho={64} />
+            : <span className="mais">+</span>}
+          <span>{e.rotulo}</span>
+        </button>
+        <button className="espaco-png" title={`Enviar um PNG pronto para ${e.tipo}_${e.nome}`} aria-label={`Enviar PNG para ${e.tipo}_${e.nome}`} onClick={() => trocar(e)}>PNG</button>
+      </div>
     );
   };
 
@@ -86,7 +100,7 @@ export function EditorPersonagemModal() {
       <div className="modal largo" role="dialog" aria-label="Editor de sprites do personagem" onClick={(ev) => ev.stopPropagation()}>
         <h3>Sprites de {ATORES[id]!.nome}</h3>
         <p className="dica">
-          Clique em um espaço para trocar ou criar o PNG (fundo transparente; nos rostos, só a cabeça com a pele do personagem). Para editar fora do app (Photoshop, Krita, Photopea…), exporte o zip,
+          Clique em um espaço para editá-lo no editor de imagem integrado (camadas, pincel, borracha, seleção…); o botão PNG envia um arquivo pronto. Fundo transparente; nos rostos, só a cabeça com a pele do personagem. Para editar fora do app (Photoshop, Krita, Photopea…), exporte o zip,
           edite os PNGs mantendo os nomes e importe de volta em Arquivo ▸ Importar pacote.
         </p>
         <div className="seletor-personagem">
@@ -94,14 +108,15 @@ export function EditorPersonagemModal() {
         </div>
 
         <h4>Poses <small>pose_parado é obrigatório; pose_andar_1, _2… formam uma animação</small></h4>
-        <div className="grade-espacos">{poses.map((e) => <Celula key={e.nome} e={e} />)}</div>
+        <div className="grade-espacos">{poses.map((e) => celula(e))}</div>
         <h4>Rostos <small>expressões, fala (a, e, o, m) e piscada</small></h4>
-        <div className="grade-espacos">{espacosRosto.map((e) => <Celula key={e.nome} e={e} />)}</div>
-        {props.length > 0 && (<><h4>Objetos</h4><div className="grade-espacos">{props.map((e) => <Celula key={e.nome} e={e} />)}</div></>)}
+        <div className="grade-espacos">{espacosRosto.map((e) => celula(e))}</div>
+        {props.length > 0 && (<><h4>Objetos</h4><div className="grade-espacos">{props.map((e) => celula(e))}</div></>)}
 
         <div className="novo-sprite">
           <select value={novoTipo} onChange={(e) => setNovoTipo(e.target.value as 'pose' | 'prop')}><option value="pose">pose</option><option value="prop">objeto</option></select>
           <input placeholder="nome novo (ex.: bracos-cruzados, andar_3)" value={novoNome} onChange={(e) => setNovoNome(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && criar()} />
+          <button onClick={criarNoEditor} disabled={!novoNome.trim()}>Criar no editor</button>
           <button onClick={criar} disabled={!novoNome.trim()}>Criar a partir de um PNG…</button>
         </div>
 
@@ -115,6 +130,9 @@ export function EditorPersonagemModal() {
     </div>
   );
 }
+
+
+
 
 
 

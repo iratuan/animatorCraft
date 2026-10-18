@@ -8,7 +8,7 @@ await p.waitForFunction(() => !document.body.innerText.includes('Carregando pers
 await p.getByText('Editar / exportar sprites de Laura').click();
 await p.waitForTimeout(400);
 const vazios = await p.locator('.espaco.vazio').count();
-const [fc] = await Promise.all([p.waitForEvent('filechooser'), p.locator('.espaco.vazio', { hasText: 'brava' }).first().click()]);
+const [fc] = await Promise.all([p.waitForEvent('filechooser'), p.locator('.espaco-caixa', { has: p.locator('.espaco.vazio', { hasText: 'brava' }) }).first().locator('.espaco-png').click()]);
 await fc.setFiles(`${dest}/teste-rosto.png`);
 await p.waitForTimeout(1200);
 console.log('vazios antes', vazios, 'depois', await p.locator('.espaco.vazio').count());
@@ -16,4 +16,5 @@ console.log('msg:', await p.locator('.barra-status, footer').last().innerText().
 await p.screenshot({ path: `${dest}/02-laura-rosto-brava-criado.png` });
 console.log('erros', erros);
 await b.close();
+
 

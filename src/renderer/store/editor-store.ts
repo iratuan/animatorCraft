@@ -35,6 +35,8 @@ interface Estado {
   importacao: ImportacaoPendente | null;
   /** personagem aberto no editor de sprites (modal) */
   editorPersonagem: ActorId | null;
+  /** sprite aberto no editor de imagem (camadas, pincel, seleção...) */
+  editorImagem: { personagem: ActorId; tipo: 'pose' | 'rosto' | 'prop'; nome: string } | null;
   /** ficha de personagem aberta (novo, ou editar id, ou duplicar duplicarDe) */
   fichaPersonagem: { id?: ActorId; duplicarDe?: ActorId } | null;
   manualAberto: boolean;
@@ -87,6 +89,7 @@ export const useEditor = create<Estado & Acoes>()((set, get) => ({
   fonteFala: lerSalvo('stickboard.fonte.fala', 'comic'),
   importacao: null,
   editorPersonagem: null,
+  editorImagem: null,
   fichaPersonagem: null,
   manualAberto: false,
   iaAberta: false,
@@ -172,6 +175,7 @@ export function refazer(): boolean {
   aplicar(depois);
   return true;
 }
+
 
 
 

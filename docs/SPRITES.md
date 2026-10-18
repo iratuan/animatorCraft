@@ -75,3 +75,8 @@ Ids de personagem: `cringefather`, `betason`, `erika`, `dario`, `laura`, `elizen
 ## Receitas das fichas (atlas)
 
 `tools/segmentar-atlas.mjs <atlas.png> <pasta>` recorta cada sprite de uma ficha (fundo transparente ou branco/xadrez) e gera `diagnostico.png` com os números; `tools/folha-contato.mjs` monta uma grade numerada dos recortes. `tools/receitas/<personagem>.json` diz qual número vira qual nome (`pose_*`, `rosto_*`, `prop_*`) e `node tools/montar-biblioteca.mjs <personagem>` normaliza a escala, mede o encaixe das cabeças e grava os sprites e o manifesto.
+
+## Editor de imagem integrado
+
+Cada espaço do editor de sprites abre um editor de imagem (camadas, pincel, lápis, borracha, balde, conta-gotas, seleções, formas, texto, mover/escalar/girar, zoom e desfazer). `Salvar no sprite` grava o PNG achatado, **sem remover fundo nem aparar**, para o mesmo nome padrão (`pose_*`, `rosto_*`, `prop_*`; quadros de animação como `pose_correr_2`). Rostos editados mantêm o encaixe medido enquanto a tela tiver o mesmo tamanho.
+O núcleo (pixels, camadas, pincel, balde, seleção, histórico) está em `src/shared/editor-imagem` e é testado em Node; a interface está em `src/renderer/features/editor-imagem`.

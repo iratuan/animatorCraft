@@ -1,7 +1,7 @@
 {
   "name": "stickboard",
   "productName": "StickBoard",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Gerador de vídeos whiteboard com personagens animados, para ensino de ciências, matemática e inglês",
   "author": "StickBoard",
   "private": true,
@@ -12,7 +12,7 @@
     "build": "vite build",
     "start": "electron .",
     "test": "vitest run",
-    "e2e": "node tools/testar-novos-recursos.mjs && node tools/testar-timeline-arrasto.mjs && node tools/testar-posicao-palco.mjs && node tools/testar-audio.mjs && node tools/testar-graficos.mjs && node tools/testar-ia.mjs && node tools/testar-projeto.mjs && node tools/testar-lousa-sem-mao.mjs && node tools/testar-imagens.mjs && node tools/testar-exportar-sprites.mjs && node tools/testar-editar-sprite.mjs",
+    "e2e": "node tools/testar-novos-recursos.mjs && node tools/testar-timeline-arrasto.mjs && node tools/testar-posicao-palco.mjs && node tools/testar-audio.mjs && node tools/testar-graficos.mjs && node tools/testar-ia.mjs && node tools/testar-projeto.mjs && node tools/testar-lousa-sem-mao.mjs && node tools/testar-imagens.mjs && node tools/testar-editor-imagem.mjs && node tools/testar-editor-imagem-2.mjs && node tools/testar-editor-imagem-3.mjs && node tools/testar-exportar-sprites.mjs && node tools/testar-editar-sprite.mjs",
     "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.main.json",
     "dist": "npm run build && electron-builder --win",
     "dist:dir": "npm run build && electron-builder --win --dir",

@@ -36,13 +36,15 @@ export function lerPacote(zip: Uint8Array, opcoes: { exigirParado?: boolean } = 
 }
 
 /** PNG → canvas pronto: remove o fundo branco se a imagem não tiver transparência e apara as bordas vazias. */
-async function prepararImagem(bytes: Uint8Array): Promise<{ url: string; w: number; h: number }> {
+async function prepararImagem(bytes: Uint8Array, bruto = false): Promise<{ url: string; w: number; h: number }> {
   const bmp = await createImageBitmap(new Blob([bytes as BlobPart], { type: 'image/png' }));
   const lim = 1600, k = Math.min(1, lim / Math.max(bmp.width, bmp.height));
   const W = Math.max(1, Math.round(bmp.width * k)), H = Math.max(1, Math.round(bmp.height * k));
   const c = document.createElement('canvas'); c.width = W; c.height = H;
   const x = c.getContext('2d', { willReadFrequently: true })!;
   x.drawImage(bmp, 0, 0, W, H);
+  // vindo do editor de imagem (bruto): a tela é exatamente a que o usuário desenhou, sem remover fundo nem aparar
+  if (bruto) return { url: c.toDataURL('image/png'), w: W, h: H };
   const d = x.getImageData(0, 0, W, H), p = d.data;
   const temAlfa = [0, W - 1, (H - 1) * W, H * W - 1].some((i) => p[i * 4 + 3]! < 250);
   if (!temAlfa) { // sem transparência: o fundo branco ligado às bordas vira transparente
@@ -72,18 +74,18 @@ const chave = (s: SpriteNomeado) => `${s.personagem}|${s.tipo}|${s.nome}|${s.var
 export interface EntradaSalva { info: SpriteInfo; url: string; personagem: string }
 
 /** Aplica o pacote à biblioteca (e guarda no navegador para a próxima abertura). `substituir`: apaga os sprites antigos dos personagens do pacote. */
-export async function aplicarPacote(p: PacoteLido, substituir: boolean): Promise<{ importados: number; falhas: string[] }> {
+export async function aplicarPacote(p: PacoteLido, substituir: boolean, opcoes: { bruto?: boolean; encaixe?: SpriteInfo['encaixe'] } = {}): Promise<{ importados: number; falhas: string[] }> {
   const porPersonagem = new Map<string, EntradaSalva[]>();
   const falhas: string[] = [];
   for (const [id, ficha] of Object.entries(p.fichas)) {
     const r = registrarAtor(ficha);
-    if ('erro' in r) falhas.push(`: `);
+    if ('erro' in r) falhas.push(`${id}: ${r.erro}`);
   }
   if (Object.keys(p.fichas).length) gravarFichas();
   const tamanhoParado = new Map<string, { w: number; h: number }>();
   for (const s of p.relatorio.sprites) {
     try {
-      const img = await prepararImagem(p.arquivos.get(s.caminho)!);
+      const img = await prepararImagem(p.arquivos.get(s.caminho)!, opcoes.bruto);
       const meta = p.meta[s.personagem];
       if (s.tipo === 'pose' && s.nome === 'parado') tamanhoParado.set(s.personagem, { w: img.w, h: img.h });
       const ehParado = s.tipo === 'pose' && s.nome === 'parado' && (s.variante === null || s.variante === 1);
@@ -102,6 +104,8 @@ export async function aplicarPacote(p: PacoteLido, substituir: boolean): Promise
     const valido = !!meta?.encaixe && !!meta.base && !!par && Math.abs(meta.base.w - par.w) <= 2 && Math.abs(meta.base.h - par.h) <= 2;
     for (const e of entradas) if (e.info.tipo === 'rosto' && valido) { const enc = meta!.encaixe![e.info.tags[0]!]; if (enc) e.info.encaixe = enc; }
   }
+  // sprite editado no editor de imagem: a tela é a mesma de antes, então o encaixe da cabeça medido para ela continua valendo
+  if (opcoes.encaixe) for (const entradas of porPersonagem.values()) for (const e of entradas) if (e.info.tipo === 'rosto') e.info.encaixe = opcoes.encaixe;
   let importados = 0;
   for (const [id, entradas] of porPersonagem) {
     await registrarSprites(id as ActorId, entradas, { substituir });

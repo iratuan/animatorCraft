@@ -121,6 +121,29 @@ Erika entra pela direita na posição 60%.  (para de andar em 60%, em vez do pon
     </>),
   },
   {
+    id: 'editor-imagem', titulo: 'Editor de imagem dos sprites',
+    corpo: (<>
+      <p>Clique num espaço do editor de sprites (Arquivo ▸ Editar / exportar sprites…) para abrir o <b>editor de imagem integrado</b>. Ele carrega o sprite atual (ou uma tela em branco do tamanho certo, se o espaço estiver vazio). <b>Salvar no sprite</b> grava o PNG achatado, com fundo transparente, no mesmo espaço; <b>Cancelar</b> descarta. O botão <b>PNG</b> no canto do espaço continua enviando um arquivo pronto.</p>
+      <table>
+        <tbody>
+          <tr><td>Mover / transformar (V)</td><td>move a seleção (ou o conteúdo da camada); as alças dos cantos escalam, a bolinha de cima gira (Shift: passos de 15°). Enter confirma, Esc cancela</td></tr>
+          <tr><td>Seleção retangular (M), elíptica (S), laço (L), varinha mágica (W)</td><td>Shift soma à seleção, Alt subtrai. Tudo (Ctrl+A), nenhuma (Ctrl+D), inverter (Ctrl+Shift+I)</td></tr>
+          <tr><td>Pincel (B), lápis (P), borracha (E)</td><td>tamanho, dureza e opacidade; a opacidade vale para o traço inteiro. A caneta usa a pressão; <C>[</C> e <C>]</C> mudam o tamanho</td></tr>
+          <tr><td>Balde (G), conta-gotas (I)</td><td>o balde tem tolerância e pode olhar todas as camadas; Alt + clique pega a cor com qualquer pincel</td></tr>
+          <tr><td>Linha (Q), retângulo (R), elipse (O), texto (T)</td><td>Shift: 45°, quadrado, círculo. Formas podem ser preenchidas. O texto vira um item solto que você move, escala e gira</td></tr>
+          <tr><td>Mão (H) ou Espaço</td><td>move a tela; roda do mouse (ou pinça com dois dedos) dá zoom; Ctrl+0 ajusta à janela</td></tr>
+        </tbody>
+      </table>
+      <ul>
+        <li><b>Camadas:</b> nova, duplicar (Ctrl+J), excluir, subir/descer, mesclar para baixo, ocultar (olho), renomear (duplo clique) e opacidade de cada uma. Você pode abrir outra imagem como camada ou colar (Ctrl+V) uma imagem da área de transferência.</li>
+        <li><b>Imagem:</b> espelhar, girar 90°, cortar ao conteúdo, redimensionar a imagem toda ou só a tela.</li>
+        <li><b>Desfazer / refazer:</b> Ctrl+Z e Ctrl+Y valem para tudo (traços, seleções, camadas, tamanho). O histórico é mais curto em imagens muito grandes.</li>
+        <li><b>Ajudas para sprites:</b> <i>Original</i> sobrepõe o sprite de antes para comparar; <i>Guias</i> mostra a caixa da cabeça (laranja) e o chão (verde) nas poses e um corpo de apoio, no ponto de encaixe, ao editar rostos. As “cores do personagem” vêm do próprio sprite, para pintar sem mudar o tom.</li>
+        <li><b>Cuidados:</b> em rostos, mantenha o tamanho da tela para o encaixe da cabeça continuar valendo. No <C>pose_parado</C>, mudar o tamanho exige remedir o encaixe dos rostos (o app volta a usar a caixa da cabeça). Poses animadas aparecem quadro a quadro (<C>correr 1</C>, <C>correr 2</C>…).</li>
+      </ul>
+    </>),
+  },
+  {
     id: 'biblioteca', titulo: 'Biblioteca e sequências prontas',
     corpo: (<>
       <p>Na aba <i>Biblioteca</i>, clipes prontos (comemoração, encerramento, danças, reações, expressões) inserem um trecho de roteiro para o personagem selecionado. Na aba <i>Propriedades</i>, cada dança e pose é um botão que insere a frase correspondente.</p>

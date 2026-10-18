@@ -24,7 +24,8 @@ export default defineConfig({
       })]
       : []),
   ],
-  server: { host: '127.0.0.1', port: 5173, strictPort: true },
+  // o servidor só vigia o código: evidências, referências, builds e o projeto Android mudam (e travam arquivos) durante os testes
+  server: { host: '127.0.0.1', port: 5173, strictPort: true, watch: { ignored: ['**/evidencias/**', '**/referencias/**', '**/release/**', '**/dist*/**', '**/android/**', '**/docs/**', '**/tools/**'] } },
   build: { outDir: 'dist', emptyOutDir: true },
   test: { include: ['src/**/*.test.ts'], environment: 'node' },
 });

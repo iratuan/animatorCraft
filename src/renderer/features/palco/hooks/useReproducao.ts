@@ -32,6 +32,8 @@ export function useAtalhos() {
   useEffect(() => {
     const tecla = (e: KeyboardEvent) => {
       const alvo = e.target;
+      // com o editor de imagem aberto, as teclas são dele (Espaço move a tela, Ctrl+Z desfaz o desenho, etc.)
+      if (useEditor.getState().editorImagem) return;
       const ctrl = e.ctrlKey || e.metaKey;
       if (ctrl && !e.shiftKey && e.key.toLowerCase() === 'z') { if (desfazer()) { e.preventDefault(); useEditor.getState().set({ mensagem: 'Desfeito.' }); } return; }
       if (ctrl && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) { if (refazer()) { e.preventDefault(); useEditor.getState().set({ mensagem: 'Refeito.' }); } return; }
@@ -46,5 +48,6 @@ export function useAtalhos() {
     return () => window.removeEventListener('keydown', tecla);
   }, [timeline.duracao]);
 }
+
 
 

@@ -17,7 +17,19 @@ const bytesDeUrl = async (url: string): Promise<Uint8Array> => new Uint8Array(aw
 const nomeArquivo = (s: SpriteInfo) => `${s.tipo ?? 'pose'}_${s.tags[0]}${s.variante ? `_${s.variante}` : ''}.png`;
 const chave = (s: SpriteInfo) => `${s.tipo}|${s.tags[0]}|${s.variante ?? ''}`;
 
-export const nomeDoZip = (ids: ActorId[]) => (ids.length === 1 ? `sprites-${ids[0]}.zip` : 'sprites-todos.zip');
+/** O sprite de um espaço (o importado/editado tem prioridade sobre o original do app): informações e data URL do PNG colorido. */
+export async function obterSprite(id: ActorId, tipo: 'pose' | 'rosto' | 'prop', nome: string): Promise<{ info: SpriteInfo; url: string } | null> {
+  // "andar_2" = quadro 2 da animação "andar"; "andar" = o sprite sem número
+  const m = /^(.+)_(\d+)$/.exec(nome), base = m ? m[1]! : nome, variante = m ? Number(m[2]) : null;
+  const bate = (s: SpriteInfo) => (s.tipo ?? 'pose') === tipo && s.tags[0] === base && (s.variante ?? null) === variante;
+  const salvo = (await lerEntradasSalvas()).find((e) => e.personagem === id && bate(e.info));
+  if (salvo) return { info: salvo.info, url: salvo.url };
+  const original = (manifestoOriginal[id]?.sprites ?? []).find(bate);
+  const url = original && urlOriginal(original.arquivo);
+  return original && url ? { info: original, url } : null;
+}
+
+export const nomeDoZip =(ids: ActorId[]) => (ids.length === 1 ? `sprites-${ids[0]}.zip` : 'sprites-todos.zip');
 
 export async function montarPacoteExportacao(ids: ActorId[]): Promise<{ zip: Uint8Array; total: number }> {
   const salvos = await lerEntradasSalvas();
