@@ -1,0 +1,16 @@
+import { chromium } from 'playwright-core';
+import { writeFileSync } from 'node:fs';
+const dest = 'evidencias/21-exportar-editar-sprites';
+const b = await chromium.launch({ channel: 'msedge', headless: true });
+const p = await b.newPage({ viewport: { width: 1600, height: 900 }, acceptDownloads: true });
+const erros = []; p.on('pageerror', (e) => erros.push(String(e)));
+await p.goto('http://127.0.0.1:5173/?ator=betason');
+await p.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+await p.getByText('Editar / exportar sprites de BetaSon').click();
+await p.waitForTimeout(600);
+await p.screenshot({ path: `${dest}/01-editor-de-sprites.png` });
+const [dl] = await Promise.all([p.waitForEvent('download'), p.getByRole('button', { name: /Exportar BetaSon/ }).click()]);
+await dl.saveAs(`${dest}/sprites-betason.zip`);
+console.log('zip', dl.suggestedFilename());
+console.log('erros', erros);
+await b.close();

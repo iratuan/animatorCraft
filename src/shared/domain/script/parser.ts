@@ -1,0 +1,298 @@
+import { ATORES, PAPEIS_PADRAO, type ActorId, type Papeis } from '../characters';
+import { DANCA_PADRAO, DURACAO_PADRAO_DANCA, EXPRESSOES, FRASE_POSE, POSES_DE_DANCA, type ExpressaoId, type PoseId } from '../poses';
+import type { Acao, Cena, Lado, Roteiro } from '../types';
+
+const semAcento = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+/** Adjetivo falado -> pose e/ou expressão. */
+const ESTADOS: Record<string, { pose?: PoseId; expressao?: ExpressaoId }> = {
+  confuso: { pose: 'confuso', expressao: 'confusa' },
+  surpreso: { pose: 'surpreso', expressao: 'surpresa' },
+  bravo: { pose: 'bravo', expressao: 'brava' },
+  irritado: { pose: 'bravo', expressao: 'brava' },
+  neutro: { expressao: 'neutra' },
+  feliz: { expressao: 'feliz' },
+  triste: { expressao: 'triste' },
+  assustado: { expressao: 'assustada' },
+  empolgado: { expressao: 'empolgada' },
+  entediado: { expressao: 'entediada' },
+  sarcastico: { pose: 'sarcastico', expressao: 'sarcastica' },
+  pensativo: { pose: 'pensar' },
+  envergonhado: { pose: 'envergonhado' },
+  rindo: { pose: 'rindo', expressao: 'feliz' },
+  chorando: { pose: 'chorando', expressao: 'triste' },
+};
+
+const VERBOS_FALA = ['diz', 'fala', 'grita', 'pergunta', 'responde', 'sussurra', 'reclama', 'exclama'];
+
+interface FraseComPosicao { texto: string; ini: number; fim: number }
+
+/** Divide em frases e informa onde cada uma está no texto de entrada (para a linha do tempo reescrever o roteiro). */
+function dividirFrases(texto: string): FraseComPosicao[] {
+  const frases: FraseComPosicao[] = [];
+  let ini = 0;
+  let aspas = false;
+  let latex = false;
+  const fechar = (ate: number) => {
+    const bruto = texto.slice(ini, ate);
+    const esq = bruto.length - bruto.trimStart().length;
+    const t = bruto.trim();
+    if (t) frases.push({ texto: t, ini: ini + esq, fim: ini + esq + t.length });
+    ini = ate;
+  };
+  for (let i = 0; i < texto.length; i++) {
+    const c = texto[i]!;
+    // comandos entre colchetes ([nota: ...], [close na lousa], [plano aberto]) são frases por si só
+    if (c === '[' && !aspas && !latex) {
+      fechar(i);
+      const fim = texto.indexOf(']', i);
+      const ate = fim === -1 ? texto.length - 1 : fim;
+      ini = i; fechar(ate + 1);
+      i = ate;
+      continue;
+    }
+    if (c === '"') aspas = !aspas;
+    else if (c === '$' && !aspas) latex = !latex;
+    else if (!aspas && !latex && '.!?'.includes(c) && (i + 1 === texto.length || /\s/.test(texto[i + 1]!))) fechar(i + 1);
+  }
+  fechar(texto.length);
+  return frases;
+}
+function acharLado(norm: string): Lado {
+  if (/esquerda/.test(norm)) return 'esquerda';
+  if (/direita/.test(norm)) return 'direita';
+  return /centro|meio/.test(norm) ? 'centro' : 'esquerda';
+}
+
+function acharEstado(norm: string) {
+  for (const [palavra, estado] of Object.entries(ESTADOS)) {
+    if (new RegExp(`\\b${palavra}\\b`).test(norm)) return estado;
+  }
+  return undefined;
+}
+
+function estadoParaAcoes(ator: ActorId, estado: { pose?: PoseId; expressao?: ExpressaoId }): Acao[] {
+  const acoes: Acao[] = [];
+  if (estado.pose) acoes.push({ tipo: 'pose', ator, pose: estado.pose });
+  if (estado.expressao) acoes.push({ tipo: 'expressao', ator, expressao: estado.expressao });
+  return acoes;
+}
+
+function acharAtores(norm: string): ActorId[] {
+  const achados: { id: ActorId; pos: number }[] = [];
+  for (const spec of Object.values(ATORES)) {
+    const pos = Math.min(...spec.apelidos.map((ap) => new RegExp(`\\b${ap}\\b`).exec(norm)?.index ?? Infinity));
+    if (pos !== Infinity) achados.push({ id: spec.id, pos });
+  }
+  return achados.sort((a, b) => a.pos - b.pos).map((a) => a.id);
+}
+
+/** Verbos no plural ("dançam", "entram", "saem") para a forma singular que o interpretador conhece. */
+function singularizar(norm: string): string {
+  return norm
+    .replace(/\bsaem\b/g, 'sai').replace(/\bcaem\b/g, 'cai').replace(/\briem\b/g, 'ri').replace(/\bpoem\b/g, 'poe')
+    .replace(/\b(\w{3,})am\b/g, '$1a').replace(/\b(\w{5,})em\b/g, '$1e');
+}
+
+/** Os papéis da aula ("Professor", "Aluno") viram o apelido de quem os cumpre nesta aula. */
+function aplicarPapeis(norm: string, papeis: Papeis): string {
+  return norm
+    .replace(/\bprofessor(?:a)?\b/g, ATORES[papeis.professor]!.apelidos[0]!)
+    .replace(/\baluno\b/g, ATORES[papeis.aluno]!.apelidos[0]!);
+}
+
+/** [close na lousa] · [close no professor] · [close em Erika] · [plano aberto]. */
+function interpretarCamera(frase: string, avisos: string[], papeis: Papeis): Acao[] | null {
+  const m = /^\[\s*(close|plano|volta|zoom)\b(.*)\]$/i.exec(frase);
+  if (!m) return null;
+  const inner = aplicarPapeis(semAcento(`${m[1]} ${m[2]}`), papeis);
+  if (/\b(plano|volta|aberto|geral|normal)\b/.test(inner) && !/\b(lousa|quadro)\b/.test(inner)) return [{ tipo: 'camera', alvo: 'aberto' }];
+  if (/\b(lousa|quadro)\b/.test(inner)) return [{ tipo: 'camera', alvo: 'lousa' }];
+  const ator = acharAtores(inner)[0];
+  if (ator) return [{ tipo: 'camera', alvo: 'personagem', ator }];
+  avisos.push(`Câmera não entendida: "${frase}"`);
+  return [];
+}
+
+function interpretarFrase(frase: string, avisos: string[], presentes: Set<ActorId>, papeis: Papeis): Acao[] {
+  const nota = /^\[\s*nota\s*:\s*(.*?)\s*\]$/i.exec(frase);
+  if (nota) return [{ tipo: 'nota', texto: nota[1]! }];
+  const camera = interpretarCamera(frase, avisos, papeis);
+  if (camera) return camera;
+
+  const citacao = /"([^"]*)"/.exec(frase)?.[1];
+  const latex = /\$([^$]+)\$/.exec(frase)?.[1];
+  // Remove trechos literais antes de analisar verbos, para que o conteúdo não seja confundido com comandos.
+  const norm = aplicarPapeis(semAcento(frase.replace(/"[^"]*"/g, ' ').replace(/\$[^$]+\$/g, ' ')), papeis);
+
+  const espera = /\b(espera|pausa|aguarda)\b.*?(\d+(?:[.,]\d+)?)\s*segundo/.exec(norm);
+  if (espera) return [{ tipo: 'esperar', segundos: parseFloat(espera[2]!.replace(',', '.')) }];
+  if (/\bapaga\b/.test(norm)) return [{ tipo: 'apagar' }];
+
+  // "Professor e Aluno dançam juntos" / "Todos dançam": uma ação por ator, todas começando juntas.
+  let atores = acharAtores(norm);
+  const todos = /\b(todos|todas)\b/.test(norm);
+  if (todos && atores.length === 0) atores = [...presentes];
+  const coletivo = todos || /\b(juntos|juntas)\b/.test(norm) || (atores.length >= 2 && /\be\b/.test(norm));
+  if (!coletivo) atores = atores.slice(0, 1);
+  if (atores.length === 0) {
+    avisos.push(`Sem ator reconhecido: "${frase}"`);
+    return [];
+  }
+  const normVerbos = atores.length > 1 ? singularizar(norm) : norm;
+  return atores.flatMap((ator, i) =>
+    interpretarAtor(frase, normVerbos, citacao, latex, ator, avisos).map((a): Acao => (i > 0 ? { ...a, junto: true } : a)),
+  );
+}
+
+function interpretarAtor(frase: string, norm: string, citacao: string | undefined, latex: string | undefined, ator: ActorId, avisos: string[]): Acao[] {
+  // "Betason faz a pose pular-corda [por 3 segundos]": usa um sprite do pacote pelo nome
+  const etiqueta = /\b(?:faz|assume|usa) a pose ([a-z0-9]+(?:-[a-z0-9]+)*)\b/.exec(norm)?.[1];
+  if (etiqueta) {
+    const por = /\bpor (\d+(?:[.,]\d+)?) segundos?\b/.exec(norm)?.[1];
+    return [{ tipo: 'pose', ator, pose: 'parado', etiqueta, ...(por ? { duracao: parseFloat(por.replace(',', '.')) } : {}) }];
+  }
+  const estado = acharEstado(norm);
+
+  if (citacao !== undefined && VERBOS_FALA.some((v) => new RegExp(`\\b${v}\\b`).test(norm))) {
+    return [{ tipo: 'fala', ator, texto: citacao }, ...(estado ? estadoParaAcoes(ator, estado) : [])];
+  }
+  if (/\bescreve\b/.test(norm)) {
+    if (latex) return [{ tipo: 'escrever', ator, conteudo: { tipo: 'latex', latex } }];
+    if (citacao !== undefined) return [{ tipo: 'escrever', ator, conteudo: { tipo: 'texto', texto: citacao } }];
+  }
+  // "fica na posição 35%" / "anda para a posição 60%" / "entra pela esquerda na posição 20%"
+  const pct = /\bposicao\s*(?:de\s*)?(\d+(?:[.,]\d+)?)\s*%?/.exec(norm)?.[1];
+  const xPos = pct ? Math.min(100, Math.max(0, parseFloat(pct.replace(',', '.')))) / 100 : undefined;
+  if (/\b(entra|chega)\b/.test(norm)) {
+    const pose: PoseId = /correndo/.test(norm) ? 'correr' : 'andar';
+    return [{ tipo: 'entrar', ator, lado: acharLado(norm), pose, ...(xPos !== undefined ? { x: xPos } : {}) }];
+  }
+  if (/\b(sai|vai embora)\b/.test(norm)) {
+    const pose: PoseId = /correndo/.test(norm) ? 'correr' : 'andar';
+    return [{ tipo: 'sair', ator, lado: acharLado(norm), pose }];
+  }
+  if (xPos !== undefined && /\b(fica|vai|vem|anda|corre|caminha|move|muda|posiciona|se posiciona)\b/.test(norm)) {
+    return [{ tipo: 'posicionar', ator, x: xPos, ...(/\b(vai|vem|anda|corre|caminha|move)\b/.test(norm) ? { andando: true } : {}) }];
+  }
+  if (/\baponta\b/.test(norm)) return [{ tipo: 'apontar', ator }];
+  const cara = /cara de (\w+)/.exec(norm)?.[1] as ExpressaoId | undefined;
+  if (cara && EXPRESSOES.includes(cara)) return [{ tipo: 'expressao', ator, expressao: cara }];
+  if (estado) return estadoParaAcoes(ator, estado);
+  const poseTemporaria = (pose: PoseId): Acao => {
+    const por = /\bpor (\d+(?:[.,]\d+)?) segundos?\b/.exec(norm)?.[1];
+    const dura = por ? parseFloat(por.replace(',', '.')) : POSES_DE_DANCA.includes(pose) ? DURACAO_PADRAO_DANCA : undefined;
+    return { tipo: 'pose', ator, pose, ...(dura ? { duracao: dura } : {}) };
+  };
+  for (const [pose, fraseDaPose] of Object.entries(FRASE_POSE)) {
+    if (new RegExp(`\\b${semAcento(fraseDaPose)}\\b`).test(norm)) return [poseTemporaria(pose as PoseId)];
+  }
+  if (/\b(danca|dancando)\b/.test(norm)) return [poseTemporaria((DANCA_PADRAO[ator] ?? ATORES[ator]?.dancaPadrao ?? 'danca_atual') as PoseId)];
+
+  avisos.push(`Ação não entendida: "${frase}"`);
+  return [];
+}
+
+// ---------------------------------------------------------------- simultaneidade
+// "Enquanto Professor diz "Oi", Aluno dança."  ·  "Aluno dança enquanto Professor diz "Oi"."
+// "Ao mesmo tempo, Erika acena."  ·  "Enquanto isso, Dario pula."  ·  "Ao mesmo tempo:" abre um bloco (cada frase seguinte do parágrafo roda junto com a primeira).
+// A ação marcada começa junto com a anterior; a próxima ação sequencial espera a mais longa terminar.
+
+const mascarar = (f: string) => f.replace(/"[^"]*"|\$[^$]*\$/g, (m) => ' '.repeat(m.length));
+const juntar = (acoes: Acao[]): Acao[] => acoes.map((a): Acao => ({ ...a, junto: true }));
+
+interface EstadoBloco { aberto: boolean; primeira: boolean }
+
+function interpretarComSimultaneidade(frase: string, avisos: string[], presentes: Set<ActorId>, papeis: Papeis, bloco: EstadoBloco): Acao[] {
+  const base = (f: string) => interpretarFrase(f.trim(), avisos, presentes, papeis);
+  const m = mascarar(semAcento(frase));
+
+  const marcador = /^(ao mesmo tempo|simultaneamente|enquanto isso)\s*([,:])?\s*/.exec(m);
+  if (marcador) {
+    const resto = frase.slice(marcador[0].length).trim();
+    if (marcador[2] === ':') { // "Ao mesmo tempo: A. B. C." — a primeira abre o grupo e as outras do parágrafo rodam junto com ela
+      bloco.aberto = true; bloco.primeira = true;
+      return resto ? interpretarComSimultaneidade(resto, avisos, presentes, papeis, bloco) : [];
+    }
+    return juntar(base(resto));
+  }
+  if (/^enquanto\s/.test(m)) {
+    const virgula = m.indexOf(',');
+    if (virgula < 0) { avisos.push(`"Enquanto" precisa de vírgula entre as duas ações: "${frase}"`); return []; }
+    const a = base(frase.slice('enquanto'.length, virgula));
+    return [...a, ...juntar(base(frase.slice(virgula + 1)))];
+  }
+  const meio = /\senquanto\s/.exec(m);
+  if (meio) {
+    const a = base(frase.slice(0, meio.index));
+    return [...a, ...juntar(base(frase.slice(meio.index + meio[0].length)))];
+  }
+  const acoes = base(frase);
+  if (bloco.aberto) {
+    if (bloco.primeira) { bloco.primeira = false; return acoes.map((a, i): Acao => (i === 0 ? a : { ...a, junto: true })); }
+    return juntar(acoes);
+  }
+  return acoes;
+}
+/**
+ * Converte o roteiro em parágrafos para ações.
+ * Linhas "# Título" iniciam uma cena; o restante é dividido em frases, cada frase vira uma ou mais ações.
+ */
+export function parseRoteiro(textoOriginal: string): Roteiro {
+  const avisos: string[] = [];
+  const cenas: Cena[] = [];
+  let cena: Cena | undefined;
+  let buffer: { txt: string; off: number }[] = [];
+  const presentes = new Set<ActorId>();
+
+  // Linha de papéis da aula: [papéis: professor=Erika, aluno=Dario]
+  const papeis: Papeis = { ...PAPEIS_PADRAO };
+  const texto = textoOriginal.replace(/^[ \t]*\[\s*pap[eé]is\s*:([^\]]*)\][ \t]*$/gim, (_inteiro, corpo: string) => {
+    for (const par of corpo.split(',')) {
+      const [papel, nome] = par.split('=').map((s) => semAcento(s.trim()));
+      const ator = nome ? acharAtores(nome)[0] : undefined;
+      if ((papel === 'professor' || papel === 'aluno') && ator) papeis[papel] = ator;
+      else if (par.trim()) avisos.push(`Papel não entendido: "${par.trim()}"`);
+    }
+    return ' '.repeat(_inteiro.length);
+  });
+
+  const fecharBuffer = () => {
+    if (!buffer.length) return;
+    cena ??= { titulo: 'Cena 1', acoes: [], origens: [] };
+    if (!cenas.includes(cena)) cenas.push(cena);
+    const bloco: EstadoBloco = { aberto: false, primeira: false };
+    // texto do parágrafo (linhas unidas por espaço) e, para cada caractere, a posição dele no roteiro original
+    const unido = buffer.map((l) => l.txt).join(' ');
+    const mapa: number[] = [];
+    buffer.forEach((l, i) => { if (i > 0) mapa.push(l.off - 1); for (let k = 0; k < l.txt.length; k++) mapa.push(l.off + k); });
+    for (const frase of dividirFrases(unido)) {
+      const acoes = interpretarComSimultaneidade(frase.texto, avisos, presentes, papeis, bloco);
+      const origem = { ini: mapa[frase.ini]!, fim: mapa[frase.fim - 1]! + 1 };
+      for (const a of acoes) if ('ator' in a && a.ator) { if (a.tipo === 'sair') presentes.delete(a.ator); else presentes.add(a.ator); }
+      cena.acoes.push(...acoes);
+      cena.origens.push(...acoes.map(() => origem));
+    }
+    buffer = [];
+  };
+
+  let pos = 0;
+  for (const linha of texto.split(/\r?\n/)) {
+    const off = pos;
+    pos += linha.length + (texto[pos + linha.length] === '\r' ? 2 : 1);
+    const titulo = /^#\s+(.*)$/.exec(linha);
+    if (titulo) {
+      fecharBuffer();
+      cena = { titulo: titulo[1]!.trim(), acoes: [], origens: [] };
+      cenas.push(cena);
+    } else if (linha.trim()) {
+      buffer.push({ txt: linha.trim(), off: off + (linha.length - linha.trimStart().length) });
+    } else {
+      fecharBuffer();
+    }
+  }
+  fecharBuffer();
+  return { cenas, avisos, papeis };
+}
+
+

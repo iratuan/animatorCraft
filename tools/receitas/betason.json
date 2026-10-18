@@ -1,0 +1,101 @@
+{
+  "id": "betason",
+  "nome": "BetaSon",
+  "alturaAlvo": 265,
+  "cabeca": {
+    "x": 0.03,
+    "y": 0,
+    "w": 0.94,
+    "h": 0.38
+  },
+  "folhas": [
+    {
+      "arquivo": "sprite_betason1.png",
+      "referencia": 6,
+      "itens": {
+        "1": [
+          "rosto_boca-a",
+          "rosto_feliz"
+        ],
+        "2": "rosto_olhos-fechados",
+        "3": [
+          "rosto_boca-o",
+          "rosto_surpresa"
+        ],
+        "4": "rosto_assustada",
+        "5": "rosto_confusa",
+        "6": "pose_parado",
+        "8": "pose_perfil",
+        "10": "pose_costas",
+        "13": "pose_mochila",
+        "15": "pose_bracos-cruzados",
+        "16": [
+          "rosto_boca-e",
+          "rosto_empolgada"
+        ],
+        "18": "rosto_sarcastica",
+        "19": "rosto_entediada",
+        "21": "rosto_neutra",
+        "22": "rosto_boca-m",
+        "23": "rosto_triste",
+        "69": "pose_andar",
+        "72": "pose_skate",
+        "73": "pose_comemorar",
+        "74": "pose_pular",
+        "75": "pose_skate-pulo",
+        "77": "pose_sentado-jogando",
+        "78": "pose_sentado",
+        "81": "pose_deitado-lendo",
+        "82": "pose_deitado-pensando",
+        "83": "pose_deitado-escrevendo",
+        "86": "pose_comemorar-sentado",
+        "88": "prop_ideia",
+        "92": "prop_mochila",
+        "93": "pose_abracando-joelhos",
+        "95": "pose_ouvindo-musica",
+        "96": "pose_relaxando",
+        "97": "pose_dormindo",
+        "98": "pose_celular",
+        "99": "prop_bola",
+        "131": "prop_skate",
+        "133": "prop_fone",
+        "137": "prop_foguete",
+        "138": "prop_dino"
+      }
+    },
+    {
+      "arquivo": "sprite_betason2.png",
+      "referencia": 1,
+      "itens": {
+        "6": "pose_acenar",
+        "7": "pose_apontar",
+        "8": "pose_joinha",
+        "9": "pose_ideia",
+        "10": "pose_correr-feliz",
+        "18": "pose_pensar-sentado",
+        "22": "pose_andar-feliz"
+      }
+    },
+    {
+      "arquivo": "sprite_betason3.png",
+      "referencia": 109,
+      "itens": {
+        "38": "rosto_brava",
+        "116": "pose_pensar",
+        "117": "pose_susto",
+        "129": "pose_telescopio",
+        "132": "pose_binoculo"
+      }
+    },
+    {
+      "arquivo": "sprite_betason4.png",
+      "referencia": 1,
+      "itens": {
+        "101": "pose_correr_1",
+        "102": "pose_correr_2",
+        "103": "pose_correr_3",
+        "104": "pose_correr_4"
+      }
+    }
+  ]
+}

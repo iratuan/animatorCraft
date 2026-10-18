@@ -1,0 +1,2408 @@
+{
+  "cringefather": {
+    "nome": "CringeFather",
+    "altura": 265,
+    "sprites": [
+      {
+        "arquivo": "cringefather/rosto_empolgada.png",
+        "w": 70,
+        "h": 82,
+        "tags": [
+          "empolgada"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 11,
+          "y": -1,
+          "escala": 1.13
+        }
+      },
+      {
+        "arquivo": "cringefather/rosto_sarcastica.png",
+        "w": 74,
+        "h": 82,
+        "tags": [
+          "sarcastica"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 12,
+          "y": 0,
+          "escala": 1.044
+        }
+      },
+      {
+        "arquivo": "cringefather/rosto_boca-o.png",
+        "w": 69,
+        "h": 82,
+        "tags": [
+          "boca-o"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 13,
+          "y": -1,
+          "escala": 1.13
+        }
+      },
+      {
+        "arquivo": "cringefather/pose_parado.png",
+        "w": 91,
+        "h": 268,
+        "tags": [
+          "parado"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes",
+        "rosto": {
+          "cabeca": {
+            "x": 0.08,
+            "y": 0,
+            "w": 0.84,
+            "h": 0.28
+          }
+        }
+      },
+      {
+        "arquivo": "cringefather/pose_perfil.png",
+        "w": 69,
+        "h": 266,
+        "tags": [
+          "perfil"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/pose_costas.png",
+        "w": 81,
+        "h": 262,
+        "tags": [
+          "costas"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/rosto_boca-m.png",
+        "w": 73,
+        "h": 82,
+        "tags": [
+          "boca-m"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 12,
+          "y": 1,
+          "escala": 1.096
+        }
+      },
+      {
+        "arquivo": "cringefather/rosto_boca-a.png",
+        "w": 72,
+        "h": 83,
+        "tags": [
+          "boca-a"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 12,
+          "y": -1,
+          "escala": 1.094
+        }
+      },
+      {
+        "arquivo": "cringefather/rosto_entediada.png",
+        "w": 73,
+        "h": 82,
+        "tags": [
+          "entediada"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 12,
+          "y": 2,
+          "escala": 1.06
+        }
+      },
+      {
+        "arquivo": "cringefather/rosto_confusa.png",
+        "w": 69,
+        "h": 81,
+        "tags": [
+          "confusa"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 11,
+          "y": 2,
+          "escala": 1.13
+        }
+      },
+      {
+        "arquivo": "cringefather/rosto_neutra.png",
+        "w": 69,
+        "h": 82,
+        "tags": [
+          "neutra"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 8,
+          "y": 6,
+          "escala": 1.189
+        }
+      },
+      {
+        "arquivo": "cringefather/rosto_feliz.png",
+        "w": 71,
+        "h": 85,
+        "tags": [
+          "feliz"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 12,
+          "y": 0,
+          "escala": 1.096
+        }
+      },
+      {
+        "arquivo": "cringefather/rosto_brava.png",
+        "w": 73,
+        "h": 83,
+        "tags": [
+          "brava"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 11,
+          "y": -1,
+          "escala": 1.096
+        }
+      },
+      {
+        "arquivo": "cringefather/rosto_olhos-fechados.png",
+        "w": 70,
+        "h": 86,
+        "tags": [
+          "olhos-fechados"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 13,
+          "y": 0,
+          "escala": 1.094
+        }
+      },
+      {
+        "arquivo": "cringefather/rosto_surpresa.png",
+        "w": 73,
+        "h": 83,
+        "tags": [
+          "surpresa"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 12,
+          "y": 0,
+          "escala": 1.06
+        }
+      },
+      {
+        "arquivo": "cringefather/rosto_assustada.png",
+        "w": 70,
+        "h": 84,
+        "tags": [
+          "assustada"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 12,
+          "y": -1,
+          "escala": 1.112
+        }
+      },
+      {
+        "arquivo": "cringefather/rosto_triste.png",
+        "w": 72,
+        "h": 84,
+        "tags": [
+          "triste"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 11,
+          "y": -1,
+          "escala": 1.063
+        }
+      },
+      {
+        "arquivo": "cringefather/rosto_boca-e.png",
+        "w": 69,
+        "h": 86,
+        "tags": [
+          "boca-e"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 11,
+          "y": 21,
+          "escala": 1.13
+        }
+      },
+      {
+        "arquivo": "cringefather/prop_livros.png",
+        "w": 69,
+        "h": 61,
+        "tags": [
+          "livros"
+        ],
+        "tipo": "prop",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/prop_mochila.png",
+        "w": 66,
+        "h": 89,
+        "tags": [
+          "mochila"
+        ],
+        "tipo": "prop",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/prop_laptop.png",
+        "w": 82,
+        "h": 69,
+        "tags": [
+          "laptop"
+        ],
+        "tipo": "prop",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/prop_atomo.png",
+        "w": 47,
+        "h": 48,
+        "tags": [
+          "atomo"
+        ],
+        "tipo": "prop",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/pose_apontar.png",
+        "w": 128,
+        "h": 183,
+        "tags": [
+          "apontar"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/pose_apresentar.png",
+        "w": 118,
+        "h": 191,
+        "tags": [
+          "apresentar"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/pose_gesticular.png",
+        "w": 102,
+        "h": 186,
+        "tags": [
+          "gesticular"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/pose_lendo.png",
+        "w": 96,
+        "h": 192,
+        "tags": [
+          "lendo"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/pose_andar_1.png",
+        "w": 62,
+        "h": 126,
+        "tags": [
+          "andar"
+        ],
+        "tipo": "pose",
+        "variante": 1,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/pose_andar_2.png",
+        "w": 60,
+        "h": 128,
+        "tags": [
+          "andar"
+        ],
+        "tipo": "pose",
+        "variante": 2,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/pose_andar_3.png",
+        "w": 68,
+        "h": 125,
+        "tags": [
+          "andar"
+        ],
+        "tipo": "pose",
+        "variante": 3,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/pose_andar_4.png",
+        "w": 81,
+        "h": 133,
+        "tags": [
+          "andar"
+        ],
+        "tipo": "pose",
+        "variante": 4,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/pose_correr.png",
+        "w": 100,
+        "h": 145,
+        "tags": [
+          "correr"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/pose_sentado.png",
+        "w": 96,
+        "h": 125,
+        "tags": [
+          "sentado"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/pose_susto.png",
+        "w": 133,
+        "h": 169,
+        "tags": [
+          "susto"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/pose_comemorar.png",
+        "w": 136,
+        "h": 178,
+        "tags": [
+          "comemorar"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/pose_pensar.png",
+        "w": 73,
+        "h": 162,
+        "tags": [
+          "pensar"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/pose_laptop.png",
+        "w": 111,
+        "h": 115,
+        "tags": [
+          "laptop"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/pose_sentado-alt.png",
+        "w": 83,
+        "h": 118,
+        "tags": [
+          "sentado-alt"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "cringefather/pose_investigar.png",
+        "w": 122,
+        "h": 116,
+        "tags": [
+          "investigar"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      }
+    ]
+  },
+  "betason": {
+    "nome": "BetaSon",
+    "altura": 265,
+    "sprites": [
+      {
+        "arquivo": "betason/rosto_boca-a.png",
+        "w": 99,
+        "h": 108,
+        "tags": [
+          "boca-a"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": -1,
+          "y": 0,
+          "escala": 1.02
+        }
+      },
+      {
+        "arquivo": "betason/rosto_feliz.png",
+        "w": 99,
+        "h": 108,
+        "tags": [
+          "feliz"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": -1,
+          "y": 0,
+          "escala": 1.02
+        }
+      },
+      {
+        "arquivo": "betason/rosto_olhos-fechados.png",
+        "w": 97,
+        "h": 107,
+        "tags": [
+          "olhos-fechados"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 1,
+          "y": 2,
+          "escala": 1.02
+        }
+      },
+      {
+        "arquivo": "betason/rosto_boca-o.png",
+        "w": 92,
+        "h": 107,
+        "tags": [
+          "boca-o"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 2,
+          "y": 0,
+          "escala": 1.06
+        }
+      },
+      {
+        "arquivo": "betason/rosto_surpresa.png",
+        "w": 92,
+        "h": 107,
+        "tags": [
+          "surpresa"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 2,
+          "y": 0,
+          "escala": 1.06
+        }
+      },
+      {
+        "arquivo": "betason/rosto_assustada.png",
+        "w": 93,
+        "h": 108,
+        "tags": [
+          "assustada"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 0,
+          "y": -1,
+          "escala": 1.06
+        }
+      },
+      {
+        "arquivo": "betason/rosto_confusa.png",
+        "w": 96,
+        "h": 107,
+        "tags": [
+          "confusa"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 0,
+          "y": 2,
+          "escala": 1.06
+        }
+      },
+      {
+        "arquivo": "betason/pose_parado.png",
+        "w": 102,
+        "h": 269,
+        "tags": [
+          "parado"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes",
+        "rosto": {
+          "cabeca": {
+            "x": 0.03,
+            "y": 0,
+            "w": 0.94,
+            "h": 0.38
+          }
+        }
+      },
+      {
+        "arquivo": "betason/pose_perfil.png",
+        "w": 88,
+        "h": 264,
+        "tags": [
+          "perfil"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_costas.png",
+        "w": 96,
+        "h": 264,
+        "tags": [
+          "costas"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_mochila.png",
+        "w": 124,
+        "h": 273,
+        "tags": [
+          "mochila"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_bracos-cruzados.png",
+        "w": 97,
+        "h": 266,
+        "tags": [
+          "bracos-cruzados"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/rosto_boca-e.png",
+        "w": 94,
+        "h": 101,
+        "tags": [
+          "boca-e"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": -2,
+          "y": 2,
+          "escala": 1.1
+        }
+      },
+      {
+        "arquivo": "betason/rosto_empolgada.png",
+        "w": 94,
+        "h": 101,
+        "tags": [
+          "empolgada"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": -2,
+          "y": 2,
+          "escala": 1.1
+        }
+      },
+      {
+        "arquivo": "betason/rosto_sarcastica.png",
+        "w": 91,
+        "h": 98,
+        "tags": [
+          "sarcastica"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 1,
+          "y": 2,
+          "escala": 1.1
+        }
+      },
+      {
+        "arquivo": "betason/rosto_entediada.png",
+        "w": 92,
+        "h": 99,
+        "tags": [
+          "entediada"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 0,
+          "y": 0,
+          "escala": 1.1
+        }
+      },
+      {
+        "arquivo": "betason/rosto_neutra.png",
+        "w": 94,
+        "h": 100,
+        "tags": [
+          "neutra"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 3,
+          "y": 1,
+          "escala": 1.02
+        }
+      },
+      {
+        "arquivo": "betason/rosto_boca-m.png",
+        "w": 92,
+        "h": 100,
+        "tags": [
+          "boca-m"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 1,
+          "y": 2,
+          "escala": 1.1
+        }
+      },
+      {
+        "arquivo": "betason/rosto_triste.png",
+        "w": 92,
+        "h": 100,
+        "tags": [
+          "triste"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 1,
+          "y": 3,
+          "escala": 1.1
+        }
+      },
+      {
+        "arquivo": "betason/pose_andar.png",
+        "w": 127,
+        "h": 215,
+        "tags": [
+          "andar"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_skate.png",
+        "w": 168,
+        "h": 230,
+        "tags": [
+          "skate"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_comemorar.png",
+        "w": 152,
+        "h": 230,
+        "tags": [
+          "comemorar"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_pular.png",
+        "w": 156,
+        "h": 209,
+        "tags": [
+          "pular"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_skate-pulo.png",
+        "w": 157,
+        "h": 191,
+        "tags": [
+          "skate-pulo"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_sentado-jogando.png",
+        "w": 118,
+        "h": 190,
+        "tags": [
+          "sentado-jogando"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_sentado.png",
+        "w": 125,
+        "h": 185,
+        "tags": [
+          "sentado"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_deitado-lendo.png",
+        "w": 184,
+        "h": 142,
+        "tags": [
+          "deitado-lendo"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_deitado-pensando.png",
+        "w": 191,
+        "h": 132,
+        "tags": [
+          "deitado-pensando"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_deitado-escrevendo.png",
+        "w": 139,
+        "h": 132,
+        "tags": [
+          "deitado-escrevendo"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_comemorar-sentado.png",
+        "w": 118,
+        "h": 160,
+        "tags": [
+          "comemorar-sentado"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/prop_ideia.png",
+        "w": 120,
+        "h": 154,
+        "tags": [
+          "ideia"
+        ],
+        "tipo": "prop",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/prop_mochila.png",
+        "w": 87,
+        "h": 100,
+        "tags": [
+          "mochila"
+        ],
+        "tipo": "prop",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_abracando-joelhos.png",
+        "w": 118,
+        "h": 154,
+        "tags": [
+          "abracando-joelhos"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_ouvindo-musica.png",
+        "w": 90,
+        "h": 150,
+        "tags": [
+          "ouvindo-musica"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_relaxando.png",
+        "w": 180,
+        "h": 154,
+        "tags": [
+          "relaxando"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_dormindo.png",
+        "w": 140,
+        "h": 92,
+        "tags": [
+          "dormindo"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_celular.png",
+        "w": 109,
+        "h": 144,
+        "tags": [
+          "celular"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/prop_bola.png",
+        "w": 60,
+        "h": 60,
+        "tags": [
+          "bola"
+        ],
+        "tipo": "prop",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/prop_skate.png",
+        "w": 132,
+        "h": 40,
+        "tags": [
+          "skate"
+        ],
+        "tipo": "prop",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/prop_fone.png",
+        "w": 54,
+        "h": 57,
+        "tags": [
+          "fone"
+        ],
+        "tipo": "prop",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/prop_foguete.png",
+        "w": 55,
+        "h": 81,
+        "tags": [
+          "foguete"
+        ],
+        "tipo": "prop",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/prop_dino.png",
+        "w": 61,
+        "h": 80,
+        "tags": [
+          "dino"
+        ],
+        "tipo": "prop",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_acenar.png",
+        "w": 148,
+        "h": 264,
+        "tags": [
+          "acenar"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_apontar.png",
+        "w": 158,
+        "h": 252,
+        "tags": [
+          "apontar"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_joinha.png",
+        "w": 125,
+        "h": 263,
+        "tags": [
+          "joinha"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_ideia.png",
+        "w": 144,
+        "h": 272,
+        "tags": [
+          "ideia"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_correr-feliz.png",
+        "w": 135,
+        "h": 232,
+        "tags": [
+          "correr-feliz"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_pensar-sentado.png",
+        "w": 105,
+        "h": 243,
+        "tags": [
+          "pensar-sentado"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_andar-feliz.png",
+        "w": 142,
+        "h": 254,
+        "tags": [
+          "andar-feliz"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/rosto_brava.png",
+        "w": 121,
+        "h": 129,
+        "tags": [
+          "brava"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": -1,
+          "y": -3,
+          "escala": 0.86
+        }
+      },
+      {
+        "arquivo": "betason/pose_pensar.png",
+        "w": 119,
+        "h": 240,
+        "tags": [
+          "pensar"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_susto.png",
+        "w": 103,
+        "h": 217,
+        "tags": [
+          "susto"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_telescopio.png",
+        "w": 189,
+        "h": 228,
+        "tags": [
+          "telescopio"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_binoculo.png",
+        "w": 145,
+        "h": 203,
+        "tags": [
+          "binoculo"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_correr_1.png",
+        "w": 119,
+        "h": 255,
+        "tags": [
+          "correr"
+        ],
+        "tipo": "pose",
+        "variante": 1,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_correr_2.png",
+        "w": 135,
+        "h": 253,
+        "tags": [
+          "correr"
+        ],
+        "tipo": "pose",
+        "variante": 2,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_correr_3.png",
+        "w": 120,
+        "h": 249,
+        "tags": [
+          "correr"
+        ],
+        "tipo": "pose",
+        "variante": 3,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "betason/pose_correr_4.png",
+        "w": 136,
+        "h": 243,
+        "tags": [
+          "correr"
+        ],
+        "tipo": "pose",
+        "variante": 4,
+        "ancora": "pes"
+      }
+    ]
+  },
+  "erika": {
+    "nome": "Erika",
+    "altura": 255,
+    "sprites": [
+      {
+        "arquivo": "erika/rosto_boca-m.png",
+        "w": 85,
+        "h": 104,
+        "tags": [
+          "boca-m"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 11,
+          "y": 9,
+          "escala": 0.98
+        }
+      },
+      {
+        "arquivo": "erika/rosto_feliz.png",
+        "w": 84,
+        "h": 102,
+        "tags": [
+          "feliz"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 10,
+          "y": 7,
+          "escala": 1.02
+        }
+      },
+      {
+        "arquivo": "erika/rosto_boca-e.png",
+        "w": 84,
+        "h": 102,
+        "tags": [
+          "boca-e"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 10,
+          "y": 7,
+          "escala": 1.02
+        }
+      },
+      {
+        "arquivo": "erika/rosto_empolgada.png",
+        "w": 78,
+        "h": 101,
+        "tags": [
+          "empolgada"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 10,
+          "y": 2,
+          "escala": 1.1
+        }
+      },
+      {
+        "arquivo": "erika/rosto_boca-a.png",
+        "w": 78,
+        "h": 101,
+        "tags": [
+          "boca-a"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 10,
+          "y": 2,
+          "escala": 1.1
+        }
+      },
+      {
+        "arquivo": "erika/rosto_neutra.png",
+        "w": 77,
+        "h": 102,
+        "tags": [
+          "neutra"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 11,
+          "y": 1,
+          "escala": 1.1
+        }
+      },
+      {
+        "arquivo": "erika/rosto_sarcastica.png",
+        "w": 77,
+        "h": 102,
+        "tags": [
+          "sarcastica"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 12,
+          "y": 4,
+          "escala": 1.06
+        }
+      },
+      {
+        "arquivo": "erika/pose_parado.png",
+        "w": 100,
+        "h": 258,
+        "tags": [
+          "parado"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes",
+        "rosto": {
+          "cabeca": {
+            "x": 0.1,
+            "y": 0,
+            "w": 0.8,
+            "h": 0.22
+          }
+        }
+      },
+      {
+        "arquivo": "erika/pose_perfil.png",
+        "w": 74,
+        "h": 255,
+        "tags": [
+          "perfil"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "erika/pose_costas.png",
+        "w": 86,
+        "h": 251,
+        "tags": [
+          "costas"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "erika/rosto_surpresa.png",
+        "w": 81,
+        "h": 100,
+        "tags": [
+          "surpresa"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 11,
+          "y": 5,
+          "escala": 1.06
+        }
+      },
+      {
+        "arquivo": "erika/rosto_boca-o.png",
+        "w": 81,
+        "h": 100,
+        "tags": [
+          "boca-o"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 11,
+          "y": 5,
+          "escala": 1.06
+        }
+      },
+      {
+        "arquivo": "erika/rosto_olhos-fechados.png",
+        "w": 83,
+        "h": 99,
+        "tags": [
+          "olhos-fechados"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 8,
+          "y": 7,
+          "escala": 1.06
+        }
+      },
+      {
+        "arquivo": "erika/rosto_assustada.png",
+        "w": 81,
+        "h": 102,
+        "tags": [
+          "assustada"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 10,
+          "y": 4,
+          "escala": 1.06
+        }
+      },
+      {
+        "arquivo": "erika/rosto_confusa.png",
+        "w": 76,
+        "h": 100,
+        "tags": [
+          "confusa"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 11,
+          "y": 3,
+          "escala": 1.1
+        }
+      },
+      {
+        "arquivo": "erika/rosto_brava.png",
+        "w": 74,
+        "h": 99,
+        "tags": [
+          "brava"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 13,
+          "y": 2,
+          "escala": 1.1
+        }
+      },
+      {
+        "arquivo": "erika/rosto_triste.png",
+        "w": 78,
+        "h": 97,
+        "tags": [
+          "triste"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 11,
+          "y": 7,
+          "escala": 1.06
+        }
+      },
+      {
+        "arquivo": "erika/rosto_entediada.png",
+        "w": 78,
+        "h": 83,
+        "tags": [
+          "entediada"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 11,
+          "y": 1,
+          "escala": 1.38
+        }
+      },
+      {
+        "arquivo": "erika/pose_andar.png",
+        "w": 110,
+        "h": 188,
+        "tags": [
+          "andar"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "erika/pose_correr.png",
+        "w": 144,
+        "h": 192,
+        "tags": [
+          "correr"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "erika/pose_celular.png",
+        "w": 109,
+        "h": 211,
+        "tags": [
+          "celular"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "erika/pose_escrever.png",
+        "w": 83,
+        "h": 206,
+        "tags": [
+          "escrever"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "erika/pose_sentado-alt.png",
+        "w": 135,
+        "h": 118,
+        "tags": [
+          "sentado-alt"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "erika/pose_meditar.png",
+        "w": 128,
+        "h": 117,
+        "tags": [
+          "meditar"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "erika/pose_laptop.png",
+        "w": 208,
+        "h": 158,
+        "tags": [
+          "laptop"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "erika/pose_sentado.png",
+        "w": 135,
+        "h": 157,
+        "tags": [
+          "sentado"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      }
+    ]
+  },
+  "dario": {
+    "nome": "Dario",
+    "altura": 190,
+    "sprites": [
+      {
+        "arquivo": "dario/pose_parado.png",
+        "w": 80,
+        "h": 194,
+        "tags": [
+          "parado"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes",
+        "rosto": {
+          "cabeca": {
+            "x": 0.1,
+            "y": 0,
+            "w": 0.8,
+            "h": 0.32
+          }
+        }
+      },
+      {
+        "arquivo": "dario/pose_perfil.png",
+        "w": 82,
+        "h": 194,
+        "tags": [
+          "perfil"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "dario/pose_costas.png",
+        "w": 80,
+        "h": 193,
+        "tags": [
+          "costas"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "dario/pose_andar.png",
+        "w": 76,
+        "h": 143,
+        "tags": [
+          "andar"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "dario/pose_correr_1.png",
+        "w": 100,
+        "h": 146,
+        "tags": [
+          "correr"
+        ],
+        "tipo": "pose",
+        "variante": 1,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "dario/pose_correr_2.png",
+        "w": 91,
+        "h": 145,
+        "tags": [
+          "correr"
+        ],
+        "tipo": "pose",
+        "variante": 2,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "dario/pose_correr_3.png",
+        "w": 97,
+        "h": 145,
+        "tags": [
+          "correr"
+        ],
+        "tipo": "pose",
+        "variante": 3,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "dario/pose_correr_4.png",
+        "w": 94,
+        "h": 145,
+        "tags": [
+          "correr"
+        ],
+        "tipo": "pose",
+        "variante": 4,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "dario/pose_agachar.png",
+        "w": 80,
+        "h": 145,
+        "tags": [
+          "agachar"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "dario/pose_pular.png",
+        "w": 100,
+        "h": 135,
+        "tags": [
+          "pular"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "dario/pose_sentado-lendo.png",
+        "w": 92,
+        "h": 129,
+        "tags": [
+          "sentado-lendo"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "dario/pose_brincar.png",
+        "w": 104,
+        "h": 131,
+        "tags": [
+          "brincar"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "dario/pose_fone.png",
+        "w": 116,
+        "h": 134,
+        "tags": [
+          "fone"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "dario/pose_deitado.png",
+        "w": 170,
+        "h": 97,
+        "tags": [
+          "deitado"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "dario/pose_dino.png",
+        "w": 114,
+        "h": 107,
+        "tags": [
+          "dino"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "dario/rosto_empolgada.png",
+        "w": 79,
+        "h": 81,
+        "tags": [
+          "empolgada"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": -1,
+          "y": 0,
+          "escala": 1.02
+        }
+      },
+      {
+        "arquivo": "dario/rosto_boca-a.png",
+        "w": 80,
+        "h": 83,
+        "tags": [
+          "boca-a"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 2,
+          "y": 0,
+          "escala": 0.98
+        }
+      },
+      {
+        "arquivo": "dario/rosto_boca-e.png",
+        "w": 78,
+        "h": 83,
+        "tags": [
+          "boca-e"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 3,
+          "y": 0,
+          "escala": 0.98
+        }
+      },
+      {
+        "arquivo": "dario/rosto_neutra.png",
+        "w": 78,
+        "h": 83,
+        "tags": [
+          "neutra"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 2,
+          "y": 0,
+          "escala": 0.98
+        }
+      },
+      {
+        "arquivo": "dario/rosto_feliz.png",
+        "w": 79,
+        "h": 83,
+        "tags": [
+          "feliz"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 2,
+          "y": 0,
+          "escala": 0.98
+        }
+      },
+      {
+        "arquivo": "dario/rosto_olhos-fechados.png",
+        "w": 81,
+        "h": 82,
+        "tags": [
+          "olhos-fechados"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 1,
+          "y": 0,
+          "escala": 0.98
+        }
+      },
+      {
+        "arquivo": "dario/rosto_triste.png",
+        "w": 78,
+        "h": 82,
+        "tags": [
+          "triste"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 0,
+          "y": 0,
+          "escala": 1.02
+        }
+      },
+      {
+        "arquivo": "dario/rosto_surpresa.png",
+        "w": 76,
+        "h": 83,
+        "tags": [
+          "surpresa"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 2,
+          "y": -1,
+          "escala": 1.02
+        }
+      },
+      {
+        "arquivo": "dario/rosto_boca-o.png",
+        "w": 76,
+        "h": 83,
+        "tags": [
+          "boca-o"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 2,
+          "y": -1,
+          "escala": 1.02
+        }
+      },
+      {
+        "arquivo": "dario/rosto_brava.png",
+        "w": 77,
+        "h": 83,
+        "tags": [
+          "brava"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 2,
+          "y": 0,
+          "escala": 1.02
+        }
+      },
+      {
+        "arquivo": "dario/rosto_boca-m.png",
+        "w": 77,
+        "h": 83,
+        "tags": [
+          "boca-m"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 3,
+          "y": 0,
+          "escala": 0.98
+        }
+      },
+      {
+        "arquivo": "dario/rosto_entediada.png",
+        "w": 76,
+        "h": 83,
+        "tags": [
+          "entediada"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 1,
+          "y": -1,
+          "escala": 1.02
+        }
+      },
+      {
+        "arquivo": "dario/rosto_sarcastica.png",
+        "w": 81,
+        "h": 84,
+        "tags": [
+          "sarcastica"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 1,
+          "y": 1,
+          "escala": 0.98
+        }
+      },
+      {
+        "arquivo": "dario/rosto_confusa.png",
+        "w": 83,
+        "h": 87,
+        "tags": [
+          "confusa"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": -1,
+          "y": -1,
+          "escala": 0.98
+        }
+      },
+      {
+        "arquivo": "dario/prop_mochila.png",
+        "w": 77,
+        "h": 77,
+        "tags": [
+          "mochila"
+        ],
+        "tipo": "prop",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "dario/prop_fone.png",
+        "w": 73,
+        "h": 73,
+        "tags": [
+          "fone"
+        ],
+        "tipo": "prop",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "dario/prop_tablet.png",
+        "w": 69,
+        "h": 60,
+        "tags": [
+          "tablet"
+        ],
+        "tipo": "prop",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "dario/prop_lupa.png",
+        "w": 58,
+        "h": 79,
+        "tags": [
+          "lupa"
+        ],
+        "tipo": "prop",
+        "variante": null,
+        "ancora": "pes"
+      }
+    ]
+  },
+  "laura": {
+    "nome": "Laura",
+    "altura": 175,
+    "sprites": [
+      {
+        "arquivo": "laura/pose_parado.png",
+        "w": 115,
+        "h": 178,
+        "tags": [
+          "parado"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes",
+        "rosto": {
+          "cabeca": {
+            "x": 0.05,
+            "y": 0,
+            "w": 0.9,
+            "h": 0.32
+          }
+        }
+      },
+      {
+        "arquivo": "laura/pose_perfil.png",
+        "w": 86,
+        "h": 176,
+        "tags": [
+          "perfil"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "laura/pose_andar.png",
+        "w": 88,
+        "h": 126,
+        "tags": [
+          "andar"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "laura/pose_correr_1.png",
+        "w": 82,
+        "h": 128,
+        "tags": [
+          "correr"
+        ],
+        "tipo": "pose",
+        "variante": 1,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "laura/pose_correr_2.png",
+        "w": 95,
+        "h": 128,
+        "tags": [
+          "correr"
+        ],
+        "tipo": "pose",
+        "variante": 2,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "laura/pose_bracos-abertos.png",
+        "w": 129,
+        "h": 150,
+        "tags": [
+          "bracos-abertos"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "laura/pose_comemorar.png",
+        "w": 113,
+        "h": 137,
+        "tags": [
+          "comemorar"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "laura/pose_pular.png",
+        "w": 116,
+        "h": 142,
+        "tags": [
+          "pular"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "laura/pose_pular-corda.png",
+        "w": 113,
+        "h": 153,
+        "tags": [
+          "pular-corda"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "laura/pose_ursinho.png",
+        "w": 135,
+        "h": 127,
+        "tags": [
+          "ursinho"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "laura/pose_deitada.png",
+        "w": 149,
+        "h": 96,
+        "tags": [
+          "deitada"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "laura/pose_costas.png",
+        "w": 110,
+        "h": 179,
+        "tags": [
+          "costas"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "laura/pose_varinha.png",
+        "w": 164,
+        "h": 180,
+        "tags": [
+          "varinha"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "laura/pose_meditar.png",
+        "w": 95,
+        "h": 115,
+        "tags": [
+          "meditar"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "laura/pose_pular-alto.png",
+        "w": 129,
+        "h": 175,
+        "tags": [
+          "pular-alto"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "laura/pose_gargalhando.png",
+        "w": 135,
+        "h": 181,
+        "tags": [
+          "gargalhando"
+        ],
+        "tipo": "pose",
+        "variante": null,
+        "ancora": "pes"
+      },
+      {
+        "arquivo": "laura/rosto_feliz.png",
+        "w": 75,
+        "h": 66,
+        "tags": [
+          "feliz"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 3,
+          "y": -1,
+          "escala": 1.489
+        }
+      },
+      {
+        "arquivo": "laura/rosto_olhos-fechados.png",
+        "w": 74,
+        "h": 62,
+        "tags": [
+          "olhos-fechados"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 3,
+          "y": -1,
+          "escala": 1.51
+        }
+      },
+      {
+        "arquivo": "laura/rosto_empolgada.png",
+        "w": 77,
+        "h": 67,
+        "tags": [
+          "empolgada"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 5,
+          "y": -3,
+          "escala": 1.388
+        }
+      },
+      {
+        "arquivo": "laura/rosto_boca-a.png",
+        "w": 78,
+        "h": 67,
+        "tags": [
+          "boca-a"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 3,
+          "y": -1,
+          "escala": 1.448
+        }
+      },
+      {
+        "arquivo": "laura/rosto_surpresa.png",
+        "w": 78,
+        "h": 67,
+        "tags": [
+          "surpresa"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 3,
+          "y": -1,
+          "escala": 1.448
+        }
+      },
+      {
+        "arquivo": "laura/rosto_boca-o.png",
+        "w": 75,
+        "h": 64,
+        "tags": [
+          "boca-o"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 2,
+          "y": -2,
+          "escala": 1.51
+        }
+      },
+      {
+        "arquivo": "laura/rosto_boca-e.png",
+        "w": 77,
+        "h": 76,
+        "tags": [
+          "boca-e"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 3,
+          "y": -2,
+          "escala": 1.462
+        }
+      },
+      {
+        "arquivo": "laura/rosto_sarcastica.png",
+        "w": 77,
+        "h": 65,
+        "tags": [
+          "sarcastica"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 5,
+          "y": -2,
+          "escala": 1.415
+        }
+      },
+      {
+        "arquivo": "laura/rosto_boca-m.png",
+        "w": 77,
+        "h": 66,
+        "tags": [
+          "boca-m"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 4,
+          "y": -1,
+          "escala": 1.435
+        }
+      },
+      {
+        "arquivo": "laura/rosto_neutra.png",
+        "w": 78,
+        "h": 67,
+        "tags": [
+          "neutra"
+        ],
+        "tipo": "rosto",
+        "variante": null,
+        "ancora": "pes",
+        "encaixe": {
+          "x": 3,
+          "y": -1,
+          "escala": 1.455
+        }
+      }
+    ]
+  }
+}

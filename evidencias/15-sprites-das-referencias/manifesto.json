@@ -1,0 +1,282 @@
+{
+  "CringeFather": [
+    {
+      "arquivo": "CringeFather-1.png",
+      "celula": 0,
+      "w": 115,
+      "h": 285
+    },
+    {
+      "arquivo": "CringeFather-2.png",
+      "celula": 1,
+      "w": 162,
+      "h": 280
+    },
+    {
+      "arquivo": "CringeFather-3.png",
+      "celula": 2,
+      "w": 257,
+      "h": 280
+    },
+    {
+      "arquivo": "CringeFather-4.png",
+      "celula": 3,
+      "w": 116,
+      "h": 226
+    },
+    {
+      "arquivo": "CringeFather-5.png",
+      "celula": 4,
+      "w": 355,
+      "h": 220
+    },
+    {
+      "arquivo": "CringeFather-6.png",
+      "celula": 5,
+      "w": 240,
+      "h": 227
+    },
+    {
+      "arquivo": "CringeFather-7.png",
+      "celula": 6,
+      "w": 113,
+      "h": 284
+    },
+    {
+      "arquivo": "CringeFather-8.png",
+      "celula": 7,
+      "w": 252,
+      "h": 239
+    },
+    {
+      "arquivo": "CringeFather-9.png",
+      "celula": 8,
+      "w": 114,
+      "h": 285
+    }
+  ],
+  "BetaSon": [
+    {
+      "arquivo": "BetaSon-1.png",
+      "celula": 0,
+      "w": 110,
+      "h": 270
+    },
+    {
+      "arquivo": "BetaSon-2.png",
+      "celula": 1,
+      "w": 151,
+      "h": 270
+    },
+    {
+      "arquivo": "BetaSon-3.png",
+      "celula": 2,
+      "w": 241,
+      "h": 271
+    },
+    {
+      "arquivo": "BetaSon-4.png",
+      "celula": 3,
+      "w": 148,
+      "h": 227
+    },
+    {
+      "arquivo": "BetaSon-5.png",
+      "celula": 4,
+      "w": 211,
+      "h": 238
+    },
+    {
+      "arquivo": "BetaSon-6.png",
+      "celula": 5,
+      "w": 193,
+      "h": 233
+    },
+    {
+      "arquivo": "BetaSon-7.png",
+      "celula": 6,
+      "w": 110,
+      "h": 276
+    },
+    {
+      "arquivo": "BetaSon-8.png",
+      "celula": 7,
+      "w": 210,
+      "h": 268
+    },
+    {
+      "arquivo": "BetaSon-9.png",
+      "celula": 8,
+      "w": 116,
+      "h": 273
+    }
+  ],
+  "Erika": [
+    {
+      "arquivo": "Erika-1.png",
+      "celula": 0,
+      "w": 124,
+      "h": 267
+    },
+    {
+      "arquivo": "Erika-2.png",
+      "celula": 1,
+      "w": 224,
+      "h": 265
+    },
+    {
+      "arquivo": "Erika-3.png",
+      "celula": 2,
+      "w": 224,
+      "h": 258
+    },
+    {
+      "arquivo": "Erika-4.png",
+      "celula": 3,
+      "w": 158,
+      "h": 251
+    },
+    {
+      "arquivo": "Erika-5.png",
+      "celula": 4,
+      "w": 150,
+      "h": 251
+    },
+    {
+      "arquivo": "Erika-6.png",
+      "celula": 5,
+      "w": 202,
+      "h": 251
+    },
+    {
+      "arquivo": "Erika-7.png",
+      "celula": 6,
+      "w": 129,
+      "h": 284
+    },
+    {
+      "arquivo": "Erika-8.png",
+      "celula": 7,
+      "w": 219,
+      "h": 283
+    },
+    {
+      "arquivo": "Erika-9.png",
+      "celula": 8,
+      "w": 126,
+      "h": 285
+    }
+  ],
+  "Dario": [
+    {
+      "arquivo": "Dario-1.png",
+      "celula": 0,
+      "w": 104,
+      "h": 265
+    },
+    {
+      "arquivo": "Dario-2.png",
+      "celula": 1,
+      "w": 227,
+      "h": 271
+    },
+    {
+      "arquivo": "Dario-3.png",
+      "celula": 2,
+      "w": 232,
+      "h": 249
+    },
+    {
+      "arquivo": "Dario-4.png",
+      "celula": 3,
+      "w": 176,
+      "h": 224
+    },
+    {
+      "arquivo": "Dario-5.png",
+      "celula": 4,
+      "w": 176,
+      "h": 236
+    },
+    {
+      "arquivo": "Dario-6.png",
+      "celula": 5,
+      "w": 173,
+      "h": 209
+    },
+    {
+      "arquivo": "Dario-7.png",
+      "celula": 6,
+      "w": 133,
+      "h": 300
+    },
+    {
+      "arquivo": "Dario-8.png",
+      "celula": 7,
+      "w": 219,
+      "h": 277
+    },
+    {
+      "arquivo": "Dario-9.png",
+      "celula": 8,
+      "w": 113,
+      "h": 273
+    }
+  ],
+  "Laura": [
+    {
+      "arquivo": "Laura-1.png",
+      "celula": 0,
+      "w": 189,
+      "h": 284
+    },
+    {
+      "arquivo": "Laura-2.png",
+      "celula": 1,
+      "w": 243,
+      "h": 287
+    },
+    {
+      "arquivo": "Laura-3.png",
+      "celula": 2,
+      "w": 259,
+      "h": 290
+    },
+    {
+      "arquivo": "Laura-4.png",
+      "celula": 3,
+      "w": 367,
+      "h": 212
+    },
+    {
+      "arquivo": "Laura-5.png",
+      "celula": 4,
+      "w": 171,
+      "h": 224
+    },
+    {
+      "arquivo": "Laura-6.png",
+      "celula": 5,
+      "w": 189,
+      "h": 221
+    },
+    {
+      "arquivo": "Laura-7.png",
+      "celula": 6,
+      "w": 226,
+      "h": 277
+    },
+    {
+      "arquivo": "Laura-8.png",
+      "celula": 7,
+      "w": 249,
+      "h": 273
+    },
+    {
+      "arquivo": "Laura-9.png",
+      "celula": 8,
+      "w": 162,
+      "h": 261
+    }
+  ]
+}
