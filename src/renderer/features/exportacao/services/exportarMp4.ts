@@ -1,5 +1,6 @@
 import { ArrayBufferTarget, Muxer } from 'mp4-muxer';
-import { estadoEm, type Timeline } from '@shared/domain';
+import { agendaDeAudio, estadoEm, type Timeline } from '@shared/domain';
+import { mixarParaExportacao } from '@renderer/features/audio/services/mixer';
 import { renderizarCena } from '@renderer/features/palco/render';
 
 /**
@@ -23,14 +24,30 @@ export async function escolherCodec(w: number, h: number, fps: number): Promise<
   throw new Error(`Este aparelho não consegue codificar vídeo em ${w}×${h}.`);
 }
 
-export interface OpcoesExport { w: number; h: number; fps: number; onProgresso?: (p: number) => void; sinal?: { cancelado: boolean } }
+/** AAC (aceito por YouTube/Instagram) e, onde faltar, Opus. */
+async function escolherCodecAudio(): Promise<{ config: AudioEncoderConfig; codecMuxer: 'aac' | 'opus' } | null> {
+  if (typeof AudioEncoder === 'undefined') return null;
+  for (const c of [{ codec: 'mp4a.40.2', m: 'aac' as const }, { codec: 'opus', m: 'opus' as const }]) {
+    const config: AudioEncoderConfig = { codec: c.codec, sampleRate: 48000, numberOfChannels: 2, bitrate: 160_000 };
+    try { if ((await AudioEncoder.isConfigSupported(config)).supported) return { config, codecMuxer: c.m }; } catch { /* tenta o próximo */ }
+  }
+  return null;
+}
+
+export interface OpcoesExport { w: number; h: number; fps: number; onProgresso?: (p: number) => void; sinal?: { cancelado: boolean }; avisos?: (m: string) => void }
 
 /** Renderiza cada frame com a mesma função do preview e codifica em H.264/MP4 (WebCodecs). */
 export async function exportarMp4(tl: Timeline, op: OpcoesExport): Promise<Blob> {
   const { w, h, fps } = op;
   const { config, codecMuxer } = await escolherCodec(w, h, fps);
 
-  const muxer = new Muxer({ target: new ArrayBufferTarget(), video: { codec: codecMuxer, width: w, height: h }, fastStart: 'in-memory' });
+  // áudio: mistura a trilha inteira antes (voz, música e efeitos) e, se o aparelho codifica áudio, vai junto no MP4
+  const agenda = agendaDeAudio(tl);
+  const mix = agenda.length ? await mixarParaExportacao(agenda, tl.duracao + 0.5) : null;
+  const ca = mix ? await escolherCodecAudio() : null;
+  op.avisos?.(agenda.length && !ca ? 'Este aparelho não codifica áudio: o vídeo sai sem som.' : '');
+
+  const muxer = new Muxer({ target: new ArrayBufferTarget(), video: { codec: codecMuxer, width: w, height: h }, ...(ca ? { audio: { codec: ca.codecMuxer, numberOfChannels: 2, sampleRate: 48000 } } : {}), fastStart: 'in-memory' });
   let erro: Error | null = null;
   const encoder = new VideoEncoder({
     output: (chunk, meta) => muxer.addVideoChunk(chunk, meta),
@@ -55,7 +72,26 @@ export async function exportarMp4(tl: Timeline, op: OpcoesExport): Promise<Blob>
   }
   await encoder.flush();
   if (erro) throw erro;
+  if (mix && ca) await codificarAudio(mix, ca.config, (chunk, meta) => muxer.addAudioChunk(chunk, meta));
   muxer.finalize();
   op.onProgresso?.(1);
   return new Blob([muxer.target.buffer], { type: 'video/mp4' });
+}
+
+async function codificarAudio(mix: AudioBuffer, config: AudioEncoderConfig, saida: (c: EncodedAudioChunk, m?: EncodedAudioChunkMetadata) => void): Promise<void> {
+  let erro: Error | null = null;
+  const enc = new AudioEncoder({ output: saida, error: (e) => { erro = e as Error; } });
+  enc.configure(config);
+  const L = mix.getChannelData(0), R = mix.numberOfChannels > 1 ? mix.getChannelData(1) : L;
+  const bloco = 4800; // 0,1 s
+  for (let i = 0; i < mix.length; i += bloco) {
+    const n = Math.min(bloco, mix.length - i);
+    const dados = new Float32Array(n * 2); // planar: canal esquerdo, depois direito
+    dados.set(L.subarray(i, i + n), 0); dados.set(R.subarray(i, i + n), n);
+    const ad = new AudioData({ format: 'f32-planar', sampleRate: mix.sampleRate, numberOfFrames: n, numberOfChannels: 2, timestamp: Math.round((i / mix.sampleRate) * 1e6), data: dados });
+    enc.encode(ad); ad.close();
+    while (enc.encodeQueueSize > 8) await new Promise((r) => setTimeout(r, 2));
+  }
+  await enc.flush();
+  if (erro) throw erro;
 }

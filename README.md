@@ -59,3 +59,7 @@ Android: use o JDK do Android Studio (`JAVA_HOME=C:\Ambiente\Android Studio\jbr`
 - O preload expõe só funções específicas (`window.stickboard`); `contextIsolation` e `sandbox` ligados.
 - `shared/domain` é código puro e testável; o desenho (canvas) fica no renderer.
 - Documentos: `docs/ROTEIRO.md` (sintaxe), `docs/SPRITES.md` (nomes dos sprites), `docs/FICHAS.md` (como gerar fichas), `PLANO.md`.
+
+## Testes
+- `npm test`: testes de domínio (roteiro, timeline, áudio, gráficos, IA, personagens, desfazer).
+- `npm run e2e`: testes de tela no navegador (com `npm run dev:web` rodando): simultâneas, posição no palco, áudio com MP4, gráficos, IA (servidor simulado), projeto, editor de sprites.

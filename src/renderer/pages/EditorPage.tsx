@@ -5,10 +5,12 @@ import { useMenus } from '@renderer/features/arquivos/hooks/useMenus';
 import { PainelLateral } from '@renderer/features/biblioteca/components/PainelLateral';
 import { Ferramentas } from '@renderer/features/ferramentas/components/Ferramentas';
 import { LinhaDoTempoPanel } from '@renderer/features/linha-do-tempo/components/LinhaDoTempoPanel';
+import { useAudioPreview } from '@renderer/features/audio/hooks/useAudioPreview';
 import { useAtalhos, useReproducao } from '@renderer/features/palco/hooks/useReproducao';
 import { PalcoPanel } from '@renderer/features/palco/components/PalcoPanel';
 import { ImportarPacoteModal } from '@renderer/features/pacotes-sprites/components/ImportarPacoteModal';
 import { PersonagemModal } from '@renderer/features/personagens/components/PersonagemModal';
+import { IaModal } from '@renderer/features/ia/components/IaModal';
 import { ManualModal } from '@renderer/features/ajuda/components/ManualModal';
 import { EditorPersonagemModal } from '@renderer/features/pacotes-sprites/components/EditorPersonagemModal';
 import { useCargaInicial } from '@renderer/features/pacotes-sprites/hooks/useCargaInicial';
@@ -35,6 +37,7 @@ export function EditorPage() {
   useCargaInicial();
   useReproducao();
   useAtalhos();
+  useAudioPreview();
 
   return (
     <>
@@ -51,9 +54,12 @@ export function EditorPage() {
       <EditorPersonagemModal />
       <PersonagemModal />
       <ManualModal />
+      <IaModal />
     </>
   );
 }
+
+
 
 
 

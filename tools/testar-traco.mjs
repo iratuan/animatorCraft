@@ -1,0 +1,12 @@
+import { chromium } from 'playwright-core';
+const b = await chromium.launch({ channel: 'msedge', headless: true });
+const p = await b.newPage({ viewport: { width: 1600, height: 900 } });
+const rot = `[papéis: professor=CringeFather, aluno=BetaSon]\n\n# Escrita\nProfessor entra pela esquerda andando.\nProfessor escreve "Quadrado da soma" no quadro.\n[close na lousa]`;
+await p.goto('http://127.0.0.1:5173/');
+await p.evaluate((r) => { localStorage.clear(); localStorage.setItem('stickboard.roteiro.v2', r); localStorage.setItem('stickboard.escrita', 'traco'); }, rot);
+await p.goto('http://127.0.0.1:5173/?t=2.9');
+await p.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+await p.waitForTimeout(900);
+const box = await p.locator('.area-palco canvas').boundingBox();
+await p.screenshot({ path: 'evidencias/25-graficos/escrita-traco.png', clip: box });
+await b.close();

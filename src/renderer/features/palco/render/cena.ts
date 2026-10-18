@@ -1,4 +1,4 @@
-import { ATORES, ORDEM_ATORES, piscando, visemaEm, type ActorId, type Estado } from '@shared/domain';
+import { ATORES, ORDEM_ATORES, infoDoAudio, piscando, visemaDoAudio, visemaEm, type ActorId, type Estado } from '@shared/domain';
 import { desenharAtor } from './ator';
 import { interpolarRect, retanguloDaCamera, visibilidadeDaCamera } from './camera';
 import { desenharItemPlanejado, escritaComMao, FONTE_MANUSCRITA, fonteCSS, planejarLousa } from './lousa';
@@ -182,7 +182,8 @@ export function renderizarCena(ctx: CanvasRenderingContext2D, estado: Estado, w:
     ctx.globalAlpha = alpha;
     const c = calc[id];
     if (c) {
-      const visema = a.fala?.boca ? visemaEm(a.fala.completo, a.fala.progresso, a.fala.duracao) : null;
+      const env = a.fala?.audio ? infoDoAudio(a.fala.audio)?.envelope : undefined;
+      const visema = a.fala?.boca ? (env?.length ? visemaDoAudio(env, a.fala.progresso * a.fala.duracao) : visemaEm(a.fala.completo, a.fala.progresso, a.fala.duracao)) : null;
       desenharAtorSprite(ctx, a, x, L.chao, escalaG, {
         alpha: 1, t: estado.t, visema, piscar: piscando(estado.t, ORDEM_ATORES.indexOf(id)), falando: !!a.fala?.boca,
         selecionado: op.selecionado === id && estado.camera.atual.alvo === 'aberto' && estado.camera.progresso > 0.99 || op.selecionado === id && estado.camera.atual.alvo === 'aberto' && estado.camera.anterior.alvo === 'aberto', rosto: fechada(estado.camera.atual, id) || fechada(estado.camera.anterior, id),
@@ -213,6 +214,7 @@ export function atorEm(estado: Estado, fx: number): ActorId | null {
   }
   return melhor?.id ?? null;
 }
+
 
 
 

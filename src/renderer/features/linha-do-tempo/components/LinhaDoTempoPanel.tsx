@@ -5,7 +5,7 @@ import { useEditor } from '@renderer/store/editor-store';
 import { useRoteiroDerivado } from '@renderer/features/roteiro/hooks/useRoteiroDerivado';
 
 const COR: Record<Acao['tipo'], string> = {
-  entrar: '#3b82f6', sair: '#3b82f6', posicionar: '#0ea5e9', fala: '#f59e0b', escrever: '#22c55e', pose: '#a855f7', expressao: '#ec4899',
+  entrar: '#3b82f6', sair: '#3b82f6', posicionar: '#0ea5e9', audio: '#f472b6', fala: '#f59e0b', escrever: '#22c55e', pose: '#a855f7', expressao: '#ec4899',
   apontar: '#14b8a6', apagar: '#6b7280', esperar: '#4b5563', nota: '#64748b', camera: '#eab308',
 };
 
@@ -39,6 +39,7 @@ function faixas(tl: Timeline): Faixa[] {
   }
   brutas.push({ chave: 'camera', nome: 'Câmera', cor: '#eab308', eventos: tl.eventos.filter((e) => e.acao.tipo === 'camera') });
   brutas.push({ chave: 'quadro', nome: 'Quadro', eventos: tl.eventos.filter((e) => e.acao.tipo === 'escrever' || e.acao.tipo === 'apagar') });
+  brutas.push({ chave: 'audio', nome: 'Áudio', cor: '#f472b6', eventos: tl.eventos.filter((e) => e.acao.tipo === 'audio' || (e.acao.tipo === 'fala' && !!e.acao.audio)) });
   brutas.push({ chave: 'direcao', nome: 'Direção', eventos: tl.eventos.filter((e) => e.acao.tipo === 'esperar' || e.acao.tipo === 'nota') });
   return brutas.map((f) => ({ ...f, ...empilhar(f.eventos) }));
 }
@@ -151,7 +152,7 @@ function Trilhos() {
               {marcas.map((s) => (
                 <div key={s} className="marca" style={{ left: s * zoom }}><span>{s % 2 === 0 ? `${s}s` : ''}</span></div>
               ))}
-              {tl.cenas.map((c, i) => <div key={i} className="cena-marca" style={{ left: c.inicio * zoom }} title={c.titulo}>{c.titulo}</div>)}
+              {tl.cenas.map((c, i) => <div key={i} className="cena-marca" style={{ left: c.inicio * zoom, cursor: 'pointer' }} title={`Ir para “${c.titulo}”`} onPointerDown={(e) => { e.stopPropagation(); set({ t: c.inicio, tocando: false }); }}>{c.titulo}</div>)}
             </div>
             {lista.map((f) => (
               <div key={f.chave} className="trilho" style={{ height: altura(f) }} onPointerDown={(e) => { setSel(null); arrastar(e); }}>
@@ -191,4 +192,5 @@ export function LinhaDoTempoPanel() {
     </Painel>
   );
 }
+
 

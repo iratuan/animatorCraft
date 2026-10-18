@@ -23,9 +23,10 @@ export function Transporte() {
       <span className="tempo">{fmtTempo(t)} / {fmtTempo(timeline.duracao)}</span>
       <div className="espaco" />
       <label className="zoom">Zoom <input type="range" min={25} max={200} value={zoom} onChange={(e) => set({ zoom: Number(e.target.value) })} /></label>
-      <button className="exportar" onClick={exportar} disabled={exportando !== null || !podeExportar}>
+      <button className="exportar" onClick={() => void exportar()} disabled={exportando !== null || !podeExportar}>
         {exportando === null ? 'Exportar MP4' : `Exportando ${Math.round(exportando * 100)}%`}
       </button>
     </div>
   );
 }
+

@@ -1,5 +1,7 @@
 import { ATORES, ORDEM_ATORES, type ActorId } from './characters';
 import { latexParaTexto } from './latex';
+import { rotuloDoGrafico } from './grafico';
+import { FOLGA_FALA_AUDIO, infoDoAudio } from './audio';
 import type { ExpressaoId, PoseId } from './poses';
 import type { Acao, Conteudo, Origem, Roteiro } from './types';
 
@@ -28,7 +30,7 @@ const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 export const suave = (x: number) => { const k = clamp01(x); return k * k * (3 - 2 * k); };
 
 export function textoDoConteudo(c: Conteudo): string {
-  return c.tipo === 'texto' ? c.texto : latexParaTexto(c.latex);
+  return c.tipo === 'texto' ? c.texto : c.tipo === 'grafico' ? rotuloDoGrafico(c.grafico) : latexParaTexto(c.latex);
 }
 
 function duracaoDe(a: Acao): number {
@@ -37,8 +39,9 @@ function duracaoDe(a: Acao): number {
     case 'posicionar': return a.andando ? 1.2 : 0;
     case 'pose': return a.duracao ?? 0.9;
     case 'expressao': return 0.7;
-    case 'fala': return Math.max(1.4, a.texto.split(/\s+/).length * 0.4 + 0.4);
-    case 'escrever': return Math.max(1.5, textoDoConteudo(a.conteudo).length * 0.13);
+    case 'audio': return 0;
+    case 'fala': if (a.audio && infoDoAudio(a.audio)) return infoDoAudio(a.audio)!.duracao + FOLGA_FALA_AUDIO; return Math.max(1.4, a.texto.split(/\s+/).length * 0.4 + 0.4);
+    case 'escrever': if (a.conteudo.tipo === 'grafico') return 3.5; return Math.max(1.5, textoDoConteudo(a.conteudo).length * 0.13);
     case 'apontar': return 1.4;
     case 'apagar': return 0.9;
     case 'camera': return 0.8;
@@ -55,7 +58,8 @@ function rotuloDe(a: Acao): string {
     case 'posicionar': return `${nome(a.ator)} ${a.andando ? 'anda para' : 'fica na'} posição ${Math.round(a.x * 100)}%`;
     case 'pose': return `${nome(a.ator)}: ${a.etiqueta ?? a.pose.replace('_', ' ')}${a.duracao ? ` (${a.duracao}s)` : ''}`;
     case 'expressao': return `${nome(a.ator)}: cara ${a.expressao}`;
-    case 'fala': return `${nome(a.ator)}: “${a.texto}”`;
+    case 'audio': return a.parar ? 'Música: parar' : `${a.papel === 'musica' ? 'Música' : a.papel === 'efeito' ? 'Efeito' : 'Voz'}: ${a.arquivo}`;
+    case 'fala': return `${a.audio ? '🔊 ' : ''}${nome(a.ator)}: “${a.texto}”`;
     case 'escrever': return `${nome(a.ator)} escreve ${textoDoConteudo(a.conteudo)}`;
     case 'apontar': return `${nome(a.ator)} aponta`;
     case 'apagar': return 'Apagar quadro';
@@ -106,7 +110,7 @@ export interface AtorEstado {
   expressaoDe: ExpressaoId;
   expressaoDesde: number;
   /** texto = palavras reveladas até agora; completo/progresso/duracao alimentam a sincronia labial. */
-  fala?: { texto: string; completo: string; progresso: number; duracao: number; opacidade: number; boca: boolean };
+  fala?: { texto: string; completo: string; progresso: number; duracao: number; opacidade: number; boca: boolean; /** nome do áudio da narração (a boca segue o volume dele) */ audio?: string };
 }
 
 export interface ItemQuadro {
@@ -246,7 +250,7 @@ export function estadoEm(tl: Timeline, t: number): Estado {
         if (t <= ev.fim + 0.5) {
           const palavras = ac.texto.split(/\s+/);
           const n = Math.max(1, Math.ceil(palavras.length * Math.min(1, p * 1.25)));
-          a.fala = { texto: palavras.slice(0, n).join(' '), completo: ac.texto, progresso: p, duracao: dur, opacidade: feito ? fade : 1, boca: !feito };
+          a.fala = { texto: palavras.slice(0, n).join(' '), completo: ac.texto, progresso: p, duracao: dur, opacidade: feito ? fade : 1, boca: !feito, audio: ac.audio };
         }
         break;
       }
@@ -279,7 +283,7 @@ export function estadoEm(tl: Timeline, t: number): Estado {
         cameraDesde = ev.inicio;
         break;
       }
-      case 'esperar': case 'nota':
+      case 'esperar': case 'nota': case 'audio':
         break;
     }
   }
@@ -288,6 +292,8 @@ export function estadoEm(tl: Timeline, t: number): Estado {
   const camera = { atual: cameraAtual, anterior: cameraAnterior, progresso: suave((t - cameraDesde) / 0.8) };
   return { t, atores, quadro: itens, mao, eventoAtual, camera };
 }
+
+
 
 
 

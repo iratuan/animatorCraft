@@ -116,3 +116,4 @@ describe('posição inserida pelo arrasto no palco', () => {
     expect(estadoEm(l, 4.17).atores.cringefather!.x).toBeCloseTo(0.45);
   });
 });
+

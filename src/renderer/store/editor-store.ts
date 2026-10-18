@@ -9,7 +9,7 @@ const lerSalvo = (k: string, padrao: string) => { try { return localStorage.getI
 const gravar = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* sem armazenamento */ } };
 const consulta = new URLSearchParams(typeof location === 'undefined' ? '' : location.search);
 
-export type AbaLateral = 'props' | 'biblioteca' | 'aula';
+export type AbaLateral = 'props' | 'biblioteca' | 'audio' | 'aula';
 export interface ImportacaoPendente { pacote: PacoteLido; substituir: boolean; nome: string }
 
 interface Estado {
@@ -39,6 +39,9 @@ interface Estado {
   /** ficha de personagem aberta (novo, ou editar id, ou duplicar duplicarDe) */
   fichaPersonagem: { id?: ActorId; duplicarDe?: ActorId } | null;
   manualAberto: boolean;
+  iaAberta: boolean;
+  /** muda quando a lista de áudios muda */
+  versaoAudio: number;
   /** personagem sendo arrastado no palco e a posição provisória (0..1 da largura) */
   arrastoPalco: { id: ActorId; x: number } | null;
   /** muda quando a lista de personagens muda (o roteiro precisa ser interpretado de novo) */
@@ -56,6 +59,7 @@ interface Acoes {
   alternarReproducao: (duracao: number) => void;
   novaVersaoBib: () => void;
   novaVersaoPersonagens: () => void;
+  novaVersaoAudio: () => void;
 }
 
 export const useEditor = create<Estado & Acoes>()((set, get) => ({
@@ -80,6 +84,8 @@ export const useEditor = create<Estado & Acoes>()((set, get) => ({
   editorPersonagem: null,
   fichaPersonagem: null,
   manualAberto: false,
+  iaAberta: false,
+  versaoAudio: 0,
   arrastoPalco: null,
   versaoPersonagens: 0,
   skinPadrao: 'chibi',
@@ -103,6 +109,7 @@ export const useEditor = create<Estado & Acoes>()((set, get) => ({
     set({ t: !tocando && t >= duracao ? 0 : t, tocando: !tocando });
   },
   novaVersaoBib: () => set((s) => ({ versaoBib: s.versaoBib + 1 })),
+  novaVersaoAudio: () => set((s) => ({ versaoAudio: s.versaoAudio + 1 })),
   novaVersaoPersonagens: () => set((s) => ({ versaoPersonagens: s.versaoPersonagens + 1, versaoBib: s.versaoBib + 1 })),
 }));
 
@@ -116,4 +123,41 @@ useEditor.subscribe((s, anterior) => {
 
 
 
+
+
+
+// ---------------------------------------------------------------- desfazer / refazer do roteiro
+// Toda edição do roteiro (digitar, arrastar na timeline ou no palco, inserir da biblioteca) entra no histórico.
+// Digitação rápida (menos de 0,8 s entre alterações) vira um passo só.
+const passado: string[] = [];
+const futuro: string[] = [];
+let aplicando = false;
+let ultimaEdicao = 0;
+
+useEditor.subscribe((s, anterior) => {
+  if (aplicando || s.roteiro === anterior.roteiro) return;
+  const agora = Date.now();
+  if (agora - ultimaEdicao > 800 || passado.length === 0) { passado.push(anterior.roteiro); if (passado.length > 300) passado.shift(); }
+  ultimaEdicao = agora;
+  futuro.length = 0;
+});
+
+const aplicar = (texto: string) => { aplicando = true; useEditor.setState({ roteiro: texto }); aplicando = false; ultimaEdicao = 0; };
+export const podeDesfazer = () => passado.length > 0;
+export const podeRefazer = () => futuro.length > 0;
+
+export function desfazer(): boolean {
+  const antes = passado.pop();
+  if (antes === undefined) return false;
+  futuro.push(useEditor.getState().roteiro);
+  aplicar(antes);
+  return true;
+}
+export function refazer(): boolean {
+  const depois = futuro.pop();
+  if (depois === undefined) return false;
+  passado.push(useEditor.getState().roteiro);
+  aplicar(depois);
+  return true;
+}
 

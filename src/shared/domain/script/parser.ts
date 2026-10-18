@@ -1,6 +1,7 @@
 import { ATORES, PAPEIS_PADRAO, type ActorId, type Papeis } from '../characters';
 import { DANCA_PADRAO, DURACAO_PADRAO_DANCA, EXPRESSOES, FRASE_POSE, POSES_DE_DANCA, type ExpressaoId, type PoseId } from '../poses';
 import type { Acao, Cena, Lado, Roteiro } from '../types';
+import { lerGrafico } from '../grafico';
 
 const semAcento = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
@@ -152,6 +153,12 @@ function interpretarAtor(frase: string, norm: string, citacao: string | undefine
     const por = /\bpor (\d+(?:[.,]\d+)?) segundos?\b/.exec(norm)?.[1];
     return [{ tipo: 'pose', ator, pose: 'parado', etiqueta, ...(por ? { duracao: parseFloat(por.replace(',', '.')) } : {}) }];
   }
+  // "desenha o gráfico de y = x^2 no quadro"
+  if (/\b(desenha|plota|mostra|traca|faz|coloca)\b/.test(norm) && /\bgrafico\b/.test(norm)) {
+    const g = lerGrafico(frase);
+    if (g && 'erro' in g) { avisos.push(g.erro); return []; }
+    if (g) return [{ tipo: 'escrever', ator, conteudo: { tipo: 'grafico', grafico: g.grafico } }];
+  }
   const estado = acharEstado(norm);
 
   if (citacao !== undefined && VERBOS_FALA.some((v) => new RegExp(`\\b${v}\\b`).test(norm))) {
@@ -191,6 +198,29 @@ function interpretarAtor(frase: string, norm: string, citacao: string | undefine
 
   avisos.push(`Ação não entendida: "${frase}"`);
   return [];
+}
+
+// ---------------------------------------------------------------- áudio
+// [áudio: aula1.wav]            anexa a narração à fala anterior (a fala dura o tempo do áudio e a boca acompanha a voz)
+// [música: fundo.mp3]           música de fundo até [música: parar] ou o fim · [música: fundo.mp3, volume 30%]
+// [efeito: palmas.wav]          efeito sonoro neste ponto (não atrasa as ações)
+
+function interpretarAudio(frase: string, anteriores: Acao[], avisos: string[]): { nova?: Acao; anexada?: boolean } | null {
+  const m = /^\[\s*(áudio|audio|música|musica|efeito|voz)\s*:\s*(.*?)\s*\]$/i.exec(frase);
+  if (!m) return null;
+  const tipo = semAcento(m[1]!);
+  let corpo = m[2]!;
+  const vol = /[,;]?\s*volume\s*(\d+(?:[.,]\d+)?)\s*%?\s*$/i.exec(corpo);
+  const volume = vol ? Math.min(1, parseFloat(vol[1]!.replace(',', '.')) / 100) : undefined;
+  if (vol) corpo = corpo.slice(0, vol.index).trim();
+  if (!corpo) { avisos.push(`Falta o nome do arquivo: "${frase}"`); return {}; }
+  if (tipo === 'musica' && /^(parar|para|fim|silencio)$/.test(semAcento(corpo))) return { nova: { tipo: 'audio', arquivo: '', papel: 'musica', parar: true } };
+  if (tipo === 'audio' || tipo === 'voz') {
+    const ultima = anteriores[anteriores.length - 1];
+    if (ultima?.tipo === 'fala' && !ultima.audio) { ultima.audio = corpo; return { anexada: true }; }
+    return { nova: { tipo: 'audio', arquivo: corpo, papel: 'voz', ...(volume !== undefined ? { volume } : {}) } };
+  }
+  return { nova: { tipo: 'audio', arquivo: corpo, papel: tipo === 'musica' ? 'musica' : 'efeito', ...(volume !== undefined ? { volume } : {}) } };
 }
 
 // ---------------------------------------------------------------- simultaneidade
@@ -267,6 +297,14 @@ export function parseRoteiro(textoOriginal: string): Roteiro {
     const mapa: number[] = [];
     buffer.forEach((l, i) => { if (i > 0) mapa.push(l.off - 1); for (let k = 0; k < l.txt.length; k++) mapa.push(l.off + k); });
     for (const frase of dividirFrases(unido)) {
+      const audio = interpretarAudio(frase.texto, cena.acoes, avisos);
+      if (audio) {
+        const origem = { ini: mapa[frase.ini]!, fim: mapa[frase.fim - 1]! + 1 };
+        if (audio.nova) { cena.acoes.push(audio.nova); cena.origens.push(origem); }
+        // a etiqueta [áudio: …] faz parte da frase da fala: mover/excluir a fala leva a etiqueta junto
+        if (audio.anexada) { const ult = cena.origens[cena.origens.length - 1]; if (ult) ult.fim = origem.fim; }
+        continue;
+      }
       const acoes = interpretarComSimultaneidade(frase.texto, avisos, presentes, papeis, bloco);
       const origem = { ini: mapa[frase.ini]!, fim: mapa[frase.fim - 1]! + 1 };
       for (const a of acoes) if ('ator' in a && a.ator) { if (a.tipo === 'sair') presentes.delete(a.ator); else presentes.add(a.ator); }
@@ -294,5 +332,7 @@ export function parseRoteiro(textoOriginal: string): Roteiro {
   fecharBuffer();
   return { cenas, avisos, papeis };
 }
+
+
 
 

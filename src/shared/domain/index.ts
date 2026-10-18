@@ -11,3 +11,6 @@ export { parseRoteiro } from './script/parser';
 export * from './nomenclatura';
 export { tornarSimultanea, tornarSequencial, reescreverDuracao, excluirFrase, posicionarNoRoteiro } from './script/editar';
 
+export * from './audio';
+export * from './grafico';
+export * from './ia';

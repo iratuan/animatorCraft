@@ -1,9 +1,12 @@
 import { MODELOS } from '@shared/domain';
 import { FORMATOS } from '@shared/constants/video';
 import type { GrupoMenu } from '@renderer/components/BarraMenu';
-import { useEditor } from '@renderer/store/editor-store';
+import { desfazer, refazer, useEditor } from '@renderer/store/editor-store';
 import { ROTEIRO_EXEMPLO } from '@renderer/features/roteiro/services/exemplo';
 import { limparPacotesSalvos, lerPacote } from '@renderer/features/pacotes-sprites/services/pacotes';
+import { useRoteiroDerivado } from '@renderer/features/roteiro/hooks/useRoteiroDerivado';
+import { gerarSrt, ATORES } from '@shared/domain';
+import { abrirProjeto, montarProjeto } from '@renderer/features/projeto/services/projeto';
 import { useExportar } from '@renderer/features/exportacao/hooks/useExportar';
 import { baixarArquivo, plataforma } from '../services/plataforma';
 
@@ -13,7 +16,8 @@ export function useMenus(): GrupoMenu[] {
   const roteiro = useEditor((s) => s.roteiro);
   const set = useEditor((s) => s.set);
   const setRoteiro = useEditor((s) => s.setRoteiro);
-  const { exportar } = useExportar();
+  const { exportar, exportarTodos } = useExportar();
+  const { timeline } = useRoteiroDerivado();
   const dim = FORMATOS[formato];
 
   const abrirRoteiro = async () => {
@@ -33,6 +37,19 @@ export function useMenus(): GrupoMenu[] {
       set({ importacao: { pacote, substituir: fichaCompleta, nome: escolhido.nome } });
     } catch (e) { set({ mensagem: `Não consegui ler o zip: ${(e as Error).message}` }); }
   };
+  const salvarProjeto = async () => {
+    set({ mensagem: 'Montando o projeto…' });
+    const { zip, sprites, audios } = await montarProjeto();
+    set({ mensagem: `${await plataforma.salvarPacoteSprites(zip, 'projeto-stickboard.zip')} (${sprites} sprites, ${audios} áudios)` });
+  };
+  const abrirProjetoZip = async () => {
+    const escolhido = await plataforma.abrirPacoteSprites();
+    if (!escolhido) return;
+    try {
+      const r = await abrirProjeto(escolhido.dados);
+      set({ mensagem: `Projeto aberto: ${r.personagens} personagem(ns), ${r.sprites} sprites, ${r.audios} áudio(s).` });
+    } catch (e) { set({ mensagem: `Não consegui abrir o projeto: ${(e as Error).message}` }); }
+  };
   const carregarModelo = (texto: string, nome: string) => { setRoteiro(texto); set({ t: 0, mensagem: `Modelo “${nome}” carregado. Troque o que está entre {chaves}.` }); };
 
   return [
@@ -42,15 +59,25 @@ export function useMenus(): GrupoMenu[] {
       { separador: true, rotulo: '' },
       { rotulo: 'Abrir roteiro…', atalho: 'Ctrl+O', acao: abrirRoteiro },
       { rotulo: 'Salvar roteiro…', atalho: 'Ctrl+S', acao: salvarRoteiro },
+      { rotulo: 'Salvar projeto completo (.zip)…', acao: salvarProjeto },
+      { rotulo: 'Abrir projeto (.zip)…', acao: abrirProjetoZip },
       { rotulo: 'Carregar exemplo', acao: () => { setRoteiro(ROTEIRO_EXEMPLO); set({ t: 0 }); } },
+      { rotulo: 'Gerar / melhorar roteiro com IA…', acao: () => set({ iaAberta: true }) },
       { separador: true, rotulo: '' },
       { rotulo: 'Novo personagem…', acao: () => set({ fichaPersonagem: {} }) },
       { rotulo: 'Editar / exportar sprites dos personagens…', acao: () => set({ editorPersonagem: useEditor.getState().selecionado ?? 'cringefather' }) },
+      { rotulo: 'Importar áudio (narração, música, efeito)…', acao: () => set({ aba: 'audio' }) },
       { rotulo: 'Importar pacote de sprites (.zip)…', acao: importarPacote },
       { rotulo: 'Remover pacotes importados', acao: async () => { await limparPacotesSalvos(); set({ mensagem: 'Pacotes removidos. Recarregue o app para voltar aos sprites originais.' }); } },
     ] },
+    { nome: 'Editar', itens: [
+      { rotulo: 'Desfazer', atalho: 'Ctrl+Z', acao: () => { if (desfazer()) set({ mensagem: 'Desfeito.' }); } },
+      { rotulo: 'Refazer', atalho: 'Ctrl+Y', acao: () => { if (refazer()) set({ mensagem: 'Refeito.' }); } },
+    ] },
     { nome: 'Exportar', itens: [
-      { rotulo: `Vídeo MP4 (${dim.nome})`, acao: exportar },
+      { rotulo: `Vídeo MP4 (${dim.nome})`, acao: () => void exportar() },
+      { rotulo: 'Vídeo MP4 nos dois formatos (16:9 e 9:16)', acao: () => void exportarTodos() },
+      { rotulo: 'Legendas das falas (.srt)', acao: async () => { const c = await plataforma.salvarRoteiro(gerarSrt(timeline, (id) => ATORES[id]?.nome ?? id), 'legendas.srt'); if (c) set({ mensagem: `Legendas salvas: ${c}` }); } },
       { rotulo: 'Quadro atual (PNG)', acao: () => document.querySelector<HTMLCanvasElement>('.area-palco canvas')?.toBlob((b) => b && baixarArquivo(b, 'quadro.png')) },
     ] },
     { nome: 'Exibir', itens: [
@@ -66,6 +93,10 @@ export function useMenus(): GrupoMenu[] {
     ] },
   ];
 }
+
+
+
+
 
 
 

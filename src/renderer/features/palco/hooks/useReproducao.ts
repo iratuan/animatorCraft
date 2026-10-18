@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useEditor } from '@renderer/store/editor-store';
+import { desfazer, refazer, useEditor } from '@renderer/store/editor-store';
 import { useRoteiroDerivado } from '@renderer/features/roteiro/hooks/useRoteiroDerivado';
 
 /** Avança o relógio da animação enquanto estiver tocando (e repete, se pedido). */
@@ -32,6 +32,9 @@ export function useAtalhos() {
   useEffect(() => {
     const tecla = (e: KeyboardEvent) => {
       const alvo = e.target;
+      const ctrl = e.ctrlKey || e.metaKey;
+      if (ctrl && !e.shiftKey && e.key.toLowerCase() === 'z') { if (desfazer()) { e.preventDefault(); useEditor.getState().set({ mensagem: 'Desfeito.' }); } return; }
+      if (ctrl && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) { if (refazer()) { e.preventDefault(); useEditor.getState().set({ mensagem: 'Refeito.' }); } return; }
       if (e.key === 'F1') { e.preventDefault(); useEditor.getState().set({ manualAberto: true }); return; }
       if (e.key === 'Escape' && useEditor.getState().manualAberto) { useEditor.getState().set({ manualAberto: false }); return; }
       if (e.code === 'Space' && !(alvo instanceof HTMLTextAreaElement) && !(alvo instanceof HTMLInputElement) && !(alvo instanceof HTMLSelectElement)) {
@@ -43,4 +46,5 @@ export function useAtalhos() {
     return () => window.removeEventListener('keydown', tecla);
   }, [timeline.duracao]);
 }
+
 

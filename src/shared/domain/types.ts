@@ -1,11 +1,13 @@
 import type { ActorId, Papeis } from './characters';
+import type { GraficoDef } from './grafico';
 import type { ExpressaoId, PoseId } from './poses';
 
 export type Lado = 'esquerda' | 'direita' | 'centro';
 
 export type Conteudo =
   | { tipo: 'texto'; texto: string }
-  | { tipo: 'latex'; latex: string };
+  | { tipo: 'latex'; latex: string }
+  | { tipo: 'grafico'; grafico: GraficoDef };
 
 /** Ação única do roteiro, já resolvida. O motor de animação consome só isto. */
 export type Acao = AcaoBase & {
@@ -22,7 +24,10 @@ type AcaoBase =
   /** Com `duracao`, a pose é temporária (ex.: dança por 5 s) e o ator volta a ficar parado depois. */
   | { tipo: 'pose'; ator: ActorId; pose: PoseId; duracao?: number; etiqueta?: string }
   | { tipo: 'expressao'; ator: ActorId; expressao: ExpressaoId }
-  | { tipo: 'fala'; ator: ActorId; texto: string }
+  /** udio: arquivo da narração (importado); a fala dura o tempo do áudio e a boca acompanha o volume dele */
+  | { tipo: 'fala'; ator: ActorId; texto: string; audio?: string }
+  /** Música de fundo (até parar ou o fim), efeito sonoro ou voz solta. Não atrasa as ações seguintes. */
+  | { tipo: 'audio'; arquivo: string; papel: 'voz' | 'musica' | 'efeito'; volume?: number; parar?: boolean }
   | { tipo: 'escrever'; ator: ActorId; conteudo: Conteudo }
   | { tipo: 'apontar'; ator: ActorId }
   | { tipo: 'apagar' }
@@ -35,6 +40,8 @@ type AcaoBase =
 export interface Origem { ini: number; fim: number }
 export interface Cena { titulo: string; acoes: Acao[]; /** uma origem por ação, na mesma ordem */ origens: Origem[]; }
 export interface Roteiro { cenas: Cena[]; avisos: string[]; papeis: Papeis; }
+
+
 
 
 

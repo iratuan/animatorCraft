@@ -57,6 +57,7 @@ export function AulaPanel() {
         <select value={escrita} onChange={(e) => set({ escrita: e.target.value as EstiloEscrita })}>
           <option value="revelar">Só revelar o conteúdo (borda suave)</option>
           <option value="mao">Mão com marcador</option>
+          <option value="traco">Letra por letra (traço a traço) com a mão</option>
         </select>
       </label>
       <p className="dica">Comic Sans é a do sistema; onde não existir (Android) entra a Comic Neue, empacotada no app.</p>
@@ -103,5 +104,6 @@ export function AulaPanel() {
     </div>
   );
 }
+
 
 

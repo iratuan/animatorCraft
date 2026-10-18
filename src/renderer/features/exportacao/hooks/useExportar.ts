@@ -1,7 +1,7 @@
 import { carregarFontes } from '@renderer/features/fontes/services/fontes';
 import { carregarPersonagens } from '@renderer/features/pacotes-sprites/services/personagens';
 import { plataforma } from '@renderer/features/arquivos/services/plataforma';
-import { FORMATOS, FPS } from '@shared/constants/video';
+import { FORMATOS, FPS, type FormatoVideo } from '@shared/constants/video';
 import { useEditor } from '@renderer/store/editor-store';
 import { useRoteiroDerivado } from '@renderer/features/roteiro/hooks/useRoteiroDerivado';
 import { exportarMp4 } from '../services/exportarMp4';
@@ -13,15 +13,15 @@ export function useExportar() {
   const set = useEditor((s) => s.set);
   const { timeline } = useRoteiroDerivado();
 
-  const exportar = async () => {
+  const exportar = async (formatoPedido?: FormatoVideo) => {
     if (useEditor.getState().exportando !== null) return;
-    const formato = useEditor.getState().formato;
+    const formato = formatoPedido ?? useEditor.getState().formato;
     const dim = FORMATOS[formato];
     set({ exportando: 0, tocando: false, mensagem: `Exportando ${dim.nome}…` });
     try {
       await carregarPersonagens();
       await carregarFontes();
-      const blob = await exportarMp4(timeline, { w: dim.w, h: dim.h, fps: FPS, onProgresso: (p) => set({ exportando: p }) });
+      const blob = await exportarMp4(timeline, { w: dim.w, h: dim.h, fps: FPS, onProgresso: (p) => set({ exportando: p }), avisos: (m) => m && set({ mensagem: m }) });
       const resposta = await plataforma.salvarVideo(blob, `stickboard-${dim.sufixo}.mp4`);
       set({ mensagem: `MP4 exportado (${(blob.size / 1e6).toFixed(1)} MB). ${resposta}` });
     } catch (err) {
@@ -31,5 +31,10 @@ export function useExportar() {
     }
   };
 
-  return { exportando, exportar, podeExportar: spritesOk };
+  /** Os dois formatos em sequência (16:9 para o YouTube e 9:16 para Shorts). */
+  const exportarTodos = async () => { for (const f of ['16:9', '9:16'] as FormatoVideo[]) { await exportar(f); } };
+
+  return { exportando, exportar, exportarTodos, podeExportar: spritesOk };
 }
+
+

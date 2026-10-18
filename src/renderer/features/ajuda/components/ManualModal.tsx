@@ -127,10 +127,57 @@ Erika entra pela direita na posição 60%.  (para de andar em 60%, em vez do pon
     </>),
   },
   {
+    id: 'audio', titulo: 'Áudio: narração, música e efeitos',
+    corpo: (<>
+      <p>Grave a narração fora do programa (um arquivo por fala, em WAV, MP3, OGG ou M4A) e importe na aba <b>Áudio</b> (ou em <b>Arquivo ▸ Importar áudio…</b>). No roteiro:</p>
+      <Ex>{`Professor diz "Bem-vindos à aula!". [áudio: abertura.wav]
+[música: fundo.mp3, volume 25%]
+[efeito: palmas.wav]
+[música: parar]`}</Ex>
+      <ul>
+        <li><b>[áudio: …]</b> logo depois da fala: a fala passa a durar o tempo do áudio e a <b>boca acompanha o volume da voz</b>. A etiqueta faz parte da fala (mover ou excluir a fala leva a etiqueta).</li>
+        <li><b>[música: …]</b> toca até <C>[música: parar]</C> ou o fim, repete se for curta e some aos poucos no final. <b>[efeito: …]</b> toca neste ponto e não atrasa nada.</li>
+        <li>Os botões da aba Áudio (Ouvir, Narrar a última fala, Música, Efeito) inserem a etiqueta certa por você. A faixa “Áudio” da linha do tempo mostra o que toca e quando.</li>
+        <li>O <b>MP4 sai com o som</b> (AAC, ou Opus se o aparelho não tiver AAC). Se o aparelho não codificar áudio, o programa avisa e exporta sem som.</li>
+      </ul>
+    </>),
+  },
+  {
+    id: 'graficos', titulo: 'Gráficos e escrita à mão',
+    corpo: (<>
+      <Ex>{`Professor desenha o gráfico de y = x^2 - 2 no quadro.
+Professor desenha o gráfico de y = sen(x) de -6 a 6 no quadro.
+Professor desenha um gráfico de barras: Maçã=5, Banana=8, Uva=3 no quadro.
+Professor desenha um gráfico de pizza: Sim=70, Não=30 no quadro.`}</Ex>
+      <p>Funções aceitam <C>+ − * / ^</C>, parênteses, multiplicação implícita (<C>2x</C>), <C>sen cos tan raiz abs ln log exp</C> e <C>pi</C>. O gráfico é traçado aos poucos: eixos, curva (ou barras uma a uma, ou a pizza girando). Se a função não for entendida, o roteiro mostra um aviso.</p>
+      <p>Na aba <i>Aula</i>, <b>Escrita na lousa</b> tem três estilos: só revelar, mão com marcador, e <b>letra por letra</b>, em que o contorno de cada letra é traçado e depois preenchido, com a mão acompanhando.</p>
+    </>),
+  },
+  {
+    id: 'ia', titulo: 'Roteiro com IA',
+    corpo: (<>
+      <p><b>Arquivo ▸ Gerar / melhorar roteiro com IA…</b> escreve o roteiro por você: informe assunto, matéria, série, duração, quem é o professor e o aluno e quem mais pode aparecer. O programa envia as regras do formato e a lista dos seus personagens e <b>confere a resposta com o próprio interpretador</b>: se algo não for entendido, pede a correção à IA (até duas vezes). Depois você escolhe <i>Substituir</i> ou <i>Acrescentar</i>; <b>Ctrl+Z</b> desfaz.</p>
+      <p>O modo <i>Melhorar o roteiro atual</i> acrescenta reações e gestos enquanto os outros falam, ou segue o pedido que você escrever.</p>
+      <p><b>Serviço:</b> Claude (Anthropic), OpenAI, OpenRouter (há modelos gratuitos), Groq (camada gratuita), Ollama no seu computador (sem chave, com <C>OLLAMA_ORIGINS=*</C>) ou qualquer serviço compatível. A chave fica só neste aparelho e só é enviada ao endereço configurado. Sem chave não há como gerar, e o resto do programa funciona normalmente.</p>
+    </>),
+  },
+  {
+    id: 'projeto', titulo: 'Projeto, desfazer e legendas',
+    corpo: (<>
+      <ul>
+        <li><b>Desfazer / Refazer:</b> <b>Ctrl+Z</b> e <b>Ctrl+Y</b> (menu Editar) desfazem qualquer edição do roteiro: digitar, arrastar na linha do tempo ou no palco, inserir da biblioteca, aplicar IA.</li>
+        <li><b>Arquivo ▸ Salvar projeto completo (.zip)</b> guarda roteiro, personagens criados, estilos, sprites trocados, áudios e preferências. <b>Abrir projeto</b> restaura tudo, inclusive em outro computador.</li>
+        <li><b>Exportar ▸ Vídeo MP4 nos dois formatos</b> gera o 16:9 e o 9:16 em sequência.</li>
+        <li><b>Exportar ▸ Legendas das falas (.srt)</b> cria as legendas a partir das falas (e dos áudios) para enviar ao YouTube.</li>
+        <li>Clique no nome de uma cena na régua da linha do tempo para pular até ela.</li>
+      </ul>
+    </>),
+  },
+  {
     id: 'exportar', titulo: 'Exportar vídeo',
     corpo: (<>
       <p><b>Exportar ▸ Vídeo MP4</b> (ou o botão laranja no palco) grava a animação em 1920×1080 (16:9, YouTube) ou 1080×1920 (9:16, Shorts), a 30 quadros por segundo. Acompanhe o progresso na barra e escolha onde salvar. No Android o arquivo é salvo e a folha de compartilhamento abre. <b>Quadro atual (PNG)</b> salva a imagem do instante mostrado.</p>
-      <p>O áudio é gravado à parte: use a linha <C>[nota: …]</C> para lembrar o tom de cada fala e monte o som no seu editor de vídeo.</p>
+      <p>O áudio importado (narração, música e efeitos) entra no MP4; veja a seção de áudio. Use <C>[nota: …]</C> para lembrar o tom de cada fala.</p>
     </>),
   },
   {
@@ -171,3 +218,4 @@ export function ManualModal() {
     </div>
   );
 }
+
