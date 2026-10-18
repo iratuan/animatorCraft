@@ -1,16 +1,14 @@
 import { ATORES, MODELOS, ORDEM_ATORES, type ActorId } from '@shared/domain';
-import type { EstiloEscrita } from '@renderer/features/palco/render';
 import { useEditor } from '@renderer/store/editor-store';
 import { FONTES } from '@renderer/features/fontes/services/fontes';
 import { SeletorSkin, useSkins } from '@renderer/features/personagens/services/useSkins';
 import { useRoteiroDerivado } from '@renderer/features/roteiro/hooks/useRoteiroDerivado';
 import { fmtTempo } from '@renderer/features/palco/services/tempo';
 
-/** Aba "Aula": papéis (professor/aluno), fontes e escrita, modelos de roteiro, cheat-sheet da câmera. */
+/** Aba "Aula": papéis (professor/aluno), fontes, modelos de roteiro, cheat-sheet da câmera. */
 export function AulaPanel() {
   const fonteLousa = useEditor((s) => s.fonteLousa);
   const fonteFala = useEditor((s) => s.fonteFala);
-  const escrita = useEditor((s) => s.escrita);
   const set = useEditor((s) => s.set);
   useEditor((s) => s.versaoPersonagens); // redesenha quando a lista de personagens muda
   const setRoteiro = useEditor((s) => s.setRoteiro);
@@ -42,7 +40,7 @@ export function AulaPanel() {
       <p className="dica">Vale para todos; cada personagem pode ter o seu na aba Propriedades. Quem ainda não tem sprites aparece como stickman.</p>
       <SeletorSkin valor={skins.padrao} aoEscolher={skins.definirPadrao} />
 
-      <h4>Fontes e escrita</h4>
+      <h4>Fontes</h4>
       <label className="campo">Fonte da lousa
         <select value={fonteLousa} onChange={(e) => set({ fonteLousa: e.target.value })}>
           {FONTES.map((f) => <option key={f.id} value={f.id}>{f.nome}</option>)}
@@ -53,14 +51,7 @@ export function AulaPanel() {
           {FONTES.map((f) => <option key={f.id} value={f.id}>{f.nome}</option>)}
         </select>
       </label>
-      <label className="campo">Escrita na lousa
-        <select value={escrita} onChange={(e) => set({ escrita: e.target.value as EstiloEscrita })}>
-          <option value="revelar">Só revelar o conteúdo (borda suave)</option>
-          <option value="mao">Mão com marcador</option>
-          <option value="traco">Letra por letra (traço a traço) com a mão</option>
-        </select>
-      </label>
-      <p className="dica">Comic Sans é a do sistema; onde não existir (Android) entra a Comic Neue, empacotada no app.</p>
+      <p className="dica">O conteúdo da lousa é revelado aos poucos, sem mão nem caneta. Comic Sans é a do sistema; onde não existir (Android) entra a Comic Neue, empacotada no app.</p>
 
       <h4>Modelos de roteiro</h4>
       <div className="modelos">
@@ -104,6 +95,7 @@ export function AulaPanel() {
     </div>
   );
 }
+
 
 
 

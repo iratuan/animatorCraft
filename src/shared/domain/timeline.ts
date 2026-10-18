@@ -129,7 +129,7 @@ export interface Estado {
   t: number;
   atores: Record<ActorId, AtorEstado>;
   quadro: ItemQuadro[];
-  /** Item sendo escrito agora (a mão com caneta o acompanha). */
+  /** Item sendo escrito agora (o conteúdo é revelado aos poucos; não há mão nem caneta na lousa). */
   mao?: { item: number; progresso: number; ator: ActorId };
   eventoAtual?: Evento;
 }
@@ -292,6 +292,7 @@ export function estadoEm(tl: Timeline, t: number): Estado {
   const camera = { atual: cameraAtual, anterior: cameraAnterior, progresso: suave((t - cameraDesde) / 0.8) };
   return { t, atores, quadro: itens, mao, eventoAtual, camera };
 }
+
 
 
 

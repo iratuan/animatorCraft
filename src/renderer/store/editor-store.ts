@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { ATORES, type ActorId } from '@shared/domain';
 import type { FormatoVideo } from '@shared/constants/video';
-import type { EstiloEscrita, Skin } from '@renderer/features/palco/render';
+import type { Skin } from '@renderer/features/palco/render';
 import type { PacoteLido } from '@renderer/features/pacotes-sprites/services/pacotes';
 import { ROTEIRO_EXEMPLO } from '@renderer/features/roteiro/services/exemplo';
 
@@ -32,7 +32,6 @@ interface Estado {
   fontesOk: boolean;
   fonteLousa: string;
   fonteFala: string;
-  escrita: EstiloEscrita;
   importacao: ImportacaoPendente | null;
   /** personagem aberto no editor de sprites (modal) */
   editorPersonagem: ActorId | null;
@@ -79,7 +78,6 @@ export const useEditor = create<Estado & Acoes>()((set, get) => ({
   fontesOk: false,
   fonteLousa: lerSalvo('stickboard.fonte.lousa', 'comic'),
   fonteFala: lerSalvo('stickboard.fonte.fala', 'comic'),
-  escrita: lerSalvo('stickboard.escrita', 'revelar') as EstiloEscrita,
   importacao: null,
   editorPersonagem: null,
   fichaPersonagem: null,
@@ -113,12 +111,11 @@ export const useEditor = create<Estado & Acoes>()((set, get) => ({
   novaVersaoPersonagens: () => set((s) => ({ versaoPersonagens: s.versaoPersonagens + 1, versaoBib: s.versaoBib + 1 })),
 }));
 
-// persistência leve do que o usuário configura (o roteiro e as preferências de fonte/escrita)
+// persistência leve do que o usuário configura (o roteiro e as preferências de fonte)
 useEditor.subscribe((s, anterior) => {
   if (s.roteiro !== anterior.roteiro) gravar('stickboard.roteiro.v2', s.roteiro);
   if (s.fonteLousa !== anterior.fonteLousa) gravar('stickboard.fonte.lousa', s.fonteLousa);
   if (s.fonteFala !== anterior.fonteFala) gravar('stickboard.fonte.fala', s.fonteFala);
-  if (s.escrita !== anterior.escrita) gravar('stickboard.escrita', s.escrita);
 });
 
 
@@ -160,4 +157,5 @@ export function refazer(): boolean {
   aplicar(depois);
   return true;
 }
+
 

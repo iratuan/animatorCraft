@@ -1,7 +1,7 @@
 import { ATORES, ORDEM_ATORES, infoDoAudio, piscando, visemaDoAudio, visemaEm, type ActorId, type Estado } from '@shared/domain';
 import { desenharAtor } from './ator';
 import { interpolarRect, retanguloDaCamera, visibilidadeDaCamera } from './camera';
-import { desenharItemPlanejado, escritaComMao, FONTE_MANUSCRITA, fonteCSS, planejarLousa } from './lousa';
+import { desenharItemPlanejado, FONTE_MANUSCRITA, fonteCSS, planejarLousa } from './lousa';
 import { calcularAtorSprite, desenharAtorSprite, temSprites, type Rect } from './sprites';
 import { tracoTremido } from './tremor';
 
@@ -38,32 +38,7 @@ function desenharMoldura(ctx: CanvasRenderingContext2D, L: Layout) {
   for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.roundRect(q.x + q.w * 0.34 + i * 70, q.y + q.h + 2, 54, 12, 5); ctx.stroke(); }
 }
 
-function desenharMao(ctx: CanvasRenderingContext2D, p: { x: number; y: number }, t: number) {
-  ctx.save();
-  ctx.translate(p.x + 3, p.y + 3);
-  ctx.rotate(-0.62 + Math.sin(t * 17) * 0.025);
-  ctx.translate(Math.sin(t * 23) * 1.5, 0);
-  ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.strokeStyle = '#111'; ctx.lineWidth = 4;
-  const pele = '#dcdcdc';
-  // antebraço com manga (vem de baixo, à direita)
-  ctx.fillStyle = '#fff';
-  ctx.beginPath(); ctx.roundRect(-24, 150, 48, 150, 12); ctx.fill(); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(-24, 168); ctx.lineTo(24, 168); ctx.stroke();
-  // marcador: ponta, corpo, faixa e tampa
-  ctx.fillStyle = '#111';
-  ctx.beginPath(); ctx.moveTo(-3.5, 0); ctx.lineTo(3.5, 0); ctx.lineTo(8, 24); ctx.lineTo(-8, 24); ctx.closePath(); ctx.fill(); ctx.stroke();
-  ctx.fillStyle = '#fff';
-  ctx.beginPath(); ctx.roundRect(-9, 22, 18, 128, 7); ctx.fill(); ctx.stroke();
-  ctx.fillStyle = '#9a9a9a'; ctx.fillRect(-9, 44, 18, 16); ctx.strokeRect(-9, 44, 18, 16);
-  // mão: palma, três dedos por cima do marcador e o polegar do lado da ponta
-  ctx.fillStyle = pele;
-  ctx.beginPath(); ctx.ellipse(6, 112, 30, 38, 0.15, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-  for (let i = 0; i < 3; i++) {
-    ctx.beginPath(); ctx.roundRect(-22 + i * 2, 70 + i * 15, 42, 15, 8); ctx.fill(); ctx.stroke();
-  }
-  ctx.beginPath(); ctx.roundRect(-34, 62, 16, 36, 8); ctx.fill(); ctx.stroke();
-  ctx.restore();
-}
+
 function quebrarLinhas(ctx: CanvasRenderingContext2D, texto: string, larguraMax: number): string[] {
   const linhas: string[] = [];
   let atual = '';
@@ -167,10 +142,8 @@ export function renderizarCena(ctx: CanvasRenderingContext2D, estado: Estado, w:
   ctx.globalAlpha = vis.lousa;
   desenharMoldura(ctx, L);
   const plano = planejarLousa(ctx, estado.quadro, L.quadro, L.vertical);
-  for (const p of plano.itens) {
-    const frente = desenharItemPlanejado(ctx, p, L.quadro);
-    if (estado.mao && estado.mao.item === p.item.id && escritaComMao()) desenharMao(ctx, frente, estado.t);
-  }
+  // o conteúdo só é revelado aos poucos; não há mão nem caneta na lousa
+  for (const p of plano.itens) desenharItemPlanejado(ctx, p, L.quadro);
 
   // personagens
   const ancoras: Partial<Record<ActorId, { x: number; y: number }>> = {};

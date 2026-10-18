@@ -12,7 +12,7 @@ import { listarAudios } from '@shared/domain';
  *   roteiro.txt · projeto.json · sprites/<personagem>/<tipo>_<nome>.png · audios/<arquivo>
  */
 const VERSAO = 1;
-interface ProjetoJson { versao: number; personagens: ActorSpec[]; skinPadrao: string; skins: Record<string, string>; fonteLousa: string; fonteFala: string; escrita: string; formato: string }
+interface ProjetoJson { versao: number; personagens: ActorSpec[]; skinPadrao: string; skins: Record<string, string>; fonteLousa: string; fonteFala: string; formato: string }
 
 async function bytesDeUrl(url: string): Promise<Uint8Array> { return new Uint8Array(await (await fetch(url)).arrayBuffer()); }
 
@@ -20,7 +20,7 @@ export async function montarProjeto(): Promise<{ zip: Uint8Array; sprites: numbe
   const s = useEditor.getState();
   const arquivos: Record<string, Uint8Array> = {};
   arquivos['roteiro.txt'] = strToU8(s.roteiro);
-  const json: ProjetoJson = { versao: VERSAO, personagens: atoresPersonalizados(), skinPadrao: s.skinPadrao, skins: s.skins, fonteLousa: s.fonteLousa, fonteFala: s.fonteFala, escrita: s.escrita, formato: s.formato };
+  const json: ProjetoJson = { versao: VERSAO, personagens: atoresPersonalizados(), skinPadrao: s.skinPadrao, skins: s.skins, fonteLousa: s.fonteLousa, fonteFala: s.fonteFala, formato: s.formato };
   arquivos['projeto.json'] = strToU8(JSON.stringify(json, null, 2));
   let sprites = 0;
   for (const e of await lerEntradasSalvas()) {
@@ -57,7 +57,8 @@ export async function abrirProjeto(zip: Uint8Array): Promise<{ sprites: number; 
   await carregarAudiosSalvos();
   const st = useEditor.getState();
   gravarSkins({ padrao: (j.skinPadrao as 'chibi' | 'stickman') ?? 'chibi', porPersonagem: (j.skins ?? {}) as Record<string, 'chibi' | 'stickman'> });
-  st.set({ roteiro: strFromU8(todos['roteiro.txt']), t: 0, skinPadrao: (j.skinPadrao as 'chibi' | 'stickman') ?? 'chibi', skins: (j.skins ?? {}) as Record<string, 'chibi' | 'stickman'>, fonteLousa: j.fonteLousa ?? st.fonteLousa, fonteFala: j.fonteFala ?? st.fonteFala, escrita: (j.escrita as typeof st.escrita) ?? st.escrita });
+  st.set({ roteiro: strFromU8(todos['roteiro.txt']), t: 0, skinPadrao: (j.skinPadrao as 'chibi' | 'stickman') ?? 'chibi', skins: (j.skins ?? {}) as Record<string, 'chibi' | 'stickman'>, fonteLousa: j.fonteLousa ?? st.fonteLousa, fonteFala: j.fonteFala ?? st.fonteFala });
   st.novaVersaoPersonagens(); st.novaVersaoAudio();
   return { sprites, audios, personagens: (j.personagens ?? []).length };
 }
+

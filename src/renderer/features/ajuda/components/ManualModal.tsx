@@ -79,7 +79,7 @@ Ao mesmo tempo: Professor diz "Um". Aluno diz "Dois". Erika acena.`}</Ex>
         <li><C>[close no professor]</C> (ou <C>aluno</C>, ou o nome do personagem): só o rosto.</li>
         <li><C>[plano aberto]</C>: volta ao palco inteiro.</li>
       </ul>
-      <p>O que é escrito na lousa se ajusta ao tamanho dela (quebra linhas e reduz a letra); se não couber nem na menor letra, o roteiro mostra um aviso para você resumir ou dividir a cena. Na aba <i>Aula</i> você escolhe a <b>fonte</b> da lousa e das falas (Comic Sans por padrão) e se a escrita aparece <b>só revelando</b> o conteúdo ou com uma <b>mão com marcador</b>.</p>
+      <p>O que é escrito na lousa se ajusta ao tamanho dela (quebra linhas e reduz a letra); se não couber nem na menor letra, o roteiro mostra um aviso para você resumir ou dividir a cena. Na aba <i>Aula</i> você escolhe a <b>fonte</b> da lousa e das falas (Comic Sans por padrão). O texto, as equações e os gráficos <b>vão sendo revelados</b> aos poucos, sem mão nem caneta.</p>
     </>),
   },
   {
@@ -143,14 +143,14 @@ Erika entra pela direita na posição 60%.  (para de andar em 60%, em vez do pon
     </>),
   },
   {
-    id: 'graficos', titulo: 'Gráficos e escrita à mão',
+    id: 'graficos', titulo: 'Gráficos',
     corpo: (<>
       <Ex>{`Professor desenha o gráfico de y = x^2 - 2 no quadro.
 Professor desenha o gráfico de y = sen(x) de -6 a 6 no quadro.
 Professor desenha um gráfico de barras: Maçã=5, Banana=8, Uva=3 no quadro.
 Professor desenha um gráfico de pizza: Sim=70, Não=30 no quadro.`}</Ex>
       <p>Funções aceitam <C>+ − * / ^</C>, parênteses, multiplicação implícita (<C>2x</C>), <C>sen cos tan raiz abs ln log exp</C> e <C>pi</C>. O gráfico é traçado aos poucos: eixos, curva (ou barras uma a uma, ou a pizza girando). Se a função não for entendida, o roteiro mostra um aviso.</p>
-      <p>Na aba <i>Aula</i>, <b>Escrita na lousa</b> tem três estilos: só revelar, mão com marcador, e <b>letra por letra</b>, em que o contorno de cada letra é traçado e depois preenchido, com a mão acompanhando.</p>
+      <p>Assim como o texto e as equações, o gráfico vai sendo revelado na lousa, sem mão nem caneta.</p>
     </>),
   },
   {
@@ -218,4 +218,5 @@ export function ManualModal() {
     </div>
   );
 }
+
 

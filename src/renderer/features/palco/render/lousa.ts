@@ -7,11 +7,6 @@ const PADRAO: FonteConfig = { familia: '"Comic Sans MS","Comic Neue",cursive', p
 const fontes: Record<'lousa' | 'fala', FonteConfig> = { lousa: { ...PADRAO }, fala: { ...PADRAO } };
 export const FONTE_MANUSCRITA = PADRAO.familia;
 
-/** Como a escrita aparece: 'mao' = mão com caneta acompanhando; 'revelar' = só revela o conteúdo com borda suave; 'traco' = letra por letra, traçando o contorno, com a mão. */
-export type EstiloEscrita = 'mao' | 'revelar' | 'traco';
-let estiloEscrita: EstiloEscrita = 'revelar';
-export function definirEscrita(e: EstiloEscrita) { estiloEscrita = e; }
-export const escritaComMao = () => estiloEscrita === 'mao' || estiloEscrita === 'traco';
 
 export function definirFontes(f: Partial<Record<'lousa' | 'fala', FonteConfig>>) { Object.assign(fontes, f); }
 export const fonteCSS = (papel: 'lousa' | 'fala', tam: number) => `${fontes[papel].peso} ${tam}px ${fontes[papel].familia}`;
@@ -93,25 +88,7 @@ export function desenharItemPlanejado(ctx: CanvasRenderingContext2D, p: ItemPlan
     const linha = p.linhas[i]!, larg = p.larguras[i]!;
     const x0 = q.x + (q.w - larg) / 2, base = p.y + i * p.alturaLinha + p.fonte * 0.95;
     const frac = Math.min(1, Math.max(0, restante / Math.max(1, linha.length)));
-    if (frac > 0 && estiloEscrita === 'traco') {
-      // letra por letra: o contorno é traçado (tracejado crescente) e, perto do fim, a letra se preenche
-      const visivel = Math.min(linha.length, Math.max(0, restante));
-      for (let k = 0; k < Math.ceil(visivel); k++) {
-        const ch = linha[k]!;
-        if (ch === ' ') continue;
-        const xk = x0 + ctx.measureText(linha.slice(0, k)).width, f = Math.min(1, visivel - k);
-        if (f >= 1) { ctx.fillText(ch, xk, base); continue; }
-        ctx.save();
-        ctx.setLineDash([p.fonte * 5 * f, p.fonte * 8]);
-        ctx.lineWidth = Math.max(1.5, p.fonte * 0.04); ctx.strokeStyle = '#111'; ctx.lineCap = 'round';
-        ctx.strokeText(ch, xk, base);
-        ctx.setLineDash([]);
-        ctx.globalAlpha *= f > 0.55 ? (f - 0.55) / 0.45 : 0;
-        ctx.fillText(ch, xk, base);
-        ctx.restore();
-      }
-      front = { x: x0 + ctx.measureText(linha.slice(0, Math.ceil(visivel))).width, y: base - p.fonte * 0.3 };
-    } else if (frac > 0) {
+    if (frac > 0) {
       const topo = base - p.fonte * 1.1, alto = p.alturaLinha * 1.3, fim = x0 + larg * frac;
       ctx.save();
       ctx.beginPath(); ctx.rect(x0 - 8, topo, fim - x0 + 8, alto); ctx.clip();

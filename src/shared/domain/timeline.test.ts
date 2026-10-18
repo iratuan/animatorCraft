@@ -37,7 +37,7 @@ describe('timeline', () => {
     expect(s.atores.cringefather.fala?.progresso).toBeGreaterThan(0);
   });
 
-  it('escreve no quadro com a mão', () => {
+  it('escreve no quadro (o personagem assume a pose de escrever)', () => {
     const esc = tl.eventos.find((e) => e.acao.tipo === 'escrever')!;
     const m = estadoEm(tl, (esc.inicio + esc.fim) / 2);
     expect(m.mao?.progresso).toBeCloseTo(0.5);
@@ -71,3 +71,4 @@ describe('latexParaTexto', () => {
     expect(latexParaTexto('x_1^{n+1}')).toBe('x₁ⁿ⁺¹');
   });
 });
+

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { definirEscrita, definirEstiloTraco, definirFontes, renderizarCena, type EstiloTraco } from '@renderer/features/palco/render';
+import { definirEstiloTraco, definirFontes, renderizarCena, type EstiloTraco } from '@renderer/features/palco/render';
 import { useEditor } from '@renderer/store/editor-store';
 import { fontePorId } from '@renderer/features/fontes/services/fontes';
 import { useRoteiroDerivado } from '@renderer/features/roteiro/hooks/useRoteiroDerivado';
@@ -18,7 +18,6 @@ export function usePalcoCanvas() {
   const versaoBib = useEditor((s) => s.versaoBib);
   const fonteLousa = useEditor((s) => s.fonteLousa);
   const fonteFala = useEditor((s) => s.fonteFala);
-  const escrita = useEditor((s) => s.escrita);
   const fontesOk = useEditor((s) => s.fontesOk);
   const arrasto = useEditor((s) => s.arrastoPalco);
 
@@ -37,15 +36,15 @@ export function usePalcoCanvas() {
     const ctx = c.getContext('2d')!;
     ctx.setTransform(k, 0, 0, k, 0, 0);
     definirFontes({ lousa: fontePorId(fonteLousa), fala: fontePorId(fonteFala) });
-    definirEscrita(escrita);
     // durante o arrasto o personagem acompanha o ponteiro (a posição só entra no roteiro ao soltar)
     const ator = arrasto ? estado.atores[arrasto.id] : undefined;
     const vista = arrasto && ator ? { ...estado, atores: { ...estado.atores, [arrasto.id]: { ...ator, x: arrasto.x } } } : estado;
     renderizarCena(ctx, vista, dim.w, dim.h, { selecionado });
-  }, [estado, formato, selecionado, dim.w, dim.h, spritesOk, versaoBib, fonteLousa, fonteFala, escrita, fontesOk, arrasto]);
+  }, [estado, formato, selecionado, dim.w, dim.h, spritesOk, versaoBib, fonteLousa, fonteFala, fontesOk, arrasto]);
 
   const ajuste = Math.min(areaTam.w / dim.w, areaTam.h / dim.h);
   const estilo = { width: Math.max(1, dim.w * ajuste), height: Math.max(1, dim.h * ajuste) };
   return { canvas, area, estilo };
 }
+
 
