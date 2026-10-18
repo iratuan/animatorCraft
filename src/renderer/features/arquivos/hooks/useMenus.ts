@@ -7,6 +7,7 @@ import { limparPacotesSalvos, lerPacote } from '@renderer/features/pacotes-sprit
 import { useRoteiroDerivado } from '@renderer/features/roteiro/hooks/useRoteiroDerivado';
 import { gerarSrt, ATORES } from '@shared/domain';
 import { abrirProjeto, montarProjeto } from '@renderer/features/projeto/services/projeto';
+import { escolherEInserirImagem } from '@renderer/features/imagens/services/inserir';
 import { useExportar } from '@renderer/features/exportacao/hooks/useExportar';
 import { baixarArquivo, plataforma } from '../services/plataforma';
 
@@ -66,6 +67,7 @@ export function useMenus(): GrupoMenu[] {
       { separador: true, rotulo: '' },
       { rotulo: 'Novo personagem…', acao: () => set({ fichaPersonagem: {} }) },
       { rotulo: 'Editar / exportar sprites dos personagens…', acao: () => set({ editorPersonagem: useEditor.getState().selecionado ?? 'cringefather' }) },
+      { rotulo: 'Inserir imagem na lousa (PNG, JPG, WebP)…', acao: () => void escolherEInserirImagem() },
       { rotulo: 'Importar áudio (narração, música, efeito)…', acao: () => set({ aba: 'audio' }) },
       { rotulo: 'Importar pacote de sprites (.zip)…', acao: importarPacote },
       { rotulo: 'Remover pacotes importados', acao: async () => { await limparPacotesSalvos(); set({ mensagem: 'Pacotes removidos. Recarregue o app para voltar aos sprites originais.' }); } },

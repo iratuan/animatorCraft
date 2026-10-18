@@ -15,3 +15,5 @@ export type { EstiloTraco } from './ator';
 
 
 
+export { guardarImagemQuadro, esquecerImagemQuadro } from './imagens';
+export { imagemDoQuadro } from './imagens';

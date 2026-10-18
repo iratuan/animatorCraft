@@ -1,4 +1,5 @@
 import type { Origem } from '../types';
+import { parseRoteiro } from './parser';
 
 /**
  * Edições da linha do tempo que reescrevem o texto do roteiro (a fonte da verdade é sempre o texto).
@@ -87,3 +88,39 @@ export function posicionarNoRoteiro(texto: string, nome: string, pct: number, an
   if (!ancora) return `${texto.trimEnd()} ${frase}\n`;
   return `${texto.slice(0, ancora.fim)} ${frase}${texto.slice(ancora.fim)}`;
 }
+
+type ConteudoImagem = Extract<import('../types').Conteudo, { tipo: 'imagem' }>;
+
+/** Frase do roteiro que corresponde a uma imagem na lousa (usada ao inserir e ao trocar efeitos pela linha do tempo). */
+export function fraseDaImagem(nomeAtor: string, c: ConteudoImagem): string {
+  const arq = /\s/.test(c.arquivo) ? `"${c.arquivo}"` : c.arquivo;
+  const efeito = (e: string) => e === 'nenhum' ? 'sem efeito' : `efeito ${e.replace('-', ' da ').replace('da cima', 'de cima').replace('da baixo', 'de baixo')}`;
+  const partes = [`${nomeAtor} mostra a imagem ${arq} no quadro`];
+  if (c.posicao !== 'centro') partes.push(`no canto ${c.posicao === 'esquerda' ? 'esquerdo' : 'direito'}`);
+  if (c.tamanho !== 'media') partes.push(c.tamanho);
+  partes.push(`com ${efeito(c.entrada)}`);
+  if (c.saida) partes.push(`e sai com ${efeito(c.saida)}`);
+  if (c.exibirPor) partes.push(`por ${String(c.exibirPor).replace('.', ',')} segundos`);
+  return `${partes.join(' ')}.`;
+}
+
+/** Troca a frase da imagem por uma nova (efeito, canto, tamanho, tempo). */
+export function reescreverImagem(texto: string, alvo: Origem, nomeAtor: string, c: ConteudoImagem): string {
+  return texto.slice(0, alvo.ini) + fraseDaImagem(nomeAtor, c) + texto.slice(alvo.fim);
+}
+
+/**
+ * Insere `trecho` no ponto do roteiro onde está o cursor: depois da frase que contém o cursor, ou da última frase que termina antes dele;
+ * se o cursor está antes de todas, entra antes da primeira. Assim "inserir no determinado trecho do roteiro" vale para imagens, falas, etc.
+ */
+export function inserirNoCursor(texto: string, cursor: number, trecho: string): string {
+  const origens = parseRoteiro(texto).cenas.flatMap((c) => c.origens);
+  const unicas = [...new Map(origens.map((o) => [o.ini, o])).values()].sort((a, b) => a.ini - b.ini);
+  if (!unicas.length) return `${texto.trimEnd()}${texto.trim() ? '\n' : ''}${trecho}\n`;
+  const dentro = unicas.find((o) => o.ini <= cursor && cursor <= o.fim);
+  const antes = [...unicas].reverse().find((o) => o.fim <= cursor);
+  const alvo = dentro ?? antes;
+  if (!alvo) return `${texto.slice(0, unicas[0]!.ini)}${trecho} ${texto.slice(unicas[0]!.ini)}`;
+  return `${texto.slice(0, alvo.fim)} ${trecho}${texto.slice(alvo.fim)}`;
+}
+

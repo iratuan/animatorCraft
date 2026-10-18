@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useEditor } from '@renderer/store/editor-store';
 import { carregarFontes } from '@renderer/features/fontes/services/fontes';
 import { carregarAudiosSalvos } from '@renderer/features/audio/services/armazenamento';
+import { carregarImagensSalvas } from '@renderer/features/imagens/services/armazenamento';
 import { carregarPacotesSalvos } from '../services/pacotes';
 import { carregarPersonagens } from '../services/personagens';
 
@@ -16,8 +17,10 @@ export function useCargaInicial() {
         useEditor.getState().novaVersaoBib();
       })
       .catch((e: Error) => set({ mensagem: `Falha ao carregar personagens: ${e.message}` }));
+    void carregarImagensSalvas().then(() => useEditor.getState().novaVersaoImagens());
     void carregarAudiosSalvos().then(() => useEditor.getState().novaVersaoAudio());
     void carregarFontes().then(() => set({ fontesOk: true }));
   }, [set]);
 }
+
 

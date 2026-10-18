@@ -9,6 +9,7 @@ export const Icones = {
   texto: <svg {...base}><path d="M5 6h14M12 6v13M9 19h6" /></svg>,
   formula: <svg {...base}><path d="M17 4H8l5 8-5 8h9" /></svg>,
   grafico: <svg {...base}><path d="M4 20V4M4 20h16M8 16l4-5 3 3 5-7" /></svg>,
+  imagem: <svg {...base}><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="9" cy="10" r="1.6" /><path d="M3 17l5-5 4 4 3-3 6 6" /></svg>,
   apagar: <svg {...base}><path d="M4 16l8-10 8 8-5 6H9zM9 20h11" /></svg>,
   pausa: <svg {...base}><path d="M9 5v14M15 5v14" /></svg>,
   nota: <svg {...base}><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h5" /></svg>,
@@ -23,3 +24,4 @@ export const Icones = {
 };
 
 export type NomeIcone = keyof typeof Icones;
+

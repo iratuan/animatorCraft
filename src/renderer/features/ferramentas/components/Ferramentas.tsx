@@ -1,5 +1,6 @@
 import { ATORES } from '@shared/domain';
 import { useEditor } from '@renderer/store/editor-store';
+import { escolherEInserirImagem } from '@renderer/features/imagens/services/inserir';
 import { Icones, type NomeIcone } from '@renderer/components/Icones';
 
 interface Ferramenta { id: string; icone: NomeIcone; dica: string; acao?: () => void; desativado?: boolean }
@@ -7,7 +8,8 @@ interface Ferramenta { id: string; icone: NomeIcone; dica: string; acao?: () => 
 /** Barra lateral de ferramentas: cada botão acrescenta uma frase pronta ao roteiro, para o personagem selecionado. */
 export function Ferramentas() {
   const selecionado = useEditor((s) => s.selecionado);
-  const inserir = useEditor((s) => s.inserir);
+  // cada botão insere a frase no ponto do roteiro onde está o cursor (ou no fim, se ele nunca foi posicionado)
+  const inserir = useEditor((s) => s.inserirNoCursor);
   const nome = selecionado ? ATORES[selecionado]!.nome : 'Professor';
   const lado = selecionado && ['betason', 'dario', 'laura', 'artur'].includes(selecionado) ? 'direita' : 'esquerda';
 
@@ -17,7 +19,8 @@ export function Ferramentas() {
     { id: 'fala', icone: 'fala', dica: 'Balão de fala', acao: () => inserir(`${nome} diz "Digite a fala aqui".`) },
     { id: 'txt', icone: 'texto', dica: 'Escrever texto no quadro', acao: () => inserir(`${nome} escreve "Título" no quadro.`) },
     { id: 'fx', icone: 'formula', dica: 'Escrever fórmula (LaTeX)', acao: () => inserir(`${nome} escreve $x^2 + 2x + 1$ no quadro.`) },
-    { id: 'graf', icone: 'grafico', dica: 'Gráfico (em breve)', desativado: true },
+    { id: 'graf', icone: 'grafico', dica: 'Gráfico de função no quadro', acao: () => inserir(`${nome} desenha o gráfico de y = x^2 no quadro.`) },
+    { id: 'img', icone: 'imagem', dica: 'Imagem (PNG, JPG, WebP) na lousa: escolhe o arquivo e insere no roteiro', acao: () => void escolherEInserirImagem() },
     { id: 'ap', icone: 'apagar', dica: 'Apagar o quadro', acao: () => inserir('Apaga o quadro.') },
     { id: 'pausa', icone: 'pausa', dica: 'Pausa de 1 segundo', acao: () => inserir('Espera 1 segundos.') },
     { id: 'nota', icone: 'nota', dica: 'Nota de produção', acao: () => inserir('[nota: lembrete para a gravação]') },
@@ -34,3 +37,4 @@ export function Ferramentas() {
     </nav>
   );
 }
+

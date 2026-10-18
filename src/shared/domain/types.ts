@@ -1,5 +1,6 @@
 import type { ActorId, Papeis } from './characters';
 import type { GraficoDef } from './grafico';
+import type { EfeitoImagem, PosicaoImagem, TamanhoImagem } from './imagem';
 import type { ExpressaoId, PoseId } from './poses';
 
 export type Lado = 'esquerda' | 'direita' | 'centro';
@@ -7,7 +8,8 @@ export type Lado = 'esquerda' | 'direita' | 'centro';
 export type Conteudo =
   | { tipo: 'texto'; texto: string }
   | { tipo: 'latex'; latex: string }
-  | { tipo: 'grafico'; grafico: GraficoDef };
+  | { tipo: 'grafico'; grafico: GraficoDef }
+  | { tipo: 'imagem'; arquivo: string; entrada: EfeitoImagem; saida?: EfeitoImagem; /** segundos na lousa; sem valor = até apagar o quadro */ exibirPor?: number; posicao: PosicaoImagem; tamanho: TamanhoImagem };
 
 /** Ação única do roteiro, já resolvida. O motor de animação consome só isto. */
 export type Acao = AcaoBase & {
@@ -31,6 +33,8 @@ type AcaoBase =
   | { tipo: 'escrever'; ator: ActorId; conteudo: Conteudo }
   | { tipo: 'apontar'; ator: ActorId }
   | { tipo: 'apagar' }
+  /** Tira uma imagem da lousa, com um efeito de saída. */
+  | { tipo: 'remover'; ator: ActorId; arquivo: string; saida: EfeitoImagem }
   /** Câmera: 'lousa' mostra só o conteúdo da lousa; 'personagem' mostra só o rosto; 'aberto' volta ao plano geral. */
   | { tipo: 'camera'; alvo: 'aberto' | 'lousa' | 'personagem'; ator?: ActorId }
   | { tipo: 'esperar'; segundos: number }
@@ -40,6 +44,7 @@ type AcaoBase =
 export interface Origem { ini: number; fim: number }
 export interface Cena { titulo: string; acoes: Acao[]; /** uma origem por ação, na mesma ordem */ origens: Origem[]; }
 export interface Roteiro { cenas: Cena[]; avisos: string[]; papeis: Papeis; }
+
 
 
 

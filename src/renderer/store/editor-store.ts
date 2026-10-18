@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { ATORES, type ActorId } from '@shared/domain';
+import { ATORES, inserirNoCursor as inserirNoCursorTexto, type ActorId } from '@shared/domain';
 import type { FormatoVideo } from '@shared/constants/video';
 import type { Skin } from '@renderer/features/palco/render';
 import type { PacoteLido } from '@renderer/features/pacotes-sprites/services/pacotes';
@@ -9,7 +9,7 @@ const lerSalvo = (k: string, padrao: string) => { try { return localStorage.getI
 const gravar = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* sem armazenamento */ } };
 const consulta = new URLSearchParams(typeof location === 'undefined' ? '' : location.search);
 
-export type AbaLateral = 'props' | 'biblioteca' | 'audio' | 'aula';
+export type AbaLateral = 'props' | 'biblioteca' | 'imagens' | 'audio' | 'aula';
 export interface ImportacaoPendente { pacote: PacoteLido; substituir: boolean; nome: string }
 
 interface Estado {
@@ -39,8 +39,12 @@ interface Estado {
   fichaPersonagem: { id?: ActorId; duplicarDe?: ActorId } | null;
   manualAberto: boolean;
   iaAberta: boolean;
+  /** posição do cursor no campo do roteiro (null = nunca clicou); usada para inserir conteúdo no trecho certo */
+  cursorRoteiro: number | null;
   /** muda quando a lista de áudios muda */
   versaoAudio: number;
+  /** muda quando a lista de imagens muda */
+  versaoImagens: number;
   /** personagem sendo arrastado no palco e a posição provisória (0..1 da largura) */
   arrastoPalco: { id: ActorId; x: number } | null;
   /** muda quando a lista de personagens muda (o roteiro precisa ser interpretado de novo) */
@@ -54,11 +58,14 @@ interface Acoes {
   setRoteiro: (r: string) => void;
   /** acrescenta um trecho ao fim do roteiro (usado pelas ferramentas e pela biblioteca) */
   inserir: (trecho: string) => void;
+  /** insere o trecho no ponto do roteiro onde está o cursor (ou no fim, se o cursor nunca foi posicionado) */
+  inserirNoCursor: (trecho: string) => void;
   definirPapeis: (professor: ActorId, aluno: ActorId) => void;
   alternarReproducao: (duracao: number) => void;
   novaVersaoBib: () => void;
   novaVersaoPersonagens: () => void;
   novaVersaoAudio: () => void;
+  novaVersaoImagens: () => void;
 }
 
 export const useEditor = create<Estado & Acoes>()((set, get) => ({
@@ -83,7 +90,9 @@ export const useEditor = create<Estado & Acoes>()((set, get) => ({
   fichaPersonagem: null,
   manualAberto: false,
   iaAberta: false,
+  cursorRoteiro: null,
   versaoAudio: 0,
+  versaoImagens: 0,
   arrastoPalco: null,
   versaoPersonagens: 0,
   skinPadrao: 'chibi',
@@ -97,6 +106,11 @@ export const useEditor = create<Estado & Acoes>()((set, get) => ({
     const sep = base === '' ? '' : /^#/.test(ultima) ? '\n\n' : ' ';
     return { roteiro: `${base}${sep}${trecho}\n` };
   }),
+  inserirNoCursor: (trecho) => {
+    const { roteiro, cursorRoteiro } = get();
+    if (cursorRoteiro === null) get().inserir(trecho);
+    else set({ roteiro: inserirNoCursorTexto(roteiro, cursorRoteiro, trecho) });
+  },
   definirPapeis: (professor, aluno) => set(({ roteiro }) => {
     const linha = `[papéis: professor=${ATORES[professor]!.nome}, aluno=${ATORES[aluno]!.nome}]`;
     const sem = roteiro.replace(/^[ \t]*\[\s*pap[eé]is\s*:[^\]]*\][ \t]*\r?\n?/gim, '').replace(/^\s+/, '');
@@ -108,6 +122,7 @@ export const useEditor = create<Estado & Acoes>()((set, get) => ({
   },
   novaVersaoBib: () => set((s) => ({ versaoBib: s.versaoBib + 1 })),
   novaVersaoAudio: () => set((s) => ({ versaoAudio: s.versaoAudio + 1 })),
+  novaVersaoImagens: () => set((s) => ({ versaoImagens: s.versaoImagens + 1, versaoBib: s.versaoBib + 1 })),
   novaVersaoPersonagens: () => set((s) => ({ versaoPersonagens: s.versaoPersonagens + 1, versaoBib: s.versaoBib + 1 })),
 }));
 
@@ -157,5 +172,7 @@ export function refazer(): boolean {
   aplicar(depois);
   return true;
 }
+
+
 
 

@@ -1,11 +1,11 @@
 import { useRef, useState } from 'react';
-import { ATORES, ORDEM_ATORES, excluirFrase, reescreverDuracao, tornarSequencial, tornarSimultanea, type Acao, type Evento, type Timeline } from '@shared/domain';
+import { ATORES, EFEITOS_IMAGEM, NOME_EFEITO, ORDEM_ATORES, excluirFrase, reescreverDuracao, reescreverImagem, tornarSequencial, tornarSimultanea, type Acao, type Conteudo, type EfeitoImagem, type Evento, type PosicaoImagem, type TamanhoImagem, type Timeline } from '@shared/domain';
 import { Painel } from '@renderer/components/Painel';
 import { useEditor } from '@renderer/store/editor-store';
 import { useRoteiroDerivado } from '@renderer/features/roteiro/hooks/useRoteiroDerivado';
 
 const COR: Record<Acao['tipo'], string> = {
-  entrar: '#3b82f6', sair: '#3b82f6', posicionar: '#0ea5e9', audio: '#f472b6', fala: '#f59e0b', escrever: '#22c55e', pose: '#a855f7', expressao: '#ec4899',
+  entrar: '#3b82f6', sair: '#3b82f6', posicionar: '#0ea5e9', remover: '#22c55e', audio: '#f472b6', fala: '#f59e0b', escrever: '#22c55e', pose: '#a855f7', expressao: '#ec4899',
   apontar: '#14b8a6', apagar: '#6b7280', esperar: '#4b5563', nota: '#64748b', camera: '#eab308',
 };
 
@@ -120,6 +120,14 @@ function Trilhos() {
     if (ant) aplicar(tornarSimultanea(roteiro, selEvento.origem, ant.origem!), `“${selEvento.rotulo}” agora acontece junto com “${ant.rotulo}”.`);
   };
   const ehSimultaneo = !!selEvento && tl.eventos.some((o) => o.indice !== selEvento.indice && o.inicio === selEvento.inicio && o.indice < selEvento.indice);
+  // bloco de imagem selecionado: efeitos, tamanho e lugar reescrevem a frase do roteiro
+  const imagemSel = selEvento && selEvento.acao.tipo === 'escrever' && selEvento.acao.conteudo.tipo === 'imagem' ? { ator: selEvento.acao.ator, conteudo: selEvento.acao.conteudo } : null;
+  const trocarImagem = (mudanca: Partial<Extract<Conteudo, { tipo: 'imagem' }>>) => {
+    if (!imagemSel || !selEvento?.origem) return;
+    const novo = { ...imagemSel.conteudo, ...mudanca };
+    for (const k of Object.keys(mudanca) as (keyof typeof novo)[]) if (novo[k] === undefined) delete novo[k];
+    aplicar(reescreverImagem(roteiro, selEvento.origem, ATORES[imagemSel.ator]!.nome, novo), 'Imagem atualizada.');
+  };
   const redimensionavel = (e: Evento) => !!e.origem && ((e.acao.tipo === 'pose' && !!e.acao.duracao) || e.acao.tipo === 'esperar');
 
   return (
@@ -131,7 +139,36 @@ function Trilhos() {
             <span>{selEvento.inicio.toFixed(1)}s → {selEvento.fim.toFixed(1)}s</span>
             <button disabled={!selEvento.origem} onClick={comAnterior} title="Acontece ao mesmo tempo que a ação anterior (reescreve o roteiro com “Ao mesmo tempo,”)">Junto com o anterior</button>
             <button disabled={!selEvento.origem || !ehSimultaneo} onClick={() => selEvento.origem && aplicar(tornarSequencial(roteiro, selEvento.origem), 'Ação agora é sequencial.')} title="Volta a acontecer depois da anterior">Sequencial</button>
-            <button disabled={!selEvento.origem} onClick={() => selEvento.origem && aplicar(excluirFrase(roteiro, selEvento.origem), 'Frase removida do roteiro.')}>Excluir</button>
+            {imagemSel && selEvento.origem && (
+              <>
+                <label title="Efeito com que a imagem entra na lousa">Entrada
+                  <select value={imagemSel.conteudo.entrada} onChange={(e) => trocarImagem({ entrada: e.target.value as EfeitoImagem })}>
+                    {EFEITOS_IMAGEM.map((x) => <option key={x} value={x}>{NOME_EFEITO[x]}</option>)}
+                  </select>
+                </label>
+                <label title="Efeito com que sai (vale junto com “por N segundos”)">Saída
+                  <select value={imagemSel.conteudo.saida ?? ''} onChange={(e) => trocarImagem({ saida: (e.target.value || undefined) as EfeitoImagem | undefined })}>
+                    <option value="">Fica até apagar</option>
+                    {EFEITOS_IMAGEM.map((x) => <option key={x} value={x}>{NOME_EFEITO[x]}</option>)}
+                  </select>
+                </label>
+                <label title="Tamanho">Tamanho
+                  <select value={imagemSel.conteudo.tamanho} onChange={(e) => trocarImagem({ tamanho: e.target.value as TamanhoImagem })}>
+                    <option value="pequena">Pequena</option><option value="media">Média</option><option value="grande">Grande</option>
+                  </select>
+                </label>
+                <label title="Posição na lousa">Lugar
+                  <select value={imagemSel.conteudo.posicao} onChange={(e) => trocarImagem({ posicao: e.target.value as PosicaoImagem })}>
+                    <option value="centro">Centro</option><option value="esquerda">Canto esquerdo</option><option value="direita">Canto direito</option>
+                  </select>
+                </label>
+                <label title="Segundos na lousa; vazio = até apagar o quadro">Por (s)
+                  <input type="number" min={1} step={0.5} style={{ width: 56 }} value={imagemSel.conteudo.exibirPor ?? ''} placeholder="∞"
+                    onChange={(e) => trocarImagem({ exibirPor: e.target.value ? Number(e.target.value) : undefined })} />
+                </label>
+              </>
+            )}
+            <button disabled={!selEvento.origem} onClick={() => selEvento.origem && aplicar(excluirFrase(roteiro, selEvento.origem), imagemSel ? 'Imagem removida do roteiro.' : 'Frase removida do roteiro.')}>{imagemSel ? 'Excluir imagem' : 'Excluir'}</button>
           </>
         ) : <span className="dica">Clique num bloco para editá-lo. Arraste-o sobre outro bloco para que aconteçam juntos, ou para um espaço livre para ficar em sequência. Arraste a borda direita de uma pose com duração para mudá-la.</span>}
       </div>
@@ -192,5 +229,7 @@ export function LinhaDoTempoPanel() {
     </Painel>
   );
 }
+
+
 
 

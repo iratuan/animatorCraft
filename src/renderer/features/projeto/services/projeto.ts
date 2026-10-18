@@ -5,7 +5,8 @@ import { aplicarPacote, lerEntradasSalvas, lerPacote } from '@renderer/features/
 import { gravarFichas } from '@renderer/features/personagens/services/fichas';
 import { gravarSkins } from '@renderer/features/personagens/services/personagens';
 import { carregarAudiosSalvos, importarAudio } from '@renderer/features/audio/services/armazenamento';
-import { listarAudios } from '@shared/domain';
+import { listarAudios, listarImagens } from '@shared/domain';
+import { bytesDaImagem, importarImagem } from '@renderer/features/imagens/services/armazenamento';
 
 /**
  * Projeto = um .zip com tudo da aula: roteiro, personagens criados, estilos, sprites trocados/importados, áudios e preferências.
@@ -31,6 +32,7 @@ export async function montarProjeto(): Promise<{ zip: Uint8Array; sprites: numbe
   const { bufferBrutoDoAudio } = await import('@renderer/features/audio/services/armazenamento');
   let audios = 0;
   for (const a of listarAudios()) { const bytes = await bufferBrutoDoAudio(a.nome); if (bytes) { arquivos[`audios/${a.nome}`] = bytes; audios++; } }
+  for (const i of listarImagens()) { const b = await bytesDaImagem(i.nome); if (b) arquivos[`imagens/${i.nome}`] = b.bytes; }
   return { zip: zipSync(arquivos, { level: 6 }), sprites, audios };
 }
 
@@ -54,11 +56,17 @@ export async function abrirProjeto(zip: Uint8Array): Promise<{ sprites: number; 
     if (!k.startsWith('audios/')) continue;
     try { await importarAudio(new File([v as BlobPart], k.slice('audios/'.length))); audios++; } catch { /* arquivo de áudio ilegível: segue sem ele */ }
   }
+  for (const [k, v] of Object.entries(todos)) {
+    if (!k.startsWith('imagens/')) continue;
+    const nome = k.slice('imagens/'.length), mime = /\.jpe?g$/i.test(nome) ? 'image/jpeg' : /\.webp$/i.test(nome) ? 'image/webp' : 'image/png';
+    try { await importarImagem(new File([v as BlobPart], nome, { type: mime })); } catch { /* imagem ilegível: o roteiro mostra o aviso */ }
+  }
   await carregarAudiosSalvos();
   const st = useEditor.getState();
   gravarSkins({ padrao: (j.skinPadrao as 'chibi' | 'stickman') ?? 'chibi', porPersonagem: (j.skins ?? {}) as Record<string, 'chibi' | 'stickman'> });
   st.set({ roteiro: strFromU8(todos['roteiro.txt']), t: 0, skinPadrao: (j.skinPadrao as 'chibi' | 'stickman') ?? 'chibi', skins: (j.skins ?? {}) as Record<string, 'chibi' | 'stickman'>, fonteLousa: j.fonteLousa ?? st.fonteLousa, fonteFala: j.fonteFala ?? st.fonteFala });
-  st.novaVersaoPersonagens(); st.novaVersaoAudio();
+  st.novaVersaoPersonagens(); st.novaVersaoAudio(); st.novaVersaoImagens();
   return { sprites, audios, personagens: (j.personagens ?? []).length };
 }
+
 

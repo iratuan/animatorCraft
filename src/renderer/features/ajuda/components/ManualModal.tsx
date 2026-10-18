@@ -127,6 +127,27 @@ Erika entra pela direita na posição 60%.  (para de andar em 60%, em vez do pon
     </>),
   },
   {
+    id: 'imagens', titulo: 'Imagens na lousa',
+    corpo: (<>
+      <p>Para assuntos mais complexos, coloque uma imagem (PNG, JPG ou WebP) na lousa, junto com o texto, as equações e os gráficos.</p>
+      <ol>
+        <li><b>Clique no roteiro</b> onde a imagem deve aparecer (a frase vai entrar logo depois da frase em que está o cursor).</li>
+        <li>Use o ícone de imagem da barra de ferramentas, <b>Arquivo ▸ Inserir imagem na lousa…</b> ou a aba <b>Imagens ▸ Importar imagem</b> e depois <i>Inserir no roteiro</i>. Escolha o arquivo: ele fica na biblioteca e passa a fazer parte da animação.</li>
+      </ol>
+      <Ex>{`Professor mostra a imagem ciclo.png no quadro.
+Professor mostra a imagem ciclo.png no quadro no canto direito pequena com efeito deslizar da direita.
+Professor mostra a imagem "meu desenho.png" no quadro com efeito zoom e sai com efeito surgir por 6 segundos.
+Professor tira a imagem ciclo.png com efeito zoom.`}</Ex>
+      <ul>
+        <li><b>Efeitos</b> de entrada e de saída: <C>surgir</C> (aparece aos poucos), <C>deslizar da esquerda/direita/de cima/de baixo</C>, <C>zoom</C>, <C>revelar</C> (varre da esquerda para a direita) e <C>sem efeito</C>. Se não disser nada, entra com “surgir”.</li>
+        <li><b>Tamanho</b> (<C>pequena</C>, média, <C>grande</C>) e <b>lugar</b> (centro, <C>no canto esquerdo</C> ou <C>direito</C>). A imagem entra na pilha da lousa, na ordem do roteiro, e a lousa se ajusta para caber tudo.</li>
+        <li><b>Quanto tempo fica:</b> até <C>Apaga o quadro.</C> ou o fim da cena; com <C>por N segundos</C> sai sozinha depois desse tempo. <C>Professor tira a imagem …</C> retira só essa imagem.</li>
+        <li><b>Pela linha do tempo:</b> clique no bloco da imagem para trocar entrada, saída, tamanho, lugar e tempo (a frase do roteiro é reescrita) ou para <b>Excluir imagem</b>. <b>Ctrl+Z</b> desfaz.</li>
+        <li>As imagens ficam coloridas, como no arquivo, e vão dentro do projeto <C>.zip</C>. Se o roteiro citar uma imagem que não está na biblioteca, o roteiro avisa e a lousa marca o lugar.</li>
+      </ul>
+    </>),
+  },
+  {
     id: 'audio', titulo: 'Áudio: narração, música e efeitos',
     corpo: (<>
       <p>Grave a narração fora do programa (um arquivo por fala, em WAV, MP3, OGG ou M4A) e importe na aba <b>Áudio</b> (ou em <b>Arquivo ▸ Importar áudio…</b>). No roteiro:</p>

@@ -1,5 +1,6 @@
-import { amostrarFuncao, textoDoConteudo, type Estado, type GraficoDef, type ItemQuadro } from '@shared/domain';
+import { amostrarFuncao, infoDaImagem, paramsDoEfeito, textoDoConteudo, type Estado, type GraficoDef, type ItemQuadro } from '@shared/domain';
 import type { Rect } from './sprites';
+import { imagemDoQuadro } from './imagens';
 
 /** Fontes do vídeo: uma para a lousa e outra para as falas (balões). O app escolhe quais; aqui só se guarda e se usa. */
 export interface FonteConfig { familia: string; peso: number }
@@ -22,6 +23,9 @@ export interface ItemPlanejado {
   total: number;
   /** item que é um gráfico: ocupa lturaLinha px de altura, sem linhas de texto */
   grafico?: GraficoDef;
+  /** item que é uma imagem: `alturaLinha` é a altura e `larguraImagem` a largura em px */
+  imagem?: Extract<ItemQuadro['conteudo'], { tipo: 'imagem' }>;
+  larguraImagem?: number;
 }
 export interface PlanoLousa { itens: ItemPlanejado[]; escala: number; estoura: boolean }
 
@@ -53,6 +57,14 @@ export function planejarLousa(ctx: CanvasRenderingContext2D, itens: ItemQuadro[]
     for (const item of itens) {
       const fonte = base(item) * m;
       ctx.font = fonteCSS('lousa', fonte);
+      if (item.conteudo.tipo === 'imagem') {
+        const c = item.conteudo, info = infoDaImagem(c.arquivo), proporcao = info ? info.w / Math.max(1, info.h) : 1.5;
+        let h = q.h * ({ pequena: 0.26, media: 0.42, grande: 0.62 }[c.tamanho]) * m, w = h * proporcao;
+        if (w > larguraMax) { w = larguraMax; h = w / proporcao; }
+        plano.push({ item, linhas: [], fonte, larguras: [], y, alturaLinha: h, total: 0, imagem: c, larguraImagem: w });
+        y += h + fonte * 0.35; altura += h + fonte * 0.35;
+        continue;
+      }
       if (item.conteudo.tipo === 'grafico') {
         const h = Math.min(q.h * 0.52, q.w * 0.42) * m;
         plano.push({ item, linhas: [], fonte, larguras: [], y, alturaLinha: h, total: 0, grafico: item.conteudo.grafico });
@@ -76,6 +88,7 @@ export function planejarLousa(ctx: CanvasRenderingContext2D, itens: ItemQuadro[]
 
 export function desenharItemPlanejado(ctx: CanvasRenderingContext2D, p: ItemPlanejado, q: Rect): { x: number; y: number } {
   if (p.grafico) return desenharGrafico(ctx, p, q);
+  if (p.imagem) return desenharImagemDaLousa(ctx, p, q);
   const it = p.item;
   ctx.save();
   ctx.font = fonteCSS('lousa', p.fonte);
@@ -111,6 +124,31 @@ export function desenharItemPlanejado(ctx: CanvasRenderingContext2D, p: ItemPlan
   }
   ctx.restore();
   return front;
+}
+
+/** Imagem importada, com o efeito de entrada (ou o de saída ao contrário). Fica sempre recortada pela moldura da lousa. */
+function desenharImagemDaLousa(ctx: CanvasRenderingContext2D, p: ItemPlanejado, q: Rect): { x: number; y: number } {
+  const c = p.imagem!, it = p.item, w = p.larguraImagem!, h = p.alturaLinha;
+  const x0 = c.posicao === 'esquerda' ? q.x + q.w * 0.04 : c.posicao === 'direita' ? q.x + q.w - w - q.w * 0.04 : q.x + (q.w - w) / 2;
+  const efeito = it.saida ? it.saida.efeito : c.entrada;
+  const par = paramsDoEfeito(efeito, it.saida ? 1 - it.saida.p : it.progresso);
+  if (par.alpha <= 0.001) return { x: x0, y: p.y };
+  ctx.save();
+  ctx.beginPath(); ctx.rect(q.x, q.y, q.w, q.h); ctx.clip();
+  ctx.globalAlpha *= it.opacidade * par.alpha;
+  const cx = x0 + w / 2 + par.dx * q.w, cy = p.y + h / 2 + par.dy * q.h;
+  ctx.translate(cx, cy); ctx.scale(par.escala, par.escala); ctx.translate(-w / 2, -h / 2);
+  if (par.clip < 1) { ctx.beginPath(); ctx.rect(0, 0, w * par.clip, h); ctx.clip(); }
+  const img = imagemDoQuadro(c.arquivo);
+  if (img) {
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(img, 0, 0, w, h);
+  } else { // imagem apagada da biblioteca: marca o lugar para o autor perceber
+    ctx.strokeStyle = '#999'; ctx.setLineDash([12, 8]); ctx.lineWidth = 3; ctx.strokeRect(0, 0, w, h);
+    ctx.fillStyle = '#777'; ctx.font = fonteCSS('lousa', Math.max(14, h * 0.07)); ctx.textAlign = 'center'; ctx.fillText(`imagem não encontrada: ${c.arquivo}`, w / 2, h / 2, w * 0.9);
+  }
+  ctx.restore();
+  return { x: x0 + w * par.clip, y: p.y + h / 2 };
 }
 
 /** Gráfico traçado aos poucos (eixos, depois a curva, as barras uma a uma ou a pizza girando). Devolve a ponta do traço, onde a mão aparece. */
@@ -192,6 +230,8 @@ export function verificarLousa(estadosFinais: Estado[], quadro: Rect, vertical: 
   estadosFinais.forEach((e, i) => { if (planejarLousa(ctxMedidor(), e.quadro, quadro, vertical).estoura) ruins.push(i); });
   return ruins;
 }
+
+
 
 
 

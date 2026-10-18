@@ -2,6 +2,7 @@ import { ATORES, PAPEIS_PADRAO, type ActorId, type Papeis } from '../characters'
 import { DANCA_PADRAO, DURACAO_PADRAO_DANCA, EXPRESSOES, FRASE_POSE, POSES_DE_DANCA, type ExpressaoId, type PoseId } from '../poses';
 import type { Acao, Cena, Lado, Roteiro } from '../types';
 import { lerGrafico } from '../grafico';
+import { lerEfeito } from '../imagem';
 
 const semAcento = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
@@ -128,7 +129,7 @@ function interpretarFrase(frase: string, avisos: string[], presentes: Set<ActorI
 
   const espera = /\b(espera|pausa|aguarda)\b.*?(\d+(?:[.,]\d+)?)\s*segundo/.exec(norm);
   if (espera) return [{ tipo: 'esperar', segundos: parseFloat(espera[2]!.replace(',', '.')) }];
-  if (/\bapaga\b/.test(norm)) return [{ tipo: 'apagar' }];
+  if (/\bapaga\b/.test(norm) && !/\bimagem\b/.test(norm)) return [{ tipo: 'apagar' }];
 
   // "Professor e Aluno dançam juntos" / "Todos dançam": uma ação por ator, todas começando juntas.
   let atores = acharAtores(norm);
@@ -146,7 +147,34 @@ function interpretarFrase(frase: string, avisos: string[], presentes: Set<ActorI
   );
 }
 
+/**
+ * "Professor mostra a imagem ciclo.png no quadro no canto direito pequena com efeito deslizar da direita e sai com efeito zoom por 6 segundos."
+ * "Professor tira a imagem ciclo.png com efeito surgir."  (o nome pode vir entre aspas se tiver espaços)
+ */
+function interpretarImagem(frase: string, ator: ActorId, avisos: string[]): Acao[] | null {
+  const m = /\bimagem\s+(?:"([^"]+)"|([^\s"]+))/i.exec(frase);
+  if (!m) return null;
+  const arquivo = (m[1] ?? m[2]!).replace(/[.,;!?]+$/, '');
+  if (!arquivo) { avisos.push(`Diga o nome do arquivo da imagem: "${frase}"`); return []; }
+  const resto = semAcento(frase.replace(m[0], ' ')); // sem o nome do arquivo, para ele não ser lido como efeito ("zoom.png")
+  const retirar = /\b(tira|remove|retira|esconde|apaga|guarda|some com)\b/.test(resto);
+  const partes = /^(.*?)\b(?:e\s+)?(?:sai|some|saindo|sumindo|saida)\b(.*)$/.exec(resto);
+  const entrada = lerEfeito(partes ? partes[1]! : resto) ?? 'surgir';
+  const saida = lerEfeito(partes ? partes[2]! : '') ?? (retirar ? lerEfeito(resto) : undefined);
+  if (retirar) return [{ tipo: 'remover', ator, arquivo, saida: saida ?? entrada }];
+  if (!/\b(mostra|coloca|poe|insere|exibe|adiciona|projeta|apresenta|cola)\b/.test(resto)) return null;
+  const por = /\bpor (\d+(?:[.,]\d+)?) segundos?\b/.exec(resto)?.[1];
+  const canto = /\bcanto (esquerdo|direito)\b/.exec(resto)?.[1];
+  const tamanho = /\b(pequena|pequeno|menor)\b/.test(resto) ? 'pequena' : /\b(grande|maior|inteira|tela cheia)\b/.test(resto) ? 'grande' : 'media';
+  return [{
+    tipo: 'escrever', ator,
+    conteudo: { tipo: 'imagem', arquivo, entrada, ...(saida ? { saida } : {}), ...(por ? { exibirPor: parseFloat(por.replace(',', '.')) } : {}), posicao: canto === 'esquerdo' ? 'esquerda' : canto === 'direito' ? 'direita' : 'centro', tamanho },
+  }];
+}
+
 function interpretarAtor(frase: string, norm: string, citacao: string | undefined, latex: string | undefined, ator: ActorId, avisos: string[]): Acao[] {
+  const imagem = interpretarImagem(frase, ator, avisos);
+  if (imagem) return imagem;
   // "Betason faz a pose pular-corda [por 3 segundos]": usa um sprite do pacote pelo nome
   const etiqueta = /\b(?:faz|assume|usa) a pose ([a-z0-9]+(?:-[a-z0-9]+)*)\b/.exec(norm)?.[1];
   if (etiqueta) {
@@ -332,6 +360,7 @@ export function parseRoteiro(textoOriginal: string): Roteiro {
   fecharBuffer();
   return { cenas, avisos, papeis };
 }
+
 
 
 

@@ -1,6 +1,7 @@
 import { ATORES, ORDEM_ATORES, type ActorId } from './characters';
 import { latexParaTexto } from './latex';
 import { rotuloDoGrafico } from './grafico';
+import { chaveImagem, DURACAO_EFEITO, type EfeitoImagem } from './imagem';
 import { FOLGA_FALA_AUDIO, infoDoAudio } from './audio';
 import type { ExpressaoId, PoseId } from './poses';
 import type { Acao, Conteudo, Origem, Roteiro } from './types';
@@ -30,7 +31,7 @@ const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 export const suave = (x: number) => { const k = clamp01(x); return k * k * (3 - 2 * k); };
 
 export function textoDoConteudo(c: Conteudo): string {
-  return c.tipo === 'texto' ? c.texto : c.tipo === 'grafico' ? rotuloDoGrafico(c.grafico) : latexParaTexto(c.latex);
+  return c.tipo === 'texto' ? c.texto : c.tipo === 'grafico' ? rotuloDoGrafico(c.grafico) : c.tipo === 'imagem' ? `imagem ${c.arquivo}` : latexParaTexto(c.latex);
 }
 
 function duracaoDe(a: Acao): number {
@@ -41,7 +42,8 @@ function duracaoDe(a: Acao): number {
     case 'expressao': return 0.7;
     case 'audio': return 0;
     case 'fala': if (a.audio && infoDoAudio(a.audio)) return infoDoAudio(a.audio)!.duracao + FOLGA_FALA_AUDIO; return Math.max(1.4, a.texto.split(/\s+/).length * 0.4 + 0.4);
-    case 'escrever': if (a.conteudo.tipo === 'grafico') return 3.5; return Math.max(1.5, textoDoConteudo(a.conteudo).length * 0.13);
+    case 'remover': return a.saida === 'nenhum' ? 0.1 : DURACAO_EFEITO;
+    case 'escrever': if (a.conteudo.tipo === 'imagem') return a.conteudo.entrada === 'nenhum' ? 0.1 : DURACAO_EFEITO; if (a.conteudo.tipo === 'grafico') return 3.5; return Math.max(1.5, textoDoConteudo(a.conteudo).length * 0.13);
     case 'apontar': return 1.4;
     case 'apagar': return 0.9;
     case 'camera': return 0.8;
@@ -60,7 +62,8 @@ function rotuloDe(a: Acao): string {
     case 'expressao': return `${nome(a.ator)}: cara ${a.expressao}`;
     case 'audio': return a.parar ? 'Música: parar' : `${a.papel === 'musica' ? 'Música' : a.papel === 'efeito' ? 'Efeito' : 'Voz'}: ${a.arquivo}`;
     case 'fala': return `${a.audio ? '🔊 ' : ''}${nome(a.ator)}: “${a.texto}”`;
-    case 'escrever': return `${nome(a.ator)} escreve ${textoDoConteudo(a.conteudo)}`;
+    case 'escrever': return a.conteudo.tipo === 'imagem' ? `${nome(a.ator)} mostra ${textoDoConteudo(a.conteudo)}` : `${nome(a.ator)} escreve ${textoDoConteudo(a.conteudo)}`;
+    case 'remover': return `${nome(a.ator)} tira a imagem ${a.arquivo}`;
     case 'apontar': return `${nome(a.ator)} aponta`;
     case 'apagar': return 'Apagar quadro';
     case 'camera': return a.alvo === 'aberto' ? 'Câmera: plano aberto' : a.alvo === 'lousa' ? 'Câmera: close na lousa' : `Câmera: close em ${nome(a.ator!)}`;
@@ -119,6 +122,8 @@ export interface ItemQuadro {
   ordem: number;
   progresso: number;
   opacidade: number;
+  /** imagem saindo da lousa: efeito e ponto (0 = no lugar, 1 = fora) */
+  saida?: { efeito: EfeitoImagem; p: number };
 }
 
 export type AlvoCamera = { alvo: 'aberto' | 'lousa' | 'personagem'; ator?: ActorId };
@@ -254,8 +259,27 @@ export function estadoEm(tl: Timeline, t: number): Estado {
         }
         break;
       }
+      case 'remover': {
+        const alvo = [...itens].reverse().find((i) => i.conteudo.tipo === 'imagem' && chaveImagem(i.conteudo.arquivo) === chaveImagem(ac.arquivo) && !i.saida);
+        if (!alvo) break;
+        alvo.saida = { efeito: ac.saida, p };
+        if (feito) itens = itens.filter((i) => i !== alvo);
+        break;
+      }
       case 'escrever': {
         const a = atores[ac.ator]; garantir(a);
+        if (ac.conteudo.tipo === 'imagem') {
+          // a imagem fica na lousa até o quadro ser apagado, ou só `exibirPor` segundos e então sai com o efeito de saída
+          const c = ac.conteudo, item: (typeof itens)[number] = { id: proximoItem++, conteudo: c, ordem: itens.length, progresso: p, opacidade: 1, inicio: ev.inicio, fim: ev.fim };
+          const saiEm = c.exibirPor !== undefined ? ev.inicio + c.exibirPor : undefined;
+          if (saiEm !== undefined && t >= saiEm) {
+            const ps = clamp01((t - saiEm) / DURACAO_EFEITO);
+            if (ps >= 1 || (c.saida ?? c.entrada) === 'nenhum') break;
+            item.progresso = 1; item.saida = { efeito: c.saida ?? c.entrada, p: ps };
+          }
+          itens.push(item);
+          break;
+        }
         itens.push({ id: proximoItem++, conteudo: ac.conteudo, ordem: itens.length, progresso: p, opacidade: 1, inicio: ev.inicio, fim: ev.fim });
         if (!feito) {
           if (a.pose !== 'escrever') mudarPose(a, 'escrever', ev.inicio);
@@ -292,6 +316,7 @@ export function estadoEm(tl: Timeline, t: number): Estado {
   const camera = { atual: cameraAtual, anterior: cameraAnterior, progresso: suave((t - cameraDesde) / 0.8) };
   return { t, atores, quadro: itens, mao, eventoAtual, camera };
 }
+
 
 
 

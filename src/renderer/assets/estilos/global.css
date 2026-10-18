@@ -222,3 +222,11 @@ code { background: #111; padding: 1px 5px; border-radius: 3px; font-size: 12px; 
 .config-ia { margin: 10px 0; background: var(--bg1); border-radius: 6px; padding: 6px 10px; }
 .config-ia summary { cursor: pointer; font-size: 12px; color: var(--txt2); }
 .previa-ia { width: 100%; background: var(--bg1); color: var(--txt); border: 1px solid #000; border-radius: 4px; font: 12px/1.5 Consolas, monospace; padding: 8px; box-sizing: border-box; }
+
+/* imagens da lousa */
+.item-imagem { display: flex; gap: 10px; background: var(--bg1); border-radius: 6px; padding: 8px; margin: 6px 0; }
+.item-imagem .mini-imagem { width: 96px; height: 72px; background: #fff; border-radius: 4px; flex: none; }
+.item-imagem .dados { min-width: 0; display: flex; flex-direction: column; gap: 3px; font-size: 12px; }
+.item-imagem .dados b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.item-imagem .dados small { color: var(--txt2); }
+.barra-evento select { background: var(--bg3); color: var(--txt); border: 1px solid #000; border-radius: 3px; font-size: 11px; padding: 1px 4px; }

@@ -9,8 +9,11 @@ export * from './modelos';
 export { latexParaTexto } from './latex';
 export { parseRoteiro } from './script/parser';
 export * from './nomenclatura';
-export { tornarSimultanea, tornarSequencial, reescreverDuracao, excluirFrase, posicionarNoRoteiro } from './script/editar';
+export { tornarSimultanea, tornarSequencial, reescreverDuracao, excluirFrase, posicionarNoRoteiro, fraseDaImagem, reescreverImagem, inserirNoCursor } from './script/editar';
 
 export * from './audio';
 export * from './grafico';
 export * from './ia';
+export * from './imagem';
+
+

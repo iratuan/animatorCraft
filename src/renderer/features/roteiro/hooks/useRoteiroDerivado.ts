@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { ATORES, construirTimeline, estadoEm, parseRoteiro, type Roteiro, type Timeline } from '@shared/domain';
+import { ATORES, construirTimeline, infoDaImagem, estadoEm, parseRoteiro, type Roteiro, type Timeline } from '@shared/domain';
 import { FORMATOS } from '@shared/constants/video';
 import { layoutDe, temPose, verificarLousa } from '@renderer/features/palco/render';
 import { useEditor } from '@renderer/store/editor-store';
@@ -22,6 +22,7 @@ export function useRoteiroDerivado() {
   const spritesOk = useEditor((s) => s.spritesOk);
   const versaoBib = useEditor((s) => s.versaoBib);
   const versaoPersonagens = useEditor((s) => s.versaoPersonagens);
+  const versaoImagens = useEditor((s) => s.versaoImagens);
 
   const { roteiro, timeline } = useMemo(() => derivar(texto, versaoPersonagens), [texto, versaoPersonagens]);
   const estado = useMemo(() => estadoEm(timeline, t), [timeline, t]);
@@ -47,7 +48,19 @@ export function useRoteiroDerivado() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeline, spritesOk, versaoBib]);
 
-  const avisos = [...roteiro.avisos, ...avisosLousa, ...avisosPoses];
+  // imagens citadas no roteiro que não estão (mais) na biblioteca
+  const avisosImagens = useMemo(() => {
+    const nomes = new Set<string>();
+    for (const e of timeline.eventos) {
+      const a = e.acao;
+      if (a.tipo === 'escrever' && a.conteudo.tipo === 'imagem' && !infoDaImagem(a.conteudo.arquivo)) nomes.add(a.conteudo.arquivo);
+      if (a.tipo === 'remover' && !infoDaImagem(a.arquivo)) nomes.add(a.arquivo);
+    }
+    return [...nomes].map((n) => `A imagem “${n}” não está na biblioteca (aba Imagens): importe o arquivo com esse nome.`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeline, versaoImagens]);
+
+  const avisos = [...roteiro.avisos, ...avisosLousa, ...avisosPoses, ...avisosImagens];
   return { roteiro, timeline, estado, dim, avisos };
 }
 

@@ -43,3 +43,10 @@ Atores: professor, aluno, mãe, caçula (ou irmão), priminha (ou prima).
 ## Personagens criados pelo usuário
 
 Arquivo > Novo personagem cria nome, apelidos, idade, altura, boneco de palito base e dança padrão; os sprites entram pelo editor de sprites. A lista fica no armazenamento do app; o zip exportado leva `ficha.json`.
+
+## Imagens na lousa
+
+- `Professor mostra a imagem ciclo.png no quadro [no canto esquerdo|direito] [pequena|grande] [com efeito E] [e sai com efeito S] [por N segundos].`
+- Efeitos: surgir, deslizar da esquerda/direita/de cima/de baixo, zoom, revelar, sem efeito. Nome entre aspas se tiver espaços.
+- `Professor tira a imagem ciclo.png [com efeito E].` retira só essa imagem. `Apaga o quadro.` limpa tudo.
+- A imagem é importada na aba Imagens (PNG, JPG, WebP) e a frase é inserida no ponto do cursor do roteiro.
