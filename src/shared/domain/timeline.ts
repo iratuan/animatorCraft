@@ -4,7 +4,8 @@ import { latexParaTexto } from './latex';
 import { rotuloDoGrafico } from './grafico';
 import { chaveImagem, DURACAO_EFEITO, type EfeitoImagem } from './imagem';
 import { FOLGA_FALA_AUDIO, infoDoAudio } from './audio';
-import type { ExpressaoId, PoseId } from './poses';
+import type { NomeExpressao } from './expressoes';
+import type { PoseId } from './poses';
 import type { Acao, Conteudo, Origem, Roteiro } from './types';
 
 const { abs } = Math;
@@ -58,7 +59,7 @@ function rotuloDe(a: Acao): string {
     case 'entrar': return `${nome(a.ator)} entra (${a.lado})`;
     case 'sair': return `${nome(a.ator)} sai (${a.lado})`;
     case 'posicionar': return `${nome(a.ator)} ${a.andando ? 'anda para' : 'fica na'} posição ${Math.round(a.x * 100)}%`;
-    case 'pose': return `${nome(a.ator)}: ${a.etiqueta ?? a.pose.replace('_', ' ')}${a.duracao ? ` (${a.duracao}s)` : ''}`;
+    case 'pose': return `${nome(a.ator)}: ${a.clipe ? `clipe ${a.clipe}` : (a.etiqueta ?? a.pose.replace('_', ' '))}${a.duracao ? ` (${a.duracao}s)` : ''}`;
     case 'expressao': return `${nome(a.ator)}: cara ${a.expressao}`;
     case 'audio': return a.parar ? 'Música: parar' : `${a.papel === 'musica' ? 'Música' : a.papel === 'efeito' ? 'Efeito' : 'Voz'}: ${a.arquivo}`;
     case 'fala': return `${a.audio ? '🔊 ' : ''}${nome(a.ator)}: “${a.texto}”`;
@@ -107,10 +108,12 @@ export interface AtorEstado {
   poseDesde: number;
   /** Nome de um sprite do pacote ("faz a pose pular-corda"); vale enquanto a pose não mudar. */
   etiqueta?: string;
+  /** Clipe do personagem ("faz o clipe tchau"); vale enquanto a pose não mudar. */
+  clipe?: string;
   fase: number;
   faseDe: number;
-  expressao: ExpressaoId;
-  expressaoDe: ExpressaoId;
+  expressao: NomeExpressao;
+  expressaoDe: NomeExpressao;
   expressaoDesde: number;
   /** texto = palavras reveladas até agora; completo/progresso/duracao alimentam a sincronia labial. */
   fala?: { texto: string; completo: string; progresso: number; duracao: number; opacidade: number; boca: boolean; /** nome do áudio da narração (a boca segue o volume dele) */ audio?: string };
@@ -162,9 +165,9 @@ export function estadoEm(tl: Timeline, t: number): Estado {
   let cameraDesde = -10;
 
   const mudarPose = (a: AtorEstado, pose: PoseId, quando: number) => {
-    a.poseDe = a.pose; a.faseDe = a.fase; a.pose = pose; a.poseDesde = quando; a.etiqueta = undefined;
+    a.poseDe = a.pose; a.faseDe = a.fase; a.pose = pose; a.poseDesde = quando; a.etiqueta = undefined; a.clipe = undefined;
   };
-  const mudarExpressao = (a: AtorEstado, e: ExpressaoId, quando: number) => {
+  const mudarExpressao = (a: AtorEstado, e: NomeExpressao, quando: number) => {
     a.expressaoDe = a.expressao; a.expressao = e; a.expressaoDesde = quando;
   };
   const garantir = (a: AtorEstado) => {
@@ -223,6 +226,7 @@ export function estadoEm(tl: Timeline, t: number): Estado {
         const a = atores[ac.ator]; garantir(a);
         mudarPose(a, ac.pose, ev.inicio);
         a.etiqueta = ac.etiqueta;
+        a.clipe = ac.clipe;
         if (ac.duracao && feito) mudarPose(a, 'parado', ev.fim);
         break;
       }

@@ -3,6 +3,7 @@ import { definirSkins, removerSprites, type Skin } from '@renderer/features/cena
 import { removerSpritesSalvos } from './spritesSalvos';
 import { gravarJson, lerJson } from '@renderer/features/sistema';
 import { gravarFichas, lerFichas } from './fichas';
+import { carregarAnimacoesSalvas, removerAnimacoesDe } from './animacoes';
 
 /** Personagens criados pelo usuário e a skin de cada um: guardados no navegador/app (localStorage). */
 const CHAVE_SKINS = 'stickboard.skins.v1';
@@ -13,6 +14,7 @@ export interface PreferenciasSkin { padrao: Skin; porPersonagem: Record<string, 
 /** Chamado antes de abrir a interface: reinstala os personagens e as skins. */
 export function carregarPersonagensSalvos(): PreferenciasSkin {
   restaurarAtores(lerFichas());
+  carregarAnimacoesSalvas();
   const skins = lerJson<PreferenciasSkin>(CHAVE_SKINS, { padrao: 'chibi', porPersonagem: {} });
   definirSkins(skins.padrao, skins.porPersonagem);
   return skins;
@@ -33,6 +35,7 @@ export async function excluirPersonagem(id: ActorId): Promise<boolean> {
   gravarFichas();
   removerSprites(id);
   await removerSpritesSalvos(id);
+  removerAnimacoesDe(id);
   return true;
 }
 

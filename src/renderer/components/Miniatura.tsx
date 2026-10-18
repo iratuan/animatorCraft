@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
-import type { ActorId, ExpressaoId, PoseId } from '@shared/domain';
+import type { ActorId, NomeExpressao, PoseId } from '@shared/domain';
 import { desenharMiniatura } from '@renderer/features/cena';
 import { useEditor } from '@renderer/store/editor-store';
 
-interface Props { ator: ActorId; pose?: PoseId; expressao?: ExpressaoId; tamanho?: number; modo?: 'corpo' | 'rosto'; etiqueta?: string }
+interface Props { ator: ActorId; pose?: PoseId; expressao?: NomeExpressao; tamanho?: number; modo?: 'corpo' | 'rosto'; etiqueta?: string }
 
 /** Miniatura de um personagem (sprite da pose, ou boneco de reserva). Redesenha quando os sprites carregam ou mudam. */
 export function Miniatura({ ator, pose = 'parado', expressao = 'neutra', tamanho = 64, modo = 'corpo', etiqueta }: Props) {

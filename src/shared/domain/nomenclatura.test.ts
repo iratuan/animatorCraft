@@ -31,13 +31,14 @@ describe('analisarPacote (padrão de nomes dos sprites)', () => {
     expect(r.sprites[1]!.nome).toBe('bracos-cruzados');
   });
 
-  it('exige pose_parado e relata nomes inválidos, rostos desconhecidos e duplicados', () => {
+  it('exige pose_parado e relata nomes inválidos e duplicados; rosto novo vira expressão nova (aviso)', () => {
     const r = analisarPacote([
       'betason/pose_andar.png', 'betason/foto_01.png', 'betason/rosto_assustadissimo.png', 'betason/pose_andar.png', 'solto.png',
     ], op);
     expect(r.erros.some((e) => e.includes('falta a pose obrigatória pose_parado'))).toBe(true);
     expect(r.erros.some((e) => e.includes('foto_01') && e.includes('nome inválido'))).toBe(true);
-    expect(r.erros.some((e) => e.includes('assustadissimo'))).toBe(true);
+    expect(r.erros.some((e) => e.includes('assustadissimo'))).toBe(false);
+    expect(r.avisos.some((a) => a.includes('expressão nova "assustadissimo"') && a.includes('betason faz cara de assustadissimo'))).toBe(true);
     expect(r.erros.some((e) => e.includes('duplicado'))).toBe(true);
     expect(r.erros.some((e) => e.includes('solto.png') && e.includes('de qual personagem'))).toBe(true);
   });
@@ -47,6 +48,15 @@ describe('analisarPacote (padrão de nomes dos sprites)', () => {
     expect(r.avisos.some((a) => a.includes('pose nova "pular-corda"') && a.includes('betason faz a pose pular-corda'))).toBe(true);
     expect(r.avisos.some((a) => a.includes('sem buracos'))).toBe(true);
     expect(r.erros.some((e) => e.includes('"andar" tem versão sem número e com número'))).toBe(true);
+  });
+
+  it('aceita quadros em expressões novas, recusa em bocas/piscada e mistura de quadro com imagem única', () => {
+    const ok = analisarPacote(['betason/pose_parado.png', 'betason/rosto_apaixonada_1.png', 'betason/rosto_apaixonada_2.png'], op);
+    expect(ok.erros).toEqual([]);
+    expect(ok.resumo.betason!.rostos).toEqual(['apaixonada']);
+    const ruim = analisarPacote(['betason/pose_parado.png', 'betason/rosto_boca-a_1.png', 'betason/rosto_feliz.png', 'betason/rosto_feliz_1.png'], op);
+    expect(ruim.erros.some((e) => e.includes('boca-a não tem número'))).toBe(true);
+    expect(ruim.erros.some((e) => e.includes('rosto "feliz" tem versão sem número e com número'))).toBe(true);
   });
 
   it('ignora lixo de zip (__MACOSX, arquivos ocultos) e avisa de arquivos que não são png', () => {

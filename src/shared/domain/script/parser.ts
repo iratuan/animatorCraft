@@ -1,10 +1,16 @@
 import { semAcento } from '../../util/texto';
 import { ATORES, PAPEIS_PADRAO, type ActorId, type Papeis } from '../characters';
-import { DANCA_PADRAO, DURACAO_PADRAO_DANCA, EXPRESSOES, FRASE_POSE, POSES_DE_DANCA, type ExpressaoId, type PoseId } from '../poses';
+import { acharClipe, clipesPersonalizados, duracaoDoClipe, nomeDeClipe } from '../clipes';
+import { ehExpressao, expressoesDe } from '../expressoes';
+import { DANCA_PADRAO, DURACAO_PADRAO_DANCA, FRASE_POSE, POSES_DE_DANCA, type ExpressaoId, type PoseId } from '../poses';
 import type { Acao, Cena, Lado, Roteiro } from '../types';
 import { lerGrafico } from '../grafico';
 import { lerEfeito } from '../imagem';
 
+
+/** Teto de qualquer duração escrita no roteiro (10 min): um zero a mais por engano não pode travar o vídeo nem a exportação. */
+const MAX_SEGUNDOS = 600;
+const lerSegundos = (s: string): number => Math.min(MAX_SEGUNDOS, Math.max(0, parseFloat(s.replace(',', '.')) || 0));
 
 /** Adjetivo falado -> pose e/ou expressão. */
 const ESTADOS: Record<string, { pose?: PoseId; expressao?: ExpressaoId }> = {
@@ -128,7 +134,7 @@ function interpretarFrase(frase: string, avisos: string[], presentes: Set<ActorI
   const norm = aplicarPapeis(semAcento(frase.replace(/"[^"]*"/g, ' ').replace(/\$[^$]+\$/g, ' ')), papeis);
 
   const espera = /\b(espera|pausa|aguarda)\b.*?(\d+(?:[.,]\d+)?)\s*segundo/.exec(norm);
-  if (espera) return [{ tipo: 'esperar', segundos: parseFloat(espera[2]!.replace(',', '.')) }];
+  if (espera) return [{ tipo: 'esperar', segundos: lerSegundos(espera[2]!) }];
   if (/\bapaga\b/.test(norm) && !/\bimagem\b/.test(norm)) return [{ tipo: 'apagar' }];
 
   // "Professor e Aluno dançam juntos" / "Todos dançam": uma ação por ator, todas começando juntas.
@@ -168,7 +174,7 @@ function interpretarImagem(frase: string, ator: ActorId, avisos: string[]): Acao
   const tamanho = /\b(pequena|pequeno|menor)\b/.test(resto) ? 'pequena' : /\b(grande|maior|inteira|tela cheia)\b/.test(resto) ? 'grande' : 'media';
   return [{
     tipo: 'escrever', ator,
-    conteudo: { tipo: 'imagem', arquivo, entrada, ...(saida ? { saida } : {}), ...(por ? { exibirPor: parseFloat(por.replace(',', '.')) } : {}), posicao: canto === 'esquerdo' ? 'esquerda' : canto === 'direito' ? 'direita' : 'centro', tamanho },
+    conteudo: { tipo: 'imagem', arquivo, entrada, ...(saida ? { saida } : {}), ...(por ? { exibirPor: lerSegundos(por) } : {}), posicao: canto === 'esquerdo' ? 'esquerda' : canto === 'direito' ? 'direita' : 'centro', tamanho },
   }];
 }
 
@@ -179,7 +185,20 @@ function interpretarAtor(frase: string, norm: string, citacao: string | undefine
   const etiqueta = /\b(?:faz|assume|usa) a pose ([a-z0-9]+(?:-[a-z0-9]+)*)\b/.exec(norm)?.[1];
   if (etiqueta) {
     const por = /\bpor (\d+(?:[.,]\d+)?) segundos?\b/.exec(norm)?.[1];
-    return [{ tipo: 'pose', ator, pose: 'parado', etiqueta, ...(por ? { duracao: parseFloat(por.replace(',', '.')) } : {}) }];
+    return [{ tipo: 'pose', ator, pose: 'parado', etiqueta, ...(por ? { duracao: lerSegundos(por) } : {}) }];
+  }
+  // "Betason faz o clipe tchau [por 3 segundos]": clipe criado pelo usuário para o personagem
+  if (/\b(faz|executa|toca|usa|roda)\b.*\bclipe\b/.test(norm)) {
+    const m = /\bclipe\s+(?:"([^"]+)"|([^\s".,;!?]+))/i.exec(frase);
+    const nome = nomeDeClipe(m?.[1] ?? m?.[2] ?? '');
+    const clipe = nome ? acharClipe(ator, nome) : undefined;
+    if (!clipe) {
+      const tem = clipesPersonalizados(ator).map((c) => c.id);
+      avisos.push(`${ATORES[ator]!.nome} não tem o clipe “${nome || '?'}”.${tem.length ? ` Clipes: ${[...new Set(tem)].join(', ')}.` : ' Crie em Personagem ▸ Expressões e clipes.'}`);
+      return [];
+    }
+    const por = /\bpor (\d+(?:[.,]\d+)?) segundos?\b/.exec(norm)?.[1];
+    return [{ tipo: 'pose', ator, pose: 'parado', clipe: clipe.id, duracao: por ? Math.max(0.1, lerSegundos(por)) : Math.max(0.3, duracaoDoClipe(clipe)) }];
   }
   // "desenha o gráfico de y = x^2 no quadro"
   if (/\b(desenha|plota|mostra|traca|faz|coloca)\b/.test(norm) && /\bgrafico\b/.test(norm)) {
@@ -211,12 +230,17 @@ function interpretarAtor(frase: string, norm: string, citacao: string | undefine
     return [{ tipo: 'posicionar', ator, x: xPos, ...(/\b(vai|vem|anda|corre|caminha|move)\b/.test(norm) ? { andando: true } : {}) }];
   }
   if (/\baponta\b/.test(norm)) return [{ tipo: 'apontar', ator }];
-  const cara = /cara de (\w+)/.exec(norm)?.[1] as ExpressaoId | undefined;
-  if (cara && EXPRESSOES.includes(cara)) return [{ tipo: 'expressao', ator, expressao: cara }];
+  // "faz cara de brava" · "faz cara de apaixonada" (expressão criada para o personagem)
+  const cara = /\bcara de ([a-z0-9]+(?:-[a-z0-9]+)*)/.exec(norm)?.[1];
+  if (cara) {
+    if (ehExpressao(ator, cara)) return [{ tipo: 'expressao', ator, expressao: cara }];
+    avisos.push(`${ATORES[ator]!.nome} não tem a expressão “${cara}”. Expressões: ${expressoesDe(ator).join(', ')}.`);
+    return [];
+  }
   if (estado) return estadoParaAcoes(ator, estado);
   const poseTemporaria = (pose: PoseId): Acao => {
     const por = /\bpor (\d+(?:[.,]\d+)?) segundos?\b/.exec(norm)?.[1];
-    const dura = por ? parseFloat(por.replace(',', '.')) : POSES_DE_DANCA.includes(pose) ? DURACAO_PADRAO_DANCA : undefined;
+    const dura = por ? lerSegundos(por) : POSES_DE_DANCA.includes(pose) ? DURACAO_PADRAO_DANCA : undefined;
     return { tipo: 'pose', ator, pose, ...(dura ? { duracao: dura } : {}) };
   };
   for (const [pose, fraseDaPose] of Object.entries(FRASE_POSE)) {

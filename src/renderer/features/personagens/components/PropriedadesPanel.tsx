@@ -1,5 +1,5 @@
 import {
-  ATORES, EXPRESSOES, FRASE_POSE, NOME_EXPRESSAO, NOME_POSE, POSES, POSES_CONHECIDAS, POSES_DE_DANCA,
+  ATORES, expressoesDe, FRASE_POSE, NOME_EXPRESSAO, NOME_POSE, POSES, POSES_CONHECIDAS, POSES_DE_DANCA, ROSTOS_ESPECIAIS,
   type ExpressaoId, type PoseId,
 } from '@shared/domain';
 import { listarSprites, possuiSprites } from '@renderer/features/cena';
@@ -64,18 +64,20 @@ export function PropriedadesPanel() {
           </div>
           <PacoteDoPersonagem ator={selecionado} versao={versaoBib} nome={nome} />
           <button className="botao-editar-sprites" onClick={() => set({ editorPersonagem: selecionado })}>Editar / exportar sprites de {nome}</button>
+          <button className="botao-editar-sprites" onClick={() => set({ editorAnimacao: { ator: selecionado } })}>Expressões e clipes de {nome}…</button>
         </>
       ) : (
         <>
           <p className="dica">Ficha de sprites pendente: este personagem aparece como boneco de reserva. Importe um pacote (Arquivo → Importar pacote de sprites).</p>
           <h4>Expressão <small>clique para inserir no roteiro</small></h4>
           <div className="grade">
-            {EXPRESSOES.map((x: ExpressaoId) => (
-              <button key={x} className={a.expressao === x ? 'on' : ''} title={NOME_EXPRESSAO[x]} onClick={() => inserir(`${nome} faz cara de ${x}.`)}>
-                <Miniatura ator={selecionado} expressao={x} tamanho={72} modo="rosto" /><span>{NOME_EXPRESSAO[x]}</span>
+            {expressoesDe(selecionado).map((x) => (
+              <button key={x} className={a.expressao === x ? 'on' : ''} title={NOME_EXPRESSAO[x as ExpressaoId] ?? x} onClick={() => inserir(`${nome} faz cara de ${x}.`)}>
+                <Miniatura ator={selecionado} expressao={x} tamanho={72} modo="rosto" /><span>{NOME_EXPRESSAO[x as ExpressaoId] ?? x}</span>
               </button>
             ))}
           </div>
+          <button className="botao-editar-sprites" onClick={() => set({ editorAnimacao: { ator: selecionado } })}>Expressões e clipes de {nome}…</button>
         </>
       )}
     </div>
@@ -87,7 +89,7 @@ function PacoteDoPersonagem({ ator, versao, nome }: { ator: Parameters<typeof li
   const inserir = useEditor((s) => s.inserir);
   const tem = listarSprites(ator);
   const extras = tem.poses.filter((p) => !POSES_CONHECIDAS.includes(p));
-  const rostos = tem.rostos.filter((r) => (EXPRESSOES as readonly string[]).includes(r));
+  const rostos = tem.rostos.filter((r) => !ROSTOS_ESPECIAIS.includes(r)); // as padrão e as criadas para o personagem
   const fonemas = tem.rostos.filter((r) => r.startsWith('boca-')).length;
   return (
     <>
@@ -106,7 +108,7 @@ function PacoteDoPersonagem({ ator, versao, nome }: { ator: Parameters<typeof li
         <div className="grade">
           {rostos.map((r) => (
             <button key={`${r}-${versao}`} onClick={() => inserir(`${nome} faz cara de ${r}.`)}>
-              <Miniatura ator={ator} expressao={r as ExpressaoId} tamanho={72} modo="rosto" /><span>{NOME_EXPRESSAO[r as ExpressaoId]}</span>
+              <Miniatura ator={ator} expressao={r} tamanho={72} modo="rosto" /><span>{NOME_EXPRESSAO[r as ExpressaoId] ?? r}</span>
             </button>
           ))}
         </div>

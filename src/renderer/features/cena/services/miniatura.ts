@@ -1,4 +1,4 @@
-import { ATORES, clipeDaPose, poseDef, type ActorId, type AtorEstado, type ExpressaoId, type PoseId } from '@shared/domain';
+import { ATORES, clipeDaPose, poseDef, type ActorId, type AtorEstado, type NomeExpressao, type PoseId } from '@shared/domain';
 import { desenharAtor, resolver } from './ator';
 import { desenharRostoNaCaixa, desenharSpriteNaCaixa, temSprites } from './sprites';
 
@@ -7,7 +7,7 @@ import { desenharRostoNaCaixa, desenharSpriteNaCaixa, temSprites } from './sprit
  * Personagens com ficha usam o sprite da pose; os demais, o boneco de reserva.
  */
 export function desenharMiniatura(
-  ctx: CanvasRenderingContext2D, id: ActorId, pose: PoseId, expressao: ExpressaoId, tamanho: number,
+  ctx: CanvasRenderingContext2D, id: ActorId, pose: PoseId, expressao: NomeExpressao, tamanho: number,
   modo: 'corpo' | 'rosto' = 'corpo', fase = 0.8, etiqueta?: string,
 ) {
   if (temSprites(id) && modo === 'rosto' && desenharRostoNaCaixa(ctx, id, expressao, tamanho)) return;

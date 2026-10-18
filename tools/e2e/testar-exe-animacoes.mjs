@@ -1,0 +1,24 @@
+import { _electron as electron } from 'playwright-core';
+const app = await electron.launch({ executablePath: 'release/win-unpacked/StickBoard.exe', args: [] });
+const win = await app.firstWindow();
+const erros = []; win.on('pageerror', (e) => erros.push(String(e)));
+await win.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+await win.getByText('Expressões e clipes de CringeFather…').click();
+await win.getByRole('button', { name: '＋ Nova expressão' }).click();
+await win.getByLabel('Nome da expressão').fill('Desconfiado');
+await win.getByLabel('Olhos do quadro 1').selectOption('meia');
+await win.waitForTimeout(1200);
+console.log('prévia no exe:', await win.locator('.previa-animacao canvas').count() === 1);
+await win.getByRole('button', { name: 'Salvar expressão' }).click();
+console.log('salvou:', (await win.locator('.msg-anim').innerText()).includes('desconfiado'));
+await win.getByRole('button', { name: 'Clipes de animação' }).click();
+await win.getByRole('button', { name: '＋ Novo clipe' }).click();
+await win.getByLabel('Nome do clipe').fill('Teste');
+await win.waitForTimeout(800);
+await win.screenshot({ path: 'evidencias/36-build-0.6.0/exe-clipes.png' });
+await win.getByRole('button', { name: 'Salvar clipe' }).click();
+console.log('clipe salvo:', await win.locator('[data-clipe="teste"]').count() === 1);
+// versão no "Sobre"
+await win.keyboard.press('Escape');
+console.log('erros', erros);
+await app.close();

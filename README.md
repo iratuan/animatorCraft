@@ -5,46 +5,27 @@ Gerador de vídeos whiteboard com personagens animados (ensino de ciências, mat
 ## Estrutura
 
 ```
-├── assets/                     ícone do app (icon.png)
-├── release/                    instaladores gerados (StickBoard Setup *.exe e portátil)
-├── android/                    projeto Android (Capacitor) — empacota a build do renderer
+├── assets/  release/  android/       ícone, instaladores gerados, projeto Android (Capacitor)
 ├── src/
-│   ├── main/                   PROCESSO PRINCIPAL (Node/Electron)
-│   │   ├── index.ts            janela, ciclo de vida, --captura para screenshots
-│   │   ├── preload.ts          contextBridge: expõe window.stickboard (5 funções, nada mais)
-│   │   ├── ipc-handlers.ts     registra os canais IPC e delega para services/
-│   │   └── services/           arquivos (abrir/salvar roteiro, abrir pacote) e vídeo (salvar MP4)
-│   ├── renderer/               FRONTEND REACT
-│   │   ├── assets/             sprites dos personagens (png + manifesto) e estilos globais
-│   │   ├── components/         UI reutilizável (Painel, BarraMenu, Miniatura, Icones)
-│   │   ├── features/           um módulo por domínio, cada um com components/ hooks/ services/
-│   │   │   ├── palco/          canvas, transporte, reprodução e render/ (motor de desenho)
-│   │   │   ├── roteiro/        editor de texto e derivação (parser → timeline → estado)
-│   │   │   ├── linha-do-tempo/ ├ biblioteca/ ├ aula/ ├ ferramentas/ ├ fontes/
-│   │   │   ├── pacotes-sprites/ importação de .zip de sprites (padrão em docs/SPRITES.md)
-│   │   │   ├── exportacao/     codificação MP4 (WebCodecs)
-│   │   │   └── arquivos/       plataforma: Electron (IPC) | Android (Capacitor) | web
-│   │   ├── layouts/            EditorLayout
-│   │   ├── pages/              EditorPage
-│   │   ├── routes/             HashRouter (funciona em file:// e no WebView)
-│   │   ├── store/              estado global (Zustand)
-│   │   ├── App.tsx  main.tsx
-│   └── shared/                 código comum aos dois processos
-│       ├── constants/          canais IPC, formatos de vídeo
-│       ├── types/              contrato IPC (StickboardApi...)
-│       └── domain/             regras puras sem DOM nem Node: parser do roteiro, timeline, poses,
-│                               clipes, personagens, sequências, modelos, nomenclatura de sprites (com testes)
-├── tools/                      scripts de apoio (sprites/, e2e/, captura/, verificação de arquitetura) — ver docs/ARQUITETURA.md
-├── docs/  referencias/  evidencias/
-├── index.html  vite.config.ts  tsconfig.json  tsconfig.main.json  capacitor.config.ts
+│   ├── main/        processo Electron: janela (com navegação/permissões bloqueadas), IPC, arquivos, vídeo
+│   ├── renderer/    interface React
+│   │   ├── pages/editor/   composição da tela, atalhos, menus, carga inicial
+│   │   ├── features/       um módulo por assunto, cada um com index.ts (cena, palco, roteiro, linha-do-tempo,
+│   │   │                   personagens, editor-imagem, audio, imagens, ia, exportacao, projeto, aula, ajuda, sistema…)
+│   │   ├── components/  layouts/  routes/  store/  assets/
+│   └── shared/      domínio puro (roteiro, linha do tempo, personagens, expressões, clipes, editor de imagem) + util
+├── tools/           sprites/ (recorte de fichas), e2e/ (baterias), captura/, auditoria/, verificação de arquitetura
+└── docs/  referencias/  evidencias/
 ```
 
+Regras de camadas, features e persistência: **docs/ARQUITETURA.md** (`npm run check` as verifica).
 ## Comandos
 
 | | |
 |---|---|
 | `npm run dev` | Vite + Electron com recarga |
 | `npm run dev:web` | só o renderer no navegador (http://127.0.0.1:5173) |
+| `npm run check` | tipos + regras de arquitetura + testes |
 | `npm test` | testes do domínio (vitest) |
 | `npm run typecheck` | renderer e processo principal |
 | `npm run build` | compila renderer (`dist/`) e main/preload (`dist-electron/`) |

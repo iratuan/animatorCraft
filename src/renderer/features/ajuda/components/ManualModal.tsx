@@ -1,5 +1,8 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useEditor } from '@renderer/store/editor-store';
+
+declare const __APP_VERSION__: string;
+const VERSAO = typeof __APP_VERSION__ === 'string' ? __APP_VERSION__ : '';
 
 interface Secao { id: string; titulo: string; corpo: ReactNode }
 const C = ({ children }: { children: ReactNode }) => <code>{children}</code>;
@@ -13,7 +16,7 @@ const SECOES: Secao[] = [
       <ul>
         <li><b>Roteiro</b> (esquerda): onde você escreve. Cada frase vira uma ação.</li>
         <li><b>Palco</b> (centro): mostra a animação. Botões de reproduzir, parar e repetir, zoom e <i>Exportar MP4</i>. Os botões 16:9 e 9:16 trocam entre vídeo e Shorts.</li>
-        <li><b>Painel lateral</b> (direita): <i>Propriedades</i> (poses e danças do personagem selecionado), <i>Biblioteca</i> (personagens e sequências prontas) e <i>Aula</i> (papéis, fontes, modelos e cheat-sheet).</li>
+        <li><b>Painel lateral</b> (direita): <i>Personagem</i> (poses e danças do personagem selecionado), <i>Biblioteca</i> (personagens e sequências prontas), <i>Imagens</i>, <i>Áudio</i> e <i>Aula</i> (papéis, fontes, modelos e cheat-sheet).</li>
         <li><b>Linha do tempo</b> (embaixo): uma faixa por personagem, mais Câmera, Quadro e Direção.</li>
         <li><b>Barra de ferramentas</b> (esquerda, ícones): inserem trechos prontos no roteiro.</li>
       </ul>
@@ -102,8 +105,25 @@ Erika entra pela direita na posição 60%.  (para de andar em 60%, em vez do pon
         <li>O personagem já pode ser usado no roteiro (<C>Tia Marta entra pela esquerda andando.</C>) e aparece como stickman.</li>
         <li>Abra o <b>editor de sprites</b> para enviar os PNGs de cada pose e expressão (veja “Sprites”).</li>
       </ol>
-      <p>Em <i>Propriedades</i> você edita a ficha dos personagens que criou, <b>duplica</b> qualquer personagem como ponto de partida e escolhe o estilo. Os do elenco original não podem ser excluídos. “Professor” e “Aluno” são papéis, não nomes, e não servem como apelido.</p>
+      <p>Em <i>Personagem</i> você edita a ficha dos personagens que criou, <b>duplica</b> qualquer personagem como ponto de partida e escolhe o estilo. Os do elenco original não podem ser excluídos. “Professor” e “Aluno” são papéis, não nomes, e não servem como apelido.</p>
       <p><b>Estilo (skin):</b> cada personagem pode ser <b>Chibi</b> (sprites desenhados) ou <b>Stickman</b> (boneco de palito de traço fino, com rosto, cabelo e óculos). A aba <i>Aula</i> define o padrão de todos. Quem não tem sprites aparece como stickman.</p>
+    </>),
+  },
+  {
+    id: 'animacoes', titulo: 'Expressões e clipes de animação',
+    corpo: (<>
+      <p>Cada personagem pode ter <b>expressões próprias</b> e <b>clipes de animação</b> próprios. Abra em <b>Personagem ▸ Expressões e clipes de …</b> (ou <i>Arquivo ▸ Expressões e clipes do personagem…</i>); a <b>prévia</b> toca ao vivo, com o mesmo motor do vídeo.</p>
+      <h4>Expressões</h4>
+      <ul>
+        <li><b>Stickman:</b> monte o rosto do boneco (olhos, boca, inclinação das sobrancelhas). Com mais de um quadro (até 4) a expressão é <b>animada</b>, 4 quadros por segundo.</li>
+        <li><b>Chibi:</b> a expressão é o sprite <C>rosto_nome.png</C>. Desenhe no editor de imagem (<i>Desenhar no editor de imagem</i>) ou importe o PNG. Com <C>rosto_nome_1.png</C>, <C>_2</C>… ela também é <b>animada</b> (8 quadros por segundo).</li>
+        <li>O mesmo nome vale nos dois estilos. No roteiro: <C>Erika faz cara de apaixonada.</C> Nome que o personagem não tem gera um aviso.</li>
+      </ul>
+      <h4>Clipes</h4>
+      <p>Um clipe é uma sequência de <b>passos</b>; cada passo tem o sprite do Chibi, a pose do Stickman, um movimento (balançar, pular, girar…), a duração, a intensidade (1 = normal) e se espelha. O clipe pode valer só para um estilo. Pode também <b>substituir uma pose padrão</b> só para aquele personagem (por exemplo, a “Dança atual” do Dario).</p>
+      <Ex>{`Dario faz o clipe tchau.
+Dario faz o clipe "dança do foguete" por 6 segundos.`}</Ex>
+      <p>Sem “por N segundos” o clipe toca uma vez; com ele, repete (se o clipe estiver marcado para repetir). Expressões e clipes vão no <b>zip de sprites</b> do personagem (<C>animacoes.json</C>) e no <b>projeto completo</b>, então passam para outro computador.</p>
     </>),
   },
   {
@@ -146,7 +166,7 @@ Erika entra pela direita na posição 60%.  (para de andar em 60%, em vez do pon
   {
     id: 'biblioteca', titulo: 'Biblioteca e sequências prontas',
     corpo: (<>
-      <p>Na aba <i>Biblioteca</i>, clipes prontos (comemoração, encerramento, danças, reações, expressões) inserem um trecho de roteiro para o personagem selecionado. Na aba <i>Propriedades</i>, cada dança e pose é um botão que insere a frase correspondente.</p>
+      <p>Na aba <i>Biblioteca</i>, clipes prontos (comemoração, encerramento, danças, reações, expressões) inserem um trecho de roteiro para o personagem selecionado. Na aba <i>Personagem</i>, cada dança e pose é um botão que insere a frase correspondente.</p>
     </>),
   },
   {
@@ -236,15 +256,24 @@ Professor desenha um gráfico de pizza: Sim=70, Não=30 no quadro.`}</Ex>
       </ul>
     </>),
   },
-];
+  {
+    id: 'sobre', titulo: 'Sobre o StickBoard',
+    corpo: (<>
+      <p><b>StickBoard {VERSAO}</b> — gerador de vídeos de quadro branco com personagens animados, para aulas de ciências, matemática e inglês.</p>
+      <p>Os personagens do elenco (CringeFather, BetaSon, Erika, Dario, Laura) têm sprites completos; Elizendra, Artur e Carol aparecem como stickman até ganharem sprites. Tudo o que você cria (roteiros, personagens, áudios, imagens) fica no seu computador; nada é enviado a lugar nenhum, exceto o pedido à IA que você mesmo configurar em <i>Gerar roteiro com IA</i>.</p>
+      <p>Atalhos: <b>F1</b> manual · <b>Espaço</b> tocar/pausar · <b>Ctrl+Z / Ctrl+Y</b> desfazer/refazer.</p>
+    </>),
+  },];
 
 /** Manual de uso, aberto pelo menu Ajuda. */
 export function ManualModal() {
   const aberto = useEditor((s) => s.manualAberto);
   const set = useEditor((s) => s.set);
+  const secaoPedida = useEditor((s) => s.manualSecao);
   const [ativo, setAtivo] = useState(SECOES[0]!.id);
+  useEffect(() => { if (aberto && secaoPedida) setAtivo(secaoPedida); }, [aberto, secaoPedida]);
   if (!aberto) return null;
-  const fechar = () => set({ manualAberto: false });
+  const fechar = () => set({ manualAberto: false, manualSecao: null });
   const sec = SECOES.find((s) => s.id === ativo) ?? SECOES[0]!;
   return (
     <div className="modal-fundo" onClick={fechar}>

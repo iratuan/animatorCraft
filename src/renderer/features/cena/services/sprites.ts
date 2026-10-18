@@ -1,4 +1,4 @@
-import { ATORES, avaliarClipe, clipeDaPose, type ActorId, type AtorEstado, type PoseId, type Transformacao, type Visema } from '@shared/domain';
+import { acharClipe, ATORES, avaliarClipe, clipeDaPose, definirExpressoesDeSprites, esquecerExpressoesDe, type ActorId, type AtorEstado, type PoseId, type Transformacao, type Visema } from '@shared/domain';
 
 export interface RostoInfo {
   /** caixa da cabeça em frações do sprite: usada pelo [close no personagem] e para encaixar as cabeças de rosto_* */
@@ -36,7 +36,13 @@ export async function prepararSprites(m: ManifestoPersonagens, urlDe: (arquivo: 
   const tarefas: Promise<void>[] = [];
   for (const p of Object.values(manifesto)) for (const s of p.sprites) tarefas.push(carregar(s, urlDe(s.arquivo)));
   await Promise.all(tarefas);
+  for (const id of Object.keys(manifesto)) sincronizarExpressoes(id);
   pronto = true;
+}
+
+/** O roteiro só aceita \cara de X\ para as expressões que o personagem tem: avisa o domínio quais rosto_* existem. */
+function sincronizarExpressoes(id: string): void {
+  definirExpressoesDeSprites(id, (manifesto[id]?.sprites ?? []).filter((s) => s.tipo === 'rosto').map((s) => s.tags[0]!));
 }
 
 async function carregar(s: SpriteInfo, url: string): Promise<void> {
@@ -71,6 +77,7 @@ export async function registrarSprites(id: ActorId, entradas: { info: SpriteInfo
     p.sprites = p.sprites.filter((s) => !mesmo(s));
     p.sprites.push(info);
   }
+  sincronizarExpressoes(id);
   pronto = true;
 }
 
@@ -78,6 +85,7 @@ export async function registrarSprites(id: ActorId, entradas: { info: SpriteInfo
 export function removerSprites(id: ActorId): void {
   for (const s of manifesto[id]?.sprites ?? []) imagens.delete(s.arquivo);
   delete manifesto[id];
+  esquecerExpressoesDe(id);
 }
 
 export const spritesProntos = () => pronto;
@@ -124,8 +132,11 @@ export function escolherSprite(id: ActorId, tags: string[], t = 0): SpriteInfo |
   return achar('parado') ?? lista[0];
 }
 
-function rostoSprite(id: ActorId, nome: string): { info: SpriteInfo; img: HTMLCanvasElement } | null {
-  const info = (manifesto[id]?.sprites ?? []).find((s) => s.tipo === 'rosto' && s.tags[0] === nome);
+/** Rosto pelo nome. Se houver quadros (rosto_nome_1, _2…), escolhe o do instante t (8 por segundo). */
+function rostoSprite(id: ActorId, nome: string, t = 0): { info: SpriteInfo; img: HTMLCanvasElement } | null {
+  const doNome = (manifesto[id]?.sprites ?? []).filter((s) => s.tipo === 'rosto' && s.tags[0] === nome);
+  const quadros = doNome.filter((s) => s.variante).sort((a, b) => a.variante! - b.variante!);
+  const info = quadros.length ? quadros[Math.floor(Math.max(0, t) * QUADROS_POR_SEGUNDO) % quadros.length] : doNome[0];
   const img = info && imagens.get(info.arquivo);
   return info && img ? { info, img } : null;
 }
@@ -157,7 +168,7 @@ export function calcularAtorSprite(a: AtorEstado, x: number, chao: number, escal
   const k = (ATORES[a.id]!.altura * escalaGlobal) / parado.h;
   const alturaPx = parado.h * k;
   const pose = opcoes.pose ?? a.pose;
-  const clipe = clipeDaPose(pose);
+  const clipe = (a.clipe && !opcoes.pose ? acharClipe(a.id, a.clipe, 'chibi') : undefined) ?? clipeDaPose(pose, a.id, 'chibi');
   let tr = avaliarClipe(clipe, Math.max(0, t - a.poseDesde));
   if (a.etiqueta && !opcoes.pose) tr = { ...tr, tags: [a.etiqueta, ...tr.tags] }; // "faz a pose <nome>": sprite escolhido pelo nome
   if (opcoes.falando) tr = { ...tr, dy: tr.dy - 0.007 * Math.abs(Math.sin(t * 13)), sy: tr.sy * (1 + 0.008 * Math.sin(t * 13)), rot: tr.rot + 0.8 * Math.sin(t * 6.5) };
@@ -179,7 +190,7 @@ export interface OpcoesSprite { alpha: number; selecionado?: boolean; visema: Vi
 function escolherRosto(a: AtorEstado, op: OpcoesSprite): { info: SpriteInfo; img: HTMLCanvasElement } | null {
   if (op.visema) { const r = rostoSprite(a.id, `boca-${op.visema}`); if (r) return r; }
   if (op.piscar) { const r = rostoSprite(a.id, 'olhos-fechados'); if (r) return r; }
-  return a.expressao !== 'neutra' ? rostoSprite(a.id, a.expressao) : null;
+  return a.expressao !== 'neutra' ? rostoSprite(a.id, a.expressao, op.t) : null;
 }
 
 function desenharImagem(ctx: CanvasRenderingContext2D, c: CalculoAtor, alpha: number, rosto: { info?: SpriteInfo; img: HTMLCanvasElement } | null) {

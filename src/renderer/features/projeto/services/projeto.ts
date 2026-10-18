@@ -1,7 +1,7 @@
 import { strFromU8, strToU8, unzipSync, zipSync } from 'fflate';
 import { atoresPersonalizados, listarAudios, listarImagens, registrarAtor, type ActorSpec } from '@shared/domain';
 import { useEditor } from '@renderer/store/editor-store';
-import { aplicarPacote, lerEntradasSalvas, lerPacote, gravarFichas, gravarSkins } from '@renderer/features/personagens';
+import { aplicarPacote, lerAnimacoes, lerEntradasSalvas, lerPacote, gravarFichas, gravarSkins, mesclarAnimacoes } from '@renderer/features/personagens';
 import { bufferBrutoDoAudio, carregarAudiosSalvos, importarAudio } from '@renderer/features/audio';
 import { bytesDaImagem, importarImagem } from '@renderer/features/imagens';
 import { bytesDeUrl } from '@renderer/features/sistema';
@@ -20,6 +20,8 @@ export async function montarProjeto(): Promise<{ zip: Uint8Array; sprites: numbe
   arquivos['roteiro.txt'] = strToU8(s.roteiro);
   const json: ProjetoJson = { versao: VERSAO, personagens: atoresPersonalizados(), skinPadrao: s.skinPadrao, skins: s.skins, fonteLousa: s.fonteLousa, fonteFala: s.fonteFala, formato: s.formato };
   arquivos['projeto.json'] = strToU8(JSON.stringify(json, null, 2));
+  const animacoes = lerAnimacoes();
+  if (animacoes.clipes.length || animacoes.expressoes.length) arquivos['animacoes.json'] = strToU8(JSON.stringify(animacoes, null, 2));
   let sprites = 0;
   for (const e of await lerEntradasSalvas()) {
     arquivos[`sprites/${e.personagem}/${e.info.tipo ?? 'pose'}_${e.info.tags[0]}${e.info.variante ? `_${e.info.variante}` : ''}.png`] = await bytesDeUrl(e.url);
@@ -39,6 +41,7 @@ export async function abrirProjeto(zip: Uint8Array): Promise<{ sprites: number; 
   const j = JSON.parse(strFromU8(todos['projeto.json'])) as ProjetoJson;
   for (const a of j.personagens ?? []) registrarAtor({ nome: a.nome, apelidos: a.apelidos, idade: a.idade, descricao: a.descricao, altura: a.altura, modeloPalito: a.modeloPalito, expressaoPadrao: a.expressaoPadrao, dancaPadrao: a.dancaPadrao });
   gravarFichas();
+  if (todos['animacoes.json']) { try { mesclarAnimacoes(JSON.parse(strFromU8(todos['animacoes.json'])) as Parameters<typeof mesclarAnimacoes>[0]); } catch { /* animacoes.json ilegível: o resto do projeto abre */ } }
   // sprites: reaproveita a importação de pacotes (mesmo padrão de nomes)
   const sub: Record<string, Uint8Array> = {};
   for (const [k, v] of Object.entries(todos)) if (k.startsWith('sprites/')) sub[k.slice('sprites/'.length)] = v;

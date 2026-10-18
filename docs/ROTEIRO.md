@@ -26,7 +26,14 @@ Professor entra pela esquerda andando. Aluno entra correndo pela direita. Profes
 
 Frases não reconhecidas geram aviso no editor (não quebram o vídeo).
 
-Atores: professor, aluno, mãe, caçula (ou irmão), priminha (ou prima).
+Atores: o nome (ou apelido) de qualquer personagem (CringeFather, BetaSon, Erika, Dario, Laura, Elizendra, Artur, Carol e os que você criar) e os papéis **Professor** e **Aluno**, que a linha `[papéis: professor=Erika, aluno=Dario]` atribui a quem cumpre cada um na aula.
+
+## Câmera, áudio e gráficos
+
+- `[close na lousa]` · `[close em Erika]` (ou `[close no professor]`) · `[plano aberto]`.
+- `Professor diz "Bem-vindos!". [áudio: abertura.wav]` (a boca acompanha a voz) · `[música: fundo.mp3, volume 25%]` · `[música: parar]` · `[efeito: palmas.wav]`.
+- `Professor desenha o gráfico de y = x^2 - 2 no quadro.` · `... um gráfico de barras: A=5, B=8 no quadro.` · `... um gráfico de pizza: Sim=70, Não=30 no quadro.`
+- `Professor faz a pose pular-corda por 3 segundos.` usa um sprite do pacote pelo nome.
 
 ## Ações simultâneas
 
@@ -50,3 +57,9 @@ Arquivo > Novo personagem cria nome, apelidos, idade, altura, boneco de palito b
 - Efeitos: surgir, deslizar da esquerda/direita/de cima/de baixo, zoom, revelar, sem efeito. Nome entre aspas se tiver espaços.
 - `Professor tira a imagem ciclo.png [com efeito E].` retira só essa imagem. `Apaga o quadro.` limpa tudo.
 - A imagem é importada na aba Imagens (PNG, JPG, WebP) e a frase é inserida no ponto do cursor do roteiro.
+
+## Expressões e clipes do personagem
+
+- `Erika faz cara de apaixonada.` · qualquer expressão que o personagem tenha (as 10 padrão, as criadas para o boneco e os sprites `rosto_<nome>.png`).
+- `Dario faz o clipe tchau.` (toca uma vez) · `Dario faz o clipe "dança do foguete" por 6 segundos.` · clipes criados em Personagem ▸ Expressões e clipes. Nome desconhecido gera aviso.
+- Durações escritas no roteiro têm teto de 10 minutos.

@@ -3,6 +3,7 @@ import { ATORES, EXPRESSOES, ROSTOS_ESPECIAIS, type ActorId } from '@shared/doma
 import { type SpriteInfo } from '@renderer/features/cena';
 import { bytesDeUrl } from '@renderer/features/sistema';
 import { lerEntradasSalvas } from './spritesSalvos';
+import { lerAnimacoes } from './animacoes';
 import { manifestoOriginal, urlOriginal } from './bibliotecaSprites';
 
 /**
@@ -50,6 +51,8 @@ export async function montarPacoteExportacao(ids: ActorId[]): Promise<{ zip: Uin
       arquivos[`${id}/ficha.json`] = strToU8(JSON.stringify({ nome: spec.nome, apelidos: spec.apelidos, idade: spec.idade, descricao: spec.descricao, altura: spec.altura, modeloPalito: spec.modeloPalito, expressaoPadrao: spec.expressaoPadrao, dancaPadrao: spec.dancaPadrao }, null, 2));
       total++;
     }
+    const proprias = { clipes: lerAnimacoes().clipes.filter((c) => c.ator === id), expressoes: lerAnimacoes().expressoes.filter((x) => x.ator === id) };
+    if (proprias.clipes.length || proprias.expressoes.length) { arquivos[`${id}/animacoes.json`] = strToU8(JSON.stringify(proprias, null, 2)); total++; }
     if (!lista.size) { if (spec?.personalizado) arquivos[`${id}/FALTANDO.txt`] = strToU8(faltando(id, [])); continue; }
 
     const meta: Record<string, unknown> = { personagem: id, nome: ATORES[id]?.nome ?? id, ancora: {} as Record<string, string>, encaixe: {} as Record<string, unknown> };

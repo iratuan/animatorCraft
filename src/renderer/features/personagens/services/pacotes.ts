@@ -1,6 +1,7 @@
 import { unzipSync } from 'fflate';
 import { analisarPacote, ATORES, EXPRESSOES, ORDEM_ATORES, registrarAtor, type NovoAtor, POSES_CONHECIDAS, type ActorId, type RelatorioPacote } from '@shared/domain';
 import { gravarFichas } from './fichas';
+import { mesclarAnimacoes, type AnimacoesJson } from './animacoes';
 import { salvarEntradas, type EntradaSalva } from './spritesSalvos';
 import { caixaCabeca, registrarSprites, type SpriteInfo } from '@renderer/features/cena';
 
@@ -9,6 +10,8 @@ export interface PacoteLido {
   /** personagens descritos no zip (<id>/ficha.json) que ainda não existem no app; são criados ao importar */
   fichas: Record<string, NovoAtor>;
   relatorio: RelatorioPacote;
+  /** expressões do boneco e clipes de animação trazidos pelo zip (<id>/animacoes.json) */
+  animacoes: AnimacoesJson;
   arquivos: Map<string, Uint8Array>;
   meta: Record<string, {
     cabeca?: { x: number; y: number; w: number; h: number };
@@ -27,13 +30,26 @@ export function lerPacote(zip: Uint8Array, opcoes: { exigirParado?: boolean } = 
     if (!m || ATORES[m[1]!]) continue;
     try { const j = JSON.parse(new TextDecoder().decode(dados)) as NovoAtor; if (j?.nome) fichas[m[1]!] = j; } catch { /* ficha ilegível: o personagem segue desconhecido */ }
   }
+  const animacoes: AnimacoesJson = { clipes: [], expressoes: [] };
+  for (const [caminho, dados] of arquivos) {
+    const m = /^([a-z0-9]+(?:-[a-z0-9]+)*)\/animacoes\.json$/.exec(caminho);
+    if (!m) continue;
+    try {
+      const j = JSON.parse(new TextDecoder().decode(dados)) as Partial<AnimacoesJson>;
+      // o personagem é o da pasta, seja o que for que o arquivo diga
+      for (const c of Array.isArray(j.clipes) ? j.clipes : []) animacoes.clipes.push({ ...c, ator: m[1]! });
+      for (const e of Array.isArray(j.expressoes) ? j.expressoes : []) animacoes.expressoes.push({ ...e, ator: m[1]! });
+    } catch { /* animacoes.json ilegível: o resto do pacote segue */ }
+  }
   const relatorio = analisarPacote([...arquivos.keys()], { personagens: [...ORDEM_ATORES, ...Object.keys(fichas)], expressoes: [...EXPRESSOES], posesConhecidas: POSES_CONHECIDAS, exigirParado: opcoes.exigirParado });
+  // um zip só com animacoes.json (personagem sem sprites) é válido
+  if (animacoes.clipes.length || animacoes.expressoes.length) relatorio.erros = relatorio.erros.filter((e) => !e.startsWith('Nenhum sprite .png'));
   const meta: PacoteLido['meta'] = {};
   for (const [id, caminho] of Object.entries(relatorio.meta)) {
     try { meta[id] = JSON.parse(new TextDecoder().decode(arquivos.get(caminho))); }
     catch { relatorio.avisos.push(`${caminho}: meta.json inválido (JSON com erro) foi ignorado.`); }
   }
-  return { fichas, relatorio, arquivos, meta };
+  return { fichas, relatorio, animacoes, arquivos, meta };
 }
 
 /** PNG → canvas pronto: remove o fundo branco se a imagem não tiver transparência e apara as bordas vazias. */
@@ -81,6 +97,7 @@ export async function aplicarPacote(p: PacoteLido, substituir: boolean, opcoes: 
     if ('erro' in r) falhas.push(`${id}: ${r.erro}`);
   }
   if (Object.keys(p.fichas).length) gravarFichas();
+  if (p.animacoes.clipes.length || p.animacoes.expressoes.length) mesclarAnimacoes(p.animacoes);
   const tamanhoParado = new Map<string, { w: number; h: number }>();
   for (const s of p.relatorio.sprites) {
     try {

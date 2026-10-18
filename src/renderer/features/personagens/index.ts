@@ -12,3 +12,5 @@ export { aplicarPacote, lerPacote } from './services/pacotes';
 export { carregarPacotesSalvos, lerEntradasSalvas, limparPacotesSalvos } from './services/spritesSalvos';
 export type { PacoteLido } from './services/pacotes';
 
+export { carregarAnimacoesSalvas, lerAnimacoes, mesclarAnimacoes, removerAnimacoesDe, salvarClipes, salvarExpressoes } from './services/animacoes';
+export { EditorAnimacaoModal } from './components/EditorAnimacaoModal';

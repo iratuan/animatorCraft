@@ -33,11 +33,15 @@ interface Estado {
   importacao: ImportacaoPendente | null;
   /** personagem aberto no editor de sprites (modal) */
   editorPersonagem: ActorId | null;
+  /** janela de expressões e clipes de um personagem */
+  editorAnimacao: { ator: ActorId; aba?: 'expressoes' | 'clipes' } | null;
   /** sprite aberto no editor de imagem (camadas, pincel, seleção...) */
   editorImagem: { personagem: ActorId; tipo: 'pose' | 'rosto' | 'prop'; nome: string } | null;
   /** ficha de personagem aberta (novo, ou editar id, ou duplicar duplicarDe) */
   fichaPersonagem: { id?: ActorId; duplicarDe?: ActorId } | null;
   manualAberto: boolean;
+  /** seção do manual a mostrar ao abrir (ex.: 'sobre') */
+  manualSecao: string | null;
   iaAberta: boolean;
   /** posição do cursor no campo do roteiro (null = nunca clicou); usada para inserir conteúdo no trecho certo */
   cursorRoteiro: number | null;
@@ -87,9 +91,11 @@ export const useEditor = create<Estado & Acoes>()((set, get) => ({
   fonteFala: lerTexto('stickboard.fonte.fala', 'comic'),
   importacao: null,
   editorPersonagem: null,
+  editorAnimacao: null,
   editorImagem: null,
   fichaPersonagem: null,
   manualAberto: false,
+  manualSecao: null,
   iaAberta: false,
   cursorRoteiro: null,
   versaoAudio: 0,

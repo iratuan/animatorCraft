@@ -1,5 +1,5 @@
 import {
-  ATORES, EFEITO_POSE, misturar, poseDef, suave, TRANSICAO_POSE,
+  acharClipe, ATORES, avaliarClipe, EFEITO_POSE, misturar, poseDef, rostoBonecoDe, suave, TRANSICAO_POSE,
   type AtorEstado, type ExpressaoId, type ModeloPalito, type PoseDef, type PoseId,
 } from '@shared/domain';
 
@@ -136,9 +136,8 @@ const ROSTOS: Record<ExpressaoId, Rosto> = {
   entediada: { olho: 'meia', sobr: 0, boca: 'reta' },
 };
 
-function desenharRosto(ctx: CanvasRenderingContext2D, e: Esqueleto, expr: ExpressaoId, falando: number, t: number, grosso: boolean, v: VisualPalito) {
+function desenharRosto(ctx: CanvasRenderingContext2D, e: Esqueleto, rosto: Rosto, falando: number, t: number, grosso: boolean, v: VisualPalito) {
   const r = e.raio, f = e.facing, { x, y } = e.cabeca;
-  const rosto = ROSTOS[expr];
   const ex = x + f * 0.22 * r, ey = y - 0.08 * r;
   const olhos: Pt[] = [{ x: ex - 0.31 * r, y: ey }, { x: ex + 0.31 * r, y: ey }];
   const piscar = (t * 1000) % 3400 < 130;
@@ -344,7 +343,10 @@ export function desenharAtor(ctx: CanvasRenderingContext2D, a: AtorEstado, x: nu
   const modelo = real.modeloPalito;
   const spec = { visual: PALITO[modelo] };
   const s = (escala * real.altura) / 440;
-  const pose = poseAtual(a, o.t);
+  // clipe do personagem (estilo Stickman): pose do boneco do passo atual + o movimento do passo
+  const clipe = a.clipe ? acharClipe(a.id, a.clipe, 'stickman') : undefined;
+  const tc = clipe ? avaliarClipe(clipe, Math.max(0, o.t - a.poseDesde)) : undefined;
+  const pose = tc ? poseDef(tc.poseBoneco ?? 'parado', a.fase, o.t) : poseAtual(a, o.t);
   if (spec.visual.postura) { pose.torso += spec.visual.postura.torso; pose.cabeca += spec.visual.postura.cabeca; }
   const e = resolver(pose, x, chao, s, spec.visual.cabeca, a.facing);
   const lw = Math.max(1.2, 5.4 * Math.pow(s, 0.6));
@@ -357,6 +359,7 @@ export function desenharAtor(ctx: CanvasRenderingContext2D, a: AtorEstado, x: nu
   ctx.restore();
 
   ctx.save();
+  if (tc) { const alt = real.altura * escala; ctx.translate(x + tc.dx * alt, chao + tc.dy * alt); ctx.rotate(rad(tc.rot)); ctx.scale(tc.sx * (tc.espelhar ? -1 : 1), tc.sy); ctx.translate(-x, -chao); }
   if (pose.rot) { ctx.translate(x, chao); ctx.rotate(rad(pose.rot) * a.facing); ctx.translate(-x, -chao); }
   ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = lw; ctx.strokeStyle = COR;
 
@@ -378,7 +381,7 @@ export function desenharAtor(ctx: CanvasRenderingContext2D, a: AtorEstado, x: nu
   desenharCabeca(ctx, e);
   desenharCabelo(ctx, e, modelo);
   desenharNariz(ctx, e);
-  desenharRosto(ctx, e, expr, a.fala?.boca ? 1 : 0, o.t, modelo === 'professor', spec.visual);
+  desenharRosto(ctx, e, ROSTOS[expr as ExpressaoId] ?? rostoBonecoDe(a.id, expr, o.t) ?? ROSTOS.neutra, a.fala?.boca ? 1 : 0, o.t, modelo === 'professor', spec.visual);
   if (spec.visual.oculos) desenharOculos(ctx, e);
   ctx.restore();
 

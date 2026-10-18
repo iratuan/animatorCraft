@@ -8,7 +8,7 @@ import { LinhaDoTempoPanel } from '@renderer/features/linha-do-tempo';
 import { useAudioPreview } from '@renderer/features/audio';
 import { useReproducao, PalcoPanel } from '@renderer/features/palco';
 import { useAtalhos } from './useAtalhos';
-import { ImportarPacoteModal, PersonagemModal, EditorSpritesModal } from '@renderer/features/personagens';
+import { ImportarPacoteModal, PersonagemModal, EditorSpritesModal, EditorAnimacaoModal } from '@renderer/features/personagens';
 import { IaModal } from '@renderer/features/ia';
 import { ManualModal } from '@renderer/features/ajuda';
 import { EditorImagemModal } from '@renderer/features/editor-imagem';
@@ -34,7 +34,7 @@ export function EditorPage() {
   const menus = useMenus();
   useCargaInicial();
   useReproducao();
-  useAtalhos();
+  useAtalhos(menus);
   useAudioPreview();
 
   return (
@@ -50,6 +50,7 @@ export function EditorPage() {
       />
       <ImportarPacoteModal />
       <EditorSpritesModal />
+      <EditorAnimacaoModal />
       <EditorImagemModal />
       <PersonagemModal />
       <ManualModal />

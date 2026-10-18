@@ -80,3 +80,9 @@ Ids de personagem: `cringefather`, `betason`, `erika`, `dario`, `laura`, `elizen
 
 Cada espaço do editor de sprites abre um editor de imagem (camadas, pincel, lápis, borracha, balde, conta-gotas, seleções, formas, texto, mover/escalar/girar, zoom e desfazer). `Salvar no sprite` grava o PNG achatado, **sem remover fundo nem aparar**, para o mesmo nome padrão (`pose_*`, `rosto_*`, `prop_*`; quadros de animação como `pose_correr_2`). Rostos editados mantêm o encaixe medido enquanto a tela tiver o mesmo tamanho.
 O núcleo (pixels, camadas, pincel, balde, seleção, histórico) está em `src/shared/editor-imagem` e é testado em Node; a interface está em `src/renderer/features/editor-imagem`.
+
+## Expressões novas e animadas
+
+- `rosto_<nome>.png` com um nome que não é padrão cria uma **expressão nova** (aviso no importador; no roteiro: `X faz cara de <nome>.`).
+- `rosto_<nome>_1.png`, `_2`… animam a expressão (8 quadros por segundo). Bocas (`boca-*`) e `olhos-fechados` não têm quadros.
+- `<personagem>/animacoes.json` (exportado junto) leva os clipes e as expressões do boneco do personagem.

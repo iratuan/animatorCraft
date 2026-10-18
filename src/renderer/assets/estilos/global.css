@@ -62,7 +62,7 @@ button:disabled { opacity: 0.35; cursor: default; }
 .transporte button.on { color: var(--azul); }
 .transporte .play { background: var(--azul); color: #fff; }
 .transporte .play:hover { background: #4aaeff !important; }
-.tempo { margin-left: 12px; font: 13px Consolas, monospace; color: #fff; background: #111; padding: 4px 10px; border-radius: 3px; }
+.tempo { margin-left: 12px; white-space: nowrap; font: 13px Consolas, monospace; color: #fff; background: #111; padding: 4px 10px; border-radius: 3px; }
 .espaco { flex: 1; }
 .zoom { display: flex; align-items: center; gap: 6px; color: var(--txt2); margin-right: 10px; }
 .zoom input { width: 90px; }
@@ -70,8 +70,8 @@ button:disabled { opacity: 0.35; cursor: default; }
 .transporte .exportar:hover:not(:disabled) { background: #ffa05f; }
 
 /* propriedades */
-.abas { display: flex; gap: 2px; height: 100%; }
-.abas button { padding: 0 8px; text-transform: uppercase; font-size: 11px; letter-spacing: .6px; color: var(--txt2); }
+.abas { display: flex; gap: 0; height: 100%; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.abas button { flex: none; padding: 0 7px; text-transform: uppercase; font-size: 11px; letter-spacing: .3px; color: var(--txt2); }
 .abas button.on { color: #fff; box-shadow: inset 0 -2px var(--azul); }
 .propriedades { padding: 10px 12px 16px; }
 .propriedades h4 { margin: 16px 0 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .6px; color: var(--txt2); font-weight: 600; }
@@ -281,3 +281,32 @@ code { background: #111; padding: 1px 5px; border-radius: 3px; font-size: 12px; 
   .ei-corpo { grid-template-columns: 46px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) 36%; }
   .ei-painel { grid-column: 1 / -1; border-left: 0; border-top: 1px solid #000; }
 }
+
+/* ---- expressões e clipes por personagem ---- */
+.modal.anim { width: min(1080px, 100%); }
+.abas-modal { display: flex; gap: 2px; margin: 8px 0; border-bottom: 1px solid #000; }
+.abas-modal button { padding: 6px 14px; color: var(--txt2); border-bottom: 2px solid transparent; }
+.abas-modal button.on { color: #fff; border-bottom-color: var(--azul); }
+.anim-corpo { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 14px; align-items: start; }
+.anim-dir { position: sticky; top: 0; display: grid; gap: 6px; }
+.previa-animacao canvas { width: 100%; aspect-ratio: 16 / 9; background: #fff; border-radius: 4px; display: block; }
+.aviso-previa { color: #ffb86b; font-size: 12px; margin: 4px 0 0; }
+.lista-anim { list-style: none; margin: 6px 0; padding: 0; display: grid; gap: 4px; }
+.lista-anim li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; background: var(--bg1); padding: 6px 8px; border-radius: 4px; align-items: center; }
+.lista-anim li small { color: var(--txt2); grid-column: 1; }
+.lista-anim .acoes-lista { grid-column: 2; grid-row: 1 / span 2; display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+.lista-anim .acoes-lista button, .anim button.primario-leve, .anim .quadro-expr > button, .anim-esq > button { padding: 4px 10px; background: var(--bg3); border-radius: 4px; color: var(--txt); font-size: 12px; }
+.lista-anim .vazio-lista { color: var(--txt2); background: transparent; }
+.perigo-leve { background: #4a2323 !important; }
+.quadro-expr, .passo-clipe { background: var(--bg1); border-radius: 4px; padding: 8px; margin: 6px 0; display: grid; gap: 4px; }
+.passo-clipe { grid-template-columns: 28px repeat(3, minmax(0, 1fr)); align-items: end; column-gap: 8px; }
+.passo-clipe .campo { margin: 2px 0; }
+.passo-clipe .n-passo { grid-row: 1 / span 2; align-self: center; color: var(--txt2); font-weight: 700; }
+.passo-clipe .acoes-passo { display: flex; gap: 4px; grid-column: 2 / -1; }
+.passo-clipe .campo-check { margin: 2px 0 8px; }
+.passo-clipe .acoes-passo button { padding: 3px 10px; background: var(--bg3); border-radius: 4px; color: var(--txt); }
+.passo-clipe .acoes-passo button:disabled { opacity: .4; }
+.campo-linha { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--txt2); }
+.campo-linha input { width: 60px; padding: 4px 6px; background: var(--bg1); border: 1px solid #000; border-radius: 4px; color: var(--txt); }
+.msg-anim { color: #9be39b; }
+@media (max-width: 900px) { .anim-corpo { grid-template-columns: 1fr; } .anim-dir { position: static; } }

@@ -4,7 +4,8 @@
  *
  *   <personagem>/pose_<nome>.png            pose do corpo        (pose_parado é obrigatória)
  *   <personagem>/pose_<nome>_<n>.png        quadros de uma animação (pose_andar_1, pose_andar_2, ...)
- *   <personagem>/rosto_<expressao>.png      cabeça com uma expressão (rosto_feliz, rosto_brava, ...)
+ *   <personagem>/rosto_<expressao>.png      cabeça com uma expressão (rosto_feliz, rosto_brava, ...); qualquer nome novo vira uma expressão nova
+ *   <personagem>/rosto_<expressao>_<n>.png  quadros de uma expressão animada (rosto_apaixonada_1, _2, ...)
  *   <personagem>/rosto_boca-a|e|o|m.png     cabeça com a boca de cada fonema (sincronia labial)
  *   <personagem>/rosto_olhos-fechados.png   cabeça piscando
  *   <personagem>/prop_<nome>.png            objetos (skate, foguete, ...)
@@ -65,6 +66,7 @@ export function analisarPacote(caminhos: string[], op: OpcoesPacote): RelatorioP
   const rel: RelatorioPacote = { sprites: [], meta: {}, erros: [], avisos: [], resumo: {} };
   const conhecidos = new Set(op.personagens.map(normalizarNome));
   const vistos = new Set<string>();
+  const novas = new Set<string>();
 
   for (const bruto of caminhos) {
     const caminho = bruto.replace(/\\/g, '/');
@@ -82,6 +84,7 @@ export function analisarPacote(caminhos: string[], op: OpcoesPacote): RelatorioP
       else rel.avisos.push(`meta.json fora da pasta de um personagem foi ignorado (${caminho}).`);
       continue;
     }
+    if (base0 === 'ficha.json' || base0 === 'animacoes.json') continue; // lidos à parte pelo app
     if (!/\.png$/.test(base0)) { rel.avisos.push(`Arquivo ignorado (só .png): ${caminho}`); continue; }
 
     let base = base0.replace(/\.png$/, '');
@@ -98,16 +101,18 @@ export function analisarPacote(caminhos: string[], op: OpcoesPacote): RelatorioP
 
     const m = PADRAO.exec(base);
     if (!m) {
-      rel.erros.push(`${caminho}: nome inválido. Use pose_<nome>, pose_<nome>_<n>, rosto_<expressao> ou prop_<nome> (minúsculas, sem acento, hífen dentro do nome).`);
+      rel.erros.push(`${caminho}: nome inválido. Use pose_<nome>, pose_<nome>_<n>, rosto_<expressao>, rosto_<expressao>_<n> ou prop_<nome> (minúsculas, sem acento, hífen dentro do nome).`);
       continue;
     }
     const tipo = m[1] as TipoSprite, nome = m[2]!, variante = m[3] ? Number(m[3]) : null;
     if (tipo === 'rosto') {
-      if (![...op.expressoes, ...ROSTOS_ESPECIAIS].includes(nome)) {
-        rel.erros.push(`${caminho}: rosto "${nome}" desconhecido. Opções: ${[...op.expressoes, ...ROSTOS_ESPECIAIS].join(', ')}.`);
-        continue;
+      const especial = ROSTOS_ESPECIAIS.includes(nome);
+      // bocas e piscada são imagens únicas; uma expressão pode ter quadros (rosto_apaixonada_1, _2…) para ser animada
+      if (especial && variante !== null) { rel.erros.push(`${caminho}: ${nome} não tem número de quadro (use rosto_${nome}.png).`); continue; }
+      if (!especial && !op.expressoes.includes(nome) && !novas.has(`${personagem}|${nome}`)) {
+        novas.add(`${personagem}|${nome}`);
+        rel.avisos.push(`${personagem}: expressão nova "${nome}". No roteiro: "${personagem} faz cara de ${nome}."`);
       }
-      if (variante !== null) { rel.erros.push(`${caminho}: rostos não têm número de quadro (use rosto_${nome}.png).`); continue; }
     }
     const chave = `${personagem}|${tipo}|${nome}|${variante ?? ''}`;
     if (vistos.has(chave)) { rel.erros.push(`${caminho}: duplicado (${tipo}_${nome}${variante ? `_${variante}` : ''} já existe para ${personagem}).`); continue; }
@@ -120,6 +125,10 @@ export function analisarPacote(caminhos: string[], op: OpcoesPacote): RelatorioP
   for (const s of rel.sprites) porPersonagem.set(s.personagem, [...(porPersonagem.get(s.personagem) ?? []), s]);
   for (const [id, lista] of porPersonagem) {
     const poses = lista.filter((s) => s.tipo === 'pose');
+    for (const n of new Set(lista.filter((s) => s.tipo === 'rosto').map((s) => s.nome))) {
+      const itens = lista.filter((s) => s.tipo === 'rosto' && s.nome === n);
+      if (itens.some((s) => s.variante !== null) && itens.some((s) => s.variante === null)) rel.erros.push(`: rosto "${n}" tem versão sem número e com número. Use só rosto_${n}.png ou só rosto_${n}_1.png, rosto_${n}_2.png...`);
+    }
     const nomesPose = [...new Set(poses.map((s) => s.nome))];
     const quadros: Record<string, number> = {};
     for (const n of nomesPose) {

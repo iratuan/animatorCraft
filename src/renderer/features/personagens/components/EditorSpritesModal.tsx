@@ -35,6 +35,7 @@ export function EditorSpritesModal() {
 
   const espacosRosto: Espaco[] = [
     ...EXPRESSOES.map((x) => ({ tipo: 'rosto' as const, nome: x, rotulo: x })),
+    ...tem.rostos.filter((r) => !(EXPRESSOES as readonly string[]).includes(r) && !ROSTOS_ESPECIAIS.includes(r)).map((x) => ({ tipo: 'rosto' as const, nome: x, rotulo: `${x} (nova)` })),
     ...ROSTOS_ESPECIAIS.map((x) => ({ tipo: 'rosto' as const, nome: x, rotulo: x === 'olhos-fechados' ? 'piscada (olhos-fechados)' : `fala ${x}` })),
   ];
   // poses animadas (andar_1, andar_2…) aparecem quadro a quadro, para cada um poder ser editado

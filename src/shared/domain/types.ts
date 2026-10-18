@@ -1,7 +1,8 @@
 import type { ActorId, Papeis } from './characters';
 import type { GraficoDef } from './grafico';
 import type { EfeitoImagem, PosicaoImagem, TamanhoImagem } from './imagem';
-import type { ExpressaoId, PoseId } from './poses';
+import type { NomeExpressao } from './expressoes';
+import type { PoseId } from './poses';
 
 export type Lado = 'esquerda' | 'direita' | 'centro';
 
@@ -24,8 +25,9 @@ type AcaoBase =
   | { tipo: 'posicionar'; ator: ActorId; x: number; andando?: boolean }
   | { tipo: 'sair'; ator: ActorId; lado: Lado; pose: PoseId }
   /** Com `duracao`, a pose é temporária (ex.: dança por 5 s) e o ator volta a ficar parado depois. */
-  | { tipo: 'pose'; ator: ActorId; pose: PoseId; duracao?: number; etiqueta?: string }
-  | { tipo: 'expressao'; ator: ActorId; expressao: ExpressaoId }
+  /** `clipe`: clipe criado pelo usuário para o personagem ("Fulano faz o clipe tchau.") */
+  | { tipo: 'pose'; ator: ActorId; pose: PoseId; duracao?: number; etiqueta?: string; clipe?: string }
+  | { tipo: 'expressao'; ator: ActorId; expressao: NomeExpressao }
   /** udio: arquivo da narração (importado); a fala dura o tempo do áudio e a boca acompanha o volume dele */
   | { tipo: 'fala'; ator: ActorId; texto: string; audio?: string }
   /** Música de fundo (até parar ou o fim), efeito sonoro ou voz solta. Não atrasa as ações seguintes. */

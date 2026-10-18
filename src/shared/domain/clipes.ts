@@ -15,6 +15,8 @@ export interface PassoClipe {
   amp?: number;
   /** Espelha o sprite (inverte para onde o personagem aponta), útil para alternar lados na dança. */
   espelhar?: boolean;
+  /** Pose do boneco de palito (estilo Stickman) neste passo; sem ela, fica parado. */
+  poseBoneco?: PoseId;
 }
 
 export interface Clipe {
@@ -29,6 +31,8 @@ export interface Transformacao {
   tags: string[];
   dx: number; dy: number; rot: number; sx: number; sy: number;
   espelhar: boolean;
+  /** pose do boneco de palito do passo atual */
+  poseBoneco?: PoseId;
 }
 
 const { sin, cos, abs, PI } = Math;
@@ -128,8 +132,10 @@ const PASSO_DA_POSE: Partial<Record<PoseId, PassoClipe>> = {
 
 const cache = new Map<PoseId, Clipe>();
 
-/** Clipe que anima uma pose do roteiro (dança = sequência; as demais = um passo com movimento). */
-export function clipeDaPose(pose: PoseId): Clipe {
+/** Clipe que anima uma pose do roteiro (dança = sequência; as demais = um passo com movimento). Com `ator`, um clipe do personagem que substitui a pose tem prioridade. */
+export function clipeDaPose(pose: PoseId, ator?: string, estilo: 'chibi' | 'stickman' = 'chibi'): Clipe {
+  const proprio = ator ? personalizados.find((c) => c.ator === ator && c.substitui === pose && (c.estilo === 'ambos' || c.estilo === estilo)) : undefined;
+  if (proprio) return proprio;
   const dança = CLIPES_DANCA[pose];
   if (dança) return dança;
   let c = cache.get(pose);
@@ -153,10 +159,64 @@ export function avaliarClipe(c: Clipe, t: number): Transformacao {
   for (const p of c.passos) {
     if (tt < acc + p.dur || p === c.passos[c.passos.length - 1]) {
       const u = Math.min(0.9999, Math.max(0, (tt - acc) / p.dur));
-      return { tags: p.tags, espelhar: !!p.espelhar, ...mover(p.mov, u, t, p.amp) };
+      return { tags: p.tags, espelhar: !!p.espelhar, ...(p.poseBoneco ? { poseBoneco: p.poseBoneco } : {}), ...mover(p.mov, u, t, p.amp) };
     }
     acc += p.dur;
   }
   return { tags: ['parado'], espelhar: false, dx: 0, dy: 0, rot: 0, sx: 1, sy: 1 };
 }
 
+// ---------------------------------------------------------------- clipes criados pelo usuário
+
+export type EstiloClipe = 'ambos' | 'chibi' | 'stickman';
+export const MOVIMENTOS: Movimento[] = ['respirar', 'quicar', 'balancar', 'tremer', 'girar', 'pular', 'inclinar', 'andar', 'correr', 'encolher'];
+export const MAX_PASSOS_CLIPE = 24;
+/** Valor padrão da intensidade ("amp") de cada movimento que a aceita; a unidade muda de um para outro (graus, fração da altura…). */
+export const AMP_PADRAO: Partial<Record<Movimento, number>> = { quicar: 0.05, pular: 0.12, balancar: 4, inclinar: 6, tremer: 1, encolher: 3 };
+
+/** Clipe de um personagem: sequência de passos (sprite do chibi, pose do boneco, movimento e duração). */
+export interface ClipePersonalizado extends Clipe {
+  ator: string;
+  /** em que estilo vale: só chibi, só stickman ou os dois */
+  estilo: EstiloClipe;
+  /** pose padrão do roteiro que este clipe substitui para o personagem (ex.: danca_atual) */
+  substitui?: PoseId;
+}
+
+const semAcentoClipe = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+/** "Tchau Longo!" -> "tchau-longo" */
+export const nomeDeClipe = (s: string): string => semAcentoClipe(s).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+let personalizados: ClipePersonalizado[] = [];
+const num = (v: unknown, padrao: number, min: number, max: number) => (typeof v === 'number' && Number.isFinite(v) ? Math.max(min, Math.min(max, v)) : padrao);
+
+/** Substitui todos os clipes criados pelo usuário. Entradas inválidas (ou com valores absurdos) são corrigidas ou descartadas. */
+export function definirClipesPersonalizados(lista: ClipePersonalizado[], poseValida: (p: string) => boolean = () => true): void {
+  const vistos = new Set<string>();
+  personalizados = (Array.isArray(lista) ? lista : []).flatMap((c): ClipePersonalizado[] => {
+    const nome = nomeDeClipe(c?.nome ?? '');
+    const estilo: EstiloClipe = c?.estilo === 'chibi' || c?.estilo === 'stickman' ? c.estilo : 'ambos';
+    const chave = `${c?.ator}|${nome}|${estilo}`;
+    const passos = (Array.isArray(c?.passos) ? c.passos : []).slice(0, MAX_PASSOS_CLIPE).flatMap((p): PassoClipe[] => {
+      const tags = (Array.isArray(p?.tags) ? p.tags : []).filter((x): x is string => typeof x === 'string' && x.length > 0).slice(0, 4);
+      const mov = MOVIMENTOS.includes(p?.mov) ? p.mov : 'respirar';
+      const poseBoneco = typeof p?.poseBoneco === 'string' && poseValida(p.poseBoneco) ? (p.poseBoneco as PoseId) : undefined;
+      return [{ tags: tags.length ? tags : ['parado'], dur: num(p?.dur, 0.5, 0.1, 10), mov, ...(p?.amp !== undefined && AMP_PADRAO[mov] !== undefined ? { amp: num(p.amp, AMP_PADRAO[mov]!, 0, AMP_PADRAO[mov]! * 5) } : {}), ...(p?.espelhar ? { espelhar: true } : {}), ...(poseBoneco ? { poseBoneco } : {}) }];
+    });
+    if (!c?.ator || !nome || !passos.length || vistos.has(chave)) return [];
+    vistos.add(chave);
+    const substitui = typeof c.substitui === 'string' && poseValida(c.substitui) ? (c.substitui as PoseId) : undefined;
+    return [{ id: nome, nome: typeof c.nome === 'string' ? c.nome.slice(0, 60) : nome, categoria: 'Movimento', loop: c.loop !== false, passos, ator: c.ator, estilo, ...(substitui ? { substitui } : {}) }];
+  });
+}
+
+export const clipesPersonalizados = (ator?: string): ClipePersonalizado[] => (ator ? personalizados.filter((c) => c.ator === ator) : [...personalizados]);
+export function esquecerClipesDe(ator: string): void { personalizados = personalizados.filter((c) => c.ator !== ator); }
+
+/** Clipe do personagem pelo nome (do roteiro). Prefere o do estilo pedido; sem estilo, qualquer um. */
+export function acharClipe(ator: string, nome: string, estilo?: 'chibi' | 'stickman'): ClipePersonalizado | undefined {
+  const n = nomeDeClipe(nome);
+  const doNome = personalizados.filter((c) => c.ator === ator && c.id === n);
+  if (!estilo) return doNome[0];
+  return doNome.find((c) => c.estilo === estilo) ?? doNome.find((c) => c.estilo === 'ambos');
+}

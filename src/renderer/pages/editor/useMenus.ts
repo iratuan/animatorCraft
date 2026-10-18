@@ -65,6 +65,7 @@ export function useMenus(): GrupoMenu[] {
       { rotulo: 'Gerar / melhorar roteiro com IA…', acao: () => set({ iaAberta: true }) },
       { separador: true, rotulo: '' },
       { rotulo: 'Novo personagem…', acao: () => set({ fichaPersonagem: {} }) },
+      { rotulo: 'Expressões e clipes do personagem…', acao: () => set({ editorAnimacao: { ator: useEditor.getState().selecionado ?? 'cringefather' } }) },
       { rotulo: 'Editar / exportar sprites dos personagens…', acao: () => set({ editorPersonagem: useEditor.getState().selecionado ?? 'cringefather' }) },
       { rotulo: 'Inserir imagem na lousa (PNG, JPG, WebP)…', acao: () => void escolherEInserirImagem() },
       { rotulo: 'Importar áudio (narração, música, efeito)…', acao: () => set({ aba: 'audio' }) },
@@ -91,6 +92,7 @@ export function useMenus(): GrupoMenu[] {
     { nome: 'Ajuda', itens: [
       { rotulo: 'Manual de uso', atalho: 'F1', acao: () => set({ manualAberto: true }) },
       { rotulo: 'Sintaxe do roteiro e modelos', acao: () => set({ aba: 'aula' }) },
+      { rotulo: 'Sobre o StickBoard', acao: () => set({ manualAberto: true, manualSecao: 'sobre' }) },
     ] },
   ];
 }

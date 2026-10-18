@@ -32,6 +32,12 @@ export function ImportarPacoteModal() {
             <span>{s.poses.length} poses{Object.keys(s.quadros).length ? ` (animações: ${Object.entries(s.quadros).map(([n, q]) => `${n}×${q}`).join(', ')})` : ''} · {s.rostos.length} rostos · {s.props.length} props</span>
           </div>
         ))}
+        {(importacao.pacote.animacoes.clipes.length > 0 || importacao.pacote.animacoes.expressoes.length > 0) && (
+          <div className="resumo-pacote" data-animacoes>
+            <b>Animações dos personagens</b>
+            <span>{importacao.pacote.animacoes.clipes.length} clipe(s) · {importacao.pacote.animacoes.expressoes.length} expressão(ões) do boneco</span>
+          </div>
+        )}
         {r.erros.length > 0 && <ul className="erros-pacote">{r.erros.map((e, i) => <li key={i}>✖ {e}</li>)}</ul>}
         {r.avisos.length > 0 && <ul className="avisos-pacote">{r.avisos.map((e, i) => <li key={i}>⚠ {e}</li>)}</ul>}
         <label className="campo-check">

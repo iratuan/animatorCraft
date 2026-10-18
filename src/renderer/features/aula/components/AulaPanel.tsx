@@ -37,7 +37,7 @@ export function AulaPanel() {
       </label>
 
       <h4>Estilo dos personagens</h4>
-      <p className="dica">Vale para todos; cada personagem pode ter o seu na aba Propriedades. Quem ainda não tem sprites aparece como stickman.</p>
+      <p className="dica">Vale para todos; cada personagem pode ter o seu na aba Personagem. Quem ainda não tem sprites aparece como stickman.</p>
       <SeletorSkin valor={skins.padrao} aoEscolher={skins.definirPadrao} />
 
       <h4>Fontes</h4>

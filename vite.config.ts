@@ -1,4 +1,5 @@
 import react from '@vitejs/plugin-react';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
 import electron from 'vite-plugin-electron/simple';
@@ -12,7 +13,10 @@ const alias = {
 // SEM_ELECTRON=1: só o renderer (navegador, testes automáticos e build do Android).
 const comElectron = !process.env.SEM_ELECTRON;
 
+const versao = (JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf8')) as { version: string }).version;
+
 export default defineConfig({
+  define: { __APP_VERSION__: JSON.stringify(versao) },
   base: './', // o app é carregado por file:// no Electron e pelo WebView no Android
   resolve: { alias },
   plugins: [

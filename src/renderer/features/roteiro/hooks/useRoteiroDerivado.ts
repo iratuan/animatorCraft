@@ -6,7 +6,7 @@ import { useEditor } from '@renderer/store/editor-store';
 
 // cache simples: vários painéis pedem o mesmo roteiro; interpreta uma vez só
 let ultimo: { chave: string; texto: string; roteiro: Roteiro; timeline: Timeline } | null = null;
-function derivar(texto: string, versao: number) {
+function derivar(texto: string, versao: string) {
   const chave = `${versao}|${texto}`;
   if (ultimo?.chave === chave) return ultimo;
   const roteiro = parseRoteiro(texto);
@@ -24,7 +24,7 @@ export function useRoteiroDerivado() {
   const versaoPersonagens = useEditor((s) => s.versaoPersonagens);
   const versaoImagens = useEditor((s) => s.versaoImagens);
 
-  const { roteiro, timeline } = useMemo(() => derivar(texto, versaoPersonagens), [texto, versaoPersonagens]);
+  const { roteiro, timeline } = useMemo(() => derivar(texto, `${versaoPersonagens}.${versaoBib}.${spritesOk}`), [texto, versaoPersonagens, versaoBib, spritesOk]);
   const estado = useMemo(() => estadoEm(timeline, t), [timeline, t]);
   const dim = FORMATOS[formato];
 
