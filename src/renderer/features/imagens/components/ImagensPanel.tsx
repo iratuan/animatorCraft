@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { infoDaImagem, listarImagens } from '@shared/domain';
-import { imagemDoQuadro } from '@renderer/features/palco/render';
+import { imagemDoQuadro } from '@renderer/features/cena';
 import { useEditor } from '@renderer/store/editor-store';
 import { excluirImagem, importarImagem, TIPOS_IMAGEM } from '../services/armazenamento';
 import { inserirImagemNoRoteiro } from '../services/inserir';

@@ -1,9 +1,9 @@
-import { carregarFontes } from '@renderer/features/fontes/services/fontes';
-import { carregarPersonagens } from '@renderer/features/pacotes-sprites/services/personagens';
-import { plataforma } from '@renderer/features/arquivos/services/plataforma';
+import { carregarFontes } from '@renderer/features/fontes';
+import { carregarPersonagens } from '@renderer/features/personagens';
+import { plataforma } from '@renderer/features/sistema';
 import { FORMATOS, FPS, type FormatoVideo } from '@shared/constants/video';
 import { useEditor } from '@renderer/store/editor-store';
-import { useRoteiroDerivado } from '@renderer/features/roteiro/hooks/useRoteiroDerivado';
+import { useRoteiroDerivado } from '@renderer/features/roteiro';
 import { exportarMp4 } from '../services/exportarMp4';
 
 /** Exporta o vídeo: renderiza, codifica em MP4 e entrega ao sistema (diálogo no Electron, compartilhar no Android, download na web). */

@@ -64,7 +64,7 @@ Ids de personagem: `cringefather`, `betason`, `erika`, `dario`, `laura`, `elizen
 ## Importar
 
 - **No app:** Arquivo → Importar pacote de sprites (.zip)… mostra o relatório (erros bloqueiam; avisos não). Marque "Substituir" quando o pacote traz a ficha completa. Fica salvo no navegador.
-- **No projeto (definitivo):** `node tools/importar-sprites.mjs pacote.zip` grava os sprites em `apps/web/src/assets/personagens/` e atualiza o manifesto; depois é só recompilar.
+- **No projeto (definitivo):** `node tools/sprites/importar-sprites.mjs pacote.zip` grava os sprites em `apps/web/src/assets/personagens/` e atualiza o manifesto; depois é só recompilar.
 
 ## Exportar para editar e importar de volta
 
@@ -74,7 +74,7 @@ Ids de personagem: `cringefather`, `betason`, `erika`, `dario`, `laura`, `elizen
 
 ## Receitas das fichas (atlas)
 
-`tools/segmentar-atlas.mjs <atlas.png> <pasta>` recorta cada sprite de uma ficha (fundo transparente ou branco/xadrez) e gera `diagnostico.png` com os números; `tools/folha-contato.mjs` monta uma grade numerada dos recortes. `tools/receitas/<personagem>.json` diz qual número vira qual nome (`pose_*`, `rosto_*`, `prop_*`) e `node tools/montar-biblioteca.mjs <personagem>` normaliza a escala, mede o encaixe das cabeças e grava os sprites e o manifesto.
+`tools/sprites/segmentar-atlas.mjs <atlas.png> <pasta>` recorta cada sprite de uma ficha (fundo transparente ou branco/xadrez) e gera `diagnostico.png` com os números; `tools/sprites/folha-contato.mjs` monta uma grade numerada dos recortes. `tools/sprites/receitas/<personagem>.json` diz qual número vira qual nome (`pose_*`, `rosto_*`, `prop_*`) e `node tools/sprites/montar-biblioteca.mjs <personagem>` normaliza a escala, mede o encaixe das cabeças e grava os sprites e o manifesto.
 
 ## Editor de imagem integrado
 

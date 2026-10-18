@@ -34,7 +34,7 @@ Gerador de vídeos whiteboard com personagens animados (ensino de ciências, mat
 │       ├── types/              contrato IPC (StickboardApi...)
 │       └── domain/             regras puras sem DOM nem Node: parser do roteiro, timeline, poses,
 │                               clipes, personagens, sequências, modelos, nomenclatura de sprites (com testes)
-├── tools/                      scripts de apoio (recorte de fichas, importação de pacotes, capturas)
+├── tools/                      scripts de apoio (sprites/, e2e/, captura/, verificação de arquitetura) — ver docs/ARQUITETURA.md
 ├── docs/  referencias/  evidencias/
 ├── index.html  vite.config.ts  tsconfig.json  tsconfig.main.json  capacitor.config.ts
 ```

@@ -1,3 +1,4 @@
+import { clamp01 } from '../util/numeros';
 import { apagarPixel, sobreporPixel, type Cor, type Mascara, type Pixels } from './pixels';
 
 export interface OpcoesPincel {
@@ -32,7 +33,7 @@ export class Traco {
 
   private carimbar(cx: number, cy: number, pressao = 1): void {
     const { w, h } = this.camada, raio = Math.max(0.5, (this.op.tamanho * pressao) / 2);
-    const dur = this.op.serrilhado ? 1 : Math.min(1, Math.max(0, this.op.dureza / 100));
+    const dur = this.op.serrilhado ? 1 : clamp01(this.op.dureza / 100);
     const x0 = Math.max(0, Math.floor(cx - raio - 1)), x1 = Math.min(w - 1, Math.ceil(cx + raio + 1));
     const y0 = Math.max(0, Math.floor(cy - raio - 1)), y1 = Math.min(h - 1, Math.ceil(cy + raio + 1));
     for (let y = y0; y <= y1; y++) {
@@ -97,4 +98,5 @@ export function desenharCaminho(camada: Pixels, pontos: { x: number; y: number; 
   for (const p of pontos) t.mover(p.x, p.y, p.pressao ?? 1);
   t.aplicar();
 }
+
 

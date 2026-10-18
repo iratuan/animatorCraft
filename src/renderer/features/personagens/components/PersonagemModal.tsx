@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ATORES, EXPRESSOES, POSES_DE_DANCA, NOME_POSE, type ActorId, type ExpressaoId, type ModeloPalito } from '@shared/domain';
 import { useEditor } from '@renderer/store/editor-store';
-import { excluirPersonagem, salvarPersonagem } from '../services/personagens';
+import { excluirPersonagem, salvarPersonagem } from '../services/cadastro';
 
 const MODELOS: { id: ModeloPalito; nome: string }[] = [
   { id: 'professor', nome: 'Adulto de jaleco' }, { id: 'aluno', nome: 'Pré-adolescente' }, { id: 'mae', nome: 'Adulta de cabelo longo' },

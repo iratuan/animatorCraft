@@ -1,3 +1,4 @@
+import { semAcento } from '../util/texto';
 /**
  * Gráficos simples para a lousa: funções y = f(x), barras e pizza. Tudo puro (sem canvas): o motor de desenho recebe pontos prontos.
  *   "Professor desenha o gráfico de y = x^2 no quadro."   ·   "... de y = sen(x) de -6 a 6"
@@ -16,10 +17,9 @@ type Tok = { t: 'n'; v: number } | { t: 'x' } | { t: 'op'; v: string } | { t: 'f
 const FUNCOES: Record<string, (v: number) => number> = {
   sen: Math.sin, sin: Math.sin, cos: Math.cos, tan: Math.tan, tg: Math.tan, raiz: Math.sqrt, sqrt: Math.sqrt, abs: Math.abs, ln: Math.log, log: Math.log10, exp: Math.exp,
 };
-const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 function tokenizar(expr: string): Tok[] {
-  const s = norm(expr).replace(/\s+/g, '').replace(/²/g, '^2').replace(/³/g, '^3').replace(/×/g, '*').replace(/−/g, '-').replace(/,/g, '.');
+  const s = semAcento(expr).replace(/\s+/g, '').replace(/²/g, '^2').replace(/³/g, '^3').replace(/×/g, '*').replace(/−/g, '-').replace(/,/g, '.');
   const toks: Tok[] = [];
   const implicita = () => { const u = toks[toks.length - 1]; if (u && (u.t === 'n' || u.t === 'x' || u.t === ')')) toks.push({ t: 'op', v: '*' }); };
   for (let i = 0; i < s.length;) {
@@ -135,4 +135,5 @@ export function lerGrafico(frase: string): { grafico: GraficoDef } | { erro: str
   try { compilarFuncao(resto); } catch (e) { return { erro: `Não entendi a função "${resto}": ${(e as Error).message}.` }; }
   return { grafico: { tipo: 'funcao', expr: resto.replace(/^\s*y\s*=\s*/i, ''), xmin, xmax } };
 }
+
 

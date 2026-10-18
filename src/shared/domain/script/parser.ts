@@ -1,10 +1,10 @@
+import { semAcento } from '../../util/texto';
 import { ATORES, PAPEIS_PADRAO, type ActorId, type Papeis } from '../characters';
 import { DANCA_PADRAO, DURACAO_PADRAO_DANCA, EXPRESSOES, FRASE_POSE, POSES_DE_DANCA, type ExpressaoId, type PoseId } from '../poses';
 import type { Acao, Cena, Lado, Roteiro } from '../types';
 import { lerGrafico } from '../grafico';
 import { lerEfeito } from '../imagem';
 
-const semAcento = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 /** Adjetivo falado -> pose e/ou expressão. */
 const ESTADOS: Record<string, { pose?: PoseId; expressao?: ExpressaoId }> = {
@@ -360,6 +360,7 @@ export function parseRoteiro(textoOriginal: string): Roteiro {
   fecharBuffer();
   return { cenas, avisos, papeis };
 }
+
 
 
 

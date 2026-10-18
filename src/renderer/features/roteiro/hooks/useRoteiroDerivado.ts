@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { ATORES, construirTimeline, infoDaImagem, estadoEm, parseRoteiro, type Roteiro, type Timeline } from '@shared/domain';
 import { FORMATOS } from '@shared/constants/video';
-import { layoutDe, temPose, verificarLousa } from '@renderer/features/palco/render';
+import { layoutDe, temPose, verificarLousa } from '@renderer/features/cena';
 import { useEditor } from '@renderer/store/editor-store';
 
 // cache simples: vários painéis pedem o mesmo roteiro; interpreta uma vez só

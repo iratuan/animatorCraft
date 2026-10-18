@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { EditorPage } from '@renderer/pages/EditorPage';
+import { EditorPage } from '@renderer/pages/editor/EditorPage';
 
 /** Rotas do app. HashRouter (em App.tsx) funciona em file:// no Electron e no WebView do Android. */
 export function Rotas() {

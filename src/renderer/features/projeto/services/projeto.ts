@@ -1,12 +1,10 @@
 import { strFromU8, strToU8, unzipSync, zipSync } from 'fflate';
-import { atoresPersonalizados, registrarAtor, type ActorSpec } from '@shared/domain';
+import { atoresPersonalizados, listarAudios, listarImagens, registrarAtor, type ActorSpec } from '@shared/domain';
 import { useEditor } from '@renderer/store/editor-store';
-import { aplicarPacote, lerEntradasSalvas, lerPacote } from '@renderer/features/pacotes-sprites/services/pacotes';
-import { gravarFichas } from '@renderer/features/personagens/services/fichas';
-import { gravarSkins } from '@renderer/features/personagens/services/personagens';
-import { carregarAudiosSalvos, importarAudio } from '@renderer/features/audio/services/armazenamento';
-import { listarAudios, listarImagens } from '@shared/domain';
-import { bytesDaImagem, importarImagem } from '@renderer/features/imagens/services/armazenamento';
+import { aplicarPacote, lerEntradasSalvas, lerPacote, gravarFichas, gravarSkins } from '@renderer/features/personagens';
+import { bufferBrutoDoAudio, carregarAudiosSalvos, importarAudio } from '@renderer/features/audio';
+import { bytesDaImagem, importarImagem } from '@renderer/features/imagens';
+import { bytesDeUrl } from '@renderer/features/sistema';
 
 /**
  * Projeto = um .zip com tudo da aula: roteiro, personagens criados, estilos, sprites trocados/importados, áudios e preferências.
@@ -15,7 +13,6 @@ import { bytesDaImagem, importarImagem } from '@renderer/features/imagens/servic
 const VERSAO = 1;
 interface ProjetoJson { versao: number; personagens: ActorSpec[]; skinPadrao: string; skins: Record<string, string>; fonteLousa: string; fonteFala: string; formato: string }
 
-async function bytesDeUrl(url: string): Promise<Uint8Array> { return new Uint8Array(await (await fetch(url)).arrayBuffer()); }
 
 export async function montarProjeto(): Promise<{ zip: Uint8Array; sprites: number; audios: number }> {
   const s = useEditor.getState();
@@ -29,7 +26,6 @@ export async function montarProjeto(): Promise<{ zip: Uint8Array; sprites: numbe
     sprites++;
   }
   // áudios: lidos do mesmo armazenamento em que foram importados
-  const { bufferBrutoDoAudio } = await import('@renderer/features/audio/services/armazenamento');
   let audios = 0;
   for (const a of listarAudios()) { const bytes = await bufferBrutoDoAudio(a.nome); if (bytes) { arquivos[`audios/${a.nome}`] = bytes; audios++; } }
   for (const i of listarImagens()) { const b = await bytesDaImagem(i.nome); if (b) arquivos[`imagens/${i.nome}`] = b.bytes; }
@@ -68,5 +64,7 @@ export async function abrirProjeto(zip: Uint8Array): Promise<{ sprites: number; 
   st.novaVersaoPersonagens(); st.novaVersaoAudio(); st.novaVersaoImagens();
   return { sprites, audios, personagens: (j.personagens ?? []).length };
 }
+
+
 
 

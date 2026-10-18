@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { definirEstiloTraco, definirFontes, renderizarCena, type EstiloTraco } from '@renderer/features/palco/render';
+import { definirEstiloTraco, definirFontes, renderizarCena, type EstiloTraco } from '@renderer/features/cena';
 import { useEditor } from '@renderer/store/editor-store';
-import { fontePorId } from '@renderer/features/fontes/services/fontes';
-import { useRoteiroDerivado } from '@renderer/features/roteiro/hooks/useRoteiroDerivado';
+import { fontePorId } from '@renderer/features/fontes';
+import { useRoteiroDerivado } from '@renderer/features/roteiro';
 
 const consulta = new URLSearchParams(typeof location === 'undefined' ? '' : location.search);
 

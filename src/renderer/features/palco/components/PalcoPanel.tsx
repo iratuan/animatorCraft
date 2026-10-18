@@ -1,10 +1,10 @@
 import { useRef } from 'react';
 import { ATORES, posicionarNoRoteiro, type Evento } from '@shared/domain';
-import { atorEm } from '@renderer/features/palco/render';
+import { atorEm } from '@renderer/features/cena';
 import { Painel } from '@renderer/components/Painel';
 import { useEditor } from '@renderer/store/editor-store';
 import { FPS } from '@shared/constants/video';
-import { useRoteiroDerivado } from '@renderer/features/roteiro/hooks/useRoteiroDerivado';
+import { useRoteiroDerivado } from '@renderer/features/roteiro';
 import { usePalcoCanvas } from '../hooks/usePalcoCanvas';
 import { Transporte } from './Transporte';
 

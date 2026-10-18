@@ -1,6 +1,6 @@
 import { ATORES } from '@shared/domain';
 import { useEditor } from '@renderer/store/editor-store';
-import { escolherEInserirImagem } from '@renderer/features/imagens/services/inserir';
+import { escolherEInserirImagem } from '@renderer/features/imagens';
 import { Icones, type NomeIcone } from '@renderer/components/Icones';
 
 interface Ferramenta { id: string; icone: NomeIcone; dica: string; acao?: () => void; desativado?: boolean }

@@ -1,6 +1,6 @@
 import { useEditor } from '@renderer/store/editor-store';
-import { useRoteiroDerivado } from '@renderer/features/roteiro/hooks/useRoteiroDerivado';
-import { useExportar } from '@renderer/features/exportacao/hooks/useExportar';
+import { useRoteiroDerivado } from '@renderer/features/roteiro';
+import { useExportar } from '@renderer/features/exportacao';
 import { Icones } from '@renderer/components/Icones';
 import { fmtTempo } from '../services/tempo';
 

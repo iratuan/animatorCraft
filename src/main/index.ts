@@ -20,6 +20,12 @@ function criarJanela(): void {
   });
   Menu.setApplicationMenu(null);
 
+  // A janela só mostra o próprio app: sem navegação para fora, sem novas janelas, sem permissões de dispositivo.
+  const origemApp = urlDev ? new URL(urlDev).origin : 'file://';
+  janela.webContents.on('will-navigate', (e, destino) => { if (!destino.startsWith(origemApp)) e.preventDefault(); });
+  janela.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  janela.webContents.session.setPermissionRequestHandler((_wc, _permissao, negar) => negar(false));
+
   if (urlDev) void janela.loadURL(consulta ? `${urlDev}?${consulta}` : urlDev);
   else void janela.loadFile(indiceCompilado, consulta ? { search: consulta } : undefined);
 

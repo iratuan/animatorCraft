@@ -37,6 +37,6 @@ Uma por personagem. É a peça que resolve a sincronia labial: o app troca a **c
 ## Como importar
 
 1. Salve cada ficha em `referencias/<Nome>.jpg` (ex.: `referencias/Elizendra.jpg`).
-2. Em `tools/mapa-poses.json`, acrescente o personagem com a lista de `tags` na ordem da grade (esquerda→direita, cima→baixo) e a `altura` proporcional à idade.
-3. Rode `node tools/gerar-sprites.mjs`. Ele recorta, grava em `apps/web/src/assets/personagens/` e atualiza o manifesto.
-4. Âncoras de rosto (olhos, boca, caixa da cabeça para o `[close no personagem]`) ficam em `tools/rostos.json`.
+2. Em `tools/sprites/mapa-poses.json`, acrescente o personagem com a lista de `tags` na ordem da grade (esquerda→direita, cima→baixo) e a `altura` proporcional à idade.
+3. Rode `node tools/sprites/gerar-sprites.mjs`. Ele recorta, grava em `apps/web/src/assets/personagens/` e atualiza o manifesto.
+4. Âncoras de rosto (olhos, boca, caixa da cabeça para o `[close no personagem]`) ficam em `tools/sprites/rostos.json`.

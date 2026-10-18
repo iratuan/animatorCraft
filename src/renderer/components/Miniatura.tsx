@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { ActorId, ExpressaoId, PoseId } from '@shared/domain';
-import { desenharMiniatura } from '@renderer/features/palco/render';
+import { desenharMiniatura } from '@renderer/features/cena';
 import { useEditor } from '@renderer/store/editor-store';
 
 interface Props { ator: ActorId; pose?: PoseId; expressao?: ExpressaoId; tamanho?: number; modo?: 'corpo' | 'rosto'; etiqueta?: string }

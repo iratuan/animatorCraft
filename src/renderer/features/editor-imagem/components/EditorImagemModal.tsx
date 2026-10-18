@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ATORES, type ActorId } from '@shared/domain';
 import { hexDeCor, paletaDoSprite, type Pixels } from '@shared/editor-imagem';
 import { useEditor } from '@renderer/store/editor-store';
-import { obterSprite } from '@renderer/features/pacotes-sprites/services/exportar';
+import { obterSprite } from '@renderer/features/personagens';
 import { MotorEditor, type Ferramenta } from '../services/motor';
 import { salvarSpriteEditado } from '../services/salvar';
 
@@ -217,7 +217,7 @@ function Editor({ alvo }: { alvo: { personagem: ActorId; tipo: 'pose' | 'rosto' 
   const comTolerancia = f === 'balde' || f === 'varinha';
   const comPincel = f === 'pincel' || f === 'lapis' || f === 'borracha' || f === 'linha' || f === 'retangulo' || f === 'elipse';
   const comForma = f === 'retangulo' || f === 'elipse';
-  const camadaAtiva = ui ? ui.camadas.findIndex((c, i) => ui.camadas.length - 1 - i === ui.ativa) : -1;
+  const camadaAtiva = ui ? ui.camadas.findIndex((_c, i) => ui.camadas.length - 1 - i === ui.ativa) : -1;
 
   return (
     <div className="ei-fundo" role="dialog" aria-label="Editor de imagem do sprite">

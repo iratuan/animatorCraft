@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { ATORES, EFEITOS_IMAGEM, NOME_EFEITO, ORDEM_ATORES, excluirFrase, reescreverDuracao, reescreverImagem, tornarSequencial, tornarSimultanea, type Acao, type Conteudo, type EfeitoImagem, type Evento, type PosicaoImagem, type TamanhoImagem, type Timeline } from '@shared/domain';
 import { Painel } from '@renderer/components/Painel';
 import { useEditor } from '@renderer/store/editor-store';
-import { useRoteiroDerivado } from '@renderer/features/roteiro/hooks/useRoteiroDerivado';
+import { useRoteiroDerivado } from '@renderer/features/roteiro';
 
 const COR: Record<Acao['tipo'], string> = {
   entrar: '#3b82f6', sair: '#3b82f6', posicionar: '#0ea5e9', remover: '#22c55e', audio: '#f472b6', fala: '#f59e0b', escrever: '#22c55e', pose: '#a855f7', expressao: '#ec4899',

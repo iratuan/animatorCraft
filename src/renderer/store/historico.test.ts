@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { desfazer, podeDesfazer, podeRefazer, refazer, useEditor } from './editor-store';
+import { desfazer, podeDesfazer, podeRefazer, refazer, useEditor } from '@renderer/store/editor-store';
 
 describe('desfazer/refazer do roteiro', () => {
   it('edições separadas no tempo viram passos; desfazer e refazer andam pela pilha', async () => {

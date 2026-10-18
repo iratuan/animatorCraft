@@ -1,7 +1,7 @@
 import { zipSync } from 'fflate';
 import type { ActorId } from '@shared/domain';
-import type { SpriteInfo } from '@renderer/features/palco/render';
-import { aplicarPacote, lerPacote } from '@renderer/features/pacotes-sprites/services/pacotes';
+import { type SpriteInfo } from '@renderer/features/cena';
+import { aplicarPacote, lerPacote } from '@renderer/features/personagens';
 
 /**
  * Grava no espaço do personagem o PNG achatado que saiu do editor de imagem. Passa pelo mesmo caminho da importação de pacotes

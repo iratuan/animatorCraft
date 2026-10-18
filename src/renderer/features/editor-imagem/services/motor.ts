@@ -1,3 +1,4 @@
+import { limitar } from '@shared/util';
 import {
   Historico, Traco, adicionarCamada, apagarSelecao, camadaAtiva, clonarPixels, colarSobre, combinarMascaras, compor, contornoDeForma, corDeHex, cortarAoConteudo,
   criarMascara, criarPixels, duplicarCamada, espelharDocumento, extrairSelecao, girarDocumento, hexDeCor, inverterMascara, lerCor, limitesDaMascara, limitesDoConteudo,
@@ -41,7 +42,6 @@ interface Flutuante { fonte: Pixels; canvas: HTMLCanvasElement; cx: number; cy: 
 type Alca = 'corpo' | 'rotacionar' | 'nw' | 'ne' | 'sw' | 'se';
 
 const ZOOM_MIN = 0.05, ZOOM_MAX = 32;
-const limitar = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 const paraCanvas = (p: Pixels): HTMLCanvasElement => { const c = document.createElement('canvas'); c.width = p.w; c.height = p.h; c.getContext('2d')!.putImageData(new ImageData(new Uint8ClampedArray(p.data), p.w, p.h), 0, 0); return c; };
 const dePixels = (c: HTMLCanvasElement): Pixels => { const d = c.getContext('2d', { willReadFrequently: true })!.getImageData(0, 0, c.width, c.height); return { w: c.width, h: c.height, data: d.data }; };
 
@@ -713,6 +713,7 @@ export class MotorEditor {
   /** Chamado pela interface depois de montar: desenha a primeira vez e inicia as formigas se houver seleção. */
   iniciar(): void { this.construirContorno(); this.iniciarFormigas(); this.marcar(); }
 }
+
 
 
 

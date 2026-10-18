@@ -1,3 +1,5 @@
+import { semAcento } from '../util/texto';
+import { suave } from '../util/numeros';
 /**
  * Imagens na lousa (PNG, JPG ou WebP importados pelo usuário). O domínio só conhece nome e proporção (para o layout) e a matemática dos
  * efeitos de transição; os pixels ficam no renderer.
@@ -22,7 +24,6 @@ export const DURACAO_EFEITO = 0.8;
 
 /** Como a imagem se mostra com o efeito `efeito` no ponto `p` (0 = fora, 1 = no lugar). dx/dy em frações da largura/altura da lousa. */
 export interface ParamsEfeito { alpha: number; dx: number; dy: number; escala: number; clip: number }
-const suave = (x: number) => { const k = Math.min(1, Math.max(0, x)); return k * k * (3 - 2 * k); };
 
 export function paramsDoEfeito(efeito: EfeitoImagem, p: number): ParamsEfeito {
   const e = suave(p), base: ParamsEfeito = { alpha: 1, dx: 0, dy: 0, escala: 1, clip: 1 };
@@ -40,7 +41,7 @@ export function paramsDoEfeito(efeito: EfeitoImagem, p: number): ParamsEfeito {
 
 /** Leitura dos efeitos escritos em português ("deslizar da esquerda", "zoom", "surgir"...). */
 export function lerEfeito(texto: string): EfeitoImagem | undefined {
-  const t = texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const t = semAcento(texto);
   if (/\b(sem efeito|nenhum|direto|cortar)\b/.test(t)) return 'nenhum';
   const d = /\b(?:deslizar|deslizando|slide|entrar|entrando)\b.*?\b(esquerda|direita|cima|baixo)\b/.exec(t) ?? /\b(?:deslizar|deslizando)\b/.exec(t);
   if (d) return (`deslizar-${d[1] ?? 'esquerda'}`) as EfeitoImagem;
@@ -49,3 +50,4 @@ export function lerEfeito(texto: string): EfeitoImagem | undefined {
   if (/\b(surgir|surgindo|aparecer|aparecendo|fade|desaparecer|sumir)\b/.test(t)) return 'surgir';
   return undefined;
 }
+

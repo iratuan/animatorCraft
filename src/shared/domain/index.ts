@@ -17,3 +17,4 @@ export * from './ia';
 export * from './imagem';
 
 
+export { ROTEIRO_EXEMPLO } from './exemplo';

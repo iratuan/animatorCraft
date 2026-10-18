@@ -1,7 +1,7 @@
 import { ArrayBufferTarget, Muxer } from 'mp4-muxer';
 import { agendaDeAudio, estadoEm, type Timeline } from '@shared/domain';
-import { mixarParaExportacao } from '@renderer/features/audio/services/mixer';
-import { renderizarCena } from '@renderer/features/palco/render';
+import { mixarParaExportacao } from '@renderer/features/audio';
+import { renderizarCena } from '@renderer/features/cena';
 
 /**
  * Codificadores em ordem de preferência: H.264 High → Main → Baseline (compatível com YouTube/Instagram), depois VP9.

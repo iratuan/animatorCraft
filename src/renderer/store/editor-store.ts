@@ -1,12 +1,10 @@
 import { create } from 'zustand';
-import { ATORES, inserirNoCursor as inserirNoCursorTexto, type ActorId } from '@shared/domain';
+import { ATORES, ROTEIRO_EXEMPLO, inserirNoCursor as inserirNoCursorTexto, type ActorId } from '@shared/domain';
 import type { FormatoVideo } from '@shared/constants/video';
-import type { Skin } from '@renderer/features/palco/render';
-import type { PacoteLido } from '@renderer/features/pacotes-sprites/services/pacotes';
-import { ROTEIRO_EXEMPLO } from '@renderer/features/roteiro/services/exemplo';
+import type { Skin } from '@renderer/features/cena';
+import { gravarTexto, lerTexto } from '@renderer/features/sistema';
+import type { PacoteLido } from '@renderer/features/personagens';
 
-const lerSalvo = (k: string, padrao: string) => { try { return localStorage.getItem(k) ?? padrao; } catch { return padrao; } };
-const gravar = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* sem armazenamento */ } };
 const consulta = new URLSearchParams(typeof location === 'undefined' ? '' : location.search);
 
 export type AbaLateral = 'props' | 'biblioteca' | 'imagens' | 'audio' | 'aula';
@@ -71,7 +69,7 @@ interface Acoes {
 }
 
 export const useEditor = create<Estado & Acoes>()((set, get) => ({
-  roteiro: lerSalvo('stickboard.roteiro.v2', ROTEIRO_EXEMPLO),
+  roteiro: lerTexto('stickboard.roteiro.v2', ROTEIRO_EXEMPLO),
   formato: '16:9',
   t: Number(consulta.get('t') ?? 0),
   tocando: false,
@@ -85,8 +83,8 @@ export const useEditor = create<Estado & Acoes>()((set, get) => ({
   spritesOk: false,
   versaoBib: 0,
   fontesOk: false,
-  fonteLousa: lerSalvo('stickboard.fonte.lousa', 'comic'),
-  fonteFala: lerSalvo('stickboard.fonte.fala', 'comic'),
+  fonteLousa: lerTexto('stickboard.fonte.lousa', 'comic'),
+  fonteFala: lerTexto('stickboard.fonte.fala', 'comic'),
   importacao: null,
   editorPersonagem: null,
   editorImagem: null,
@@ -131,9 +129,9 @@ export const useEditor = create<Estado & Acoes>()((set, get) => ({
 
 // persistência leve do que o usuário configura (o roteiro e as preferências de fonte)
 useEditor.subscribe((s, anterior) => {
-  if (s.roteiro !== anterior.roteiro) gravar('stickboard.roteiro.v2', s.roteiro);
-  if (s.fonteLousa !== anterior.fonteLousa) gravar('stickboard.fonte.lousa', s.fonteLousa);
-  if (s.fonteFala !== anterior.fonteFala) gravar('stickboard.fonte.fala', s.fonteFala);
+  if (s.roteiro !== anterior.roteiro) gravarTexto('stickboard.roteiro.v2', s.roteiro);
+  if (s.fonteLousa !== anterior.fonteLousa) gravarTexto('stickboard.fonte.lousa', s.fonteLousa);
+  if (s.fonteFala !== anterior.fonteFala) gravarTexto('stickboard.fonte.fala', s.fonteFala);
 });
 
 
@@ -175,6 +173,8 @@ export function refazer(): boolean {
   aplicar(depois);
   return true;
 }
+
+
 
 
 

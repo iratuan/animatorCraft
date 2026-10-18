@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { agendaDeAudio } from '@shared/domain';
 import { useEditor } from '@renderer/store/editor-store';
-import { useRoteiroDerivado } from '@renderer/features/roteiro/hooks/useRoteiroDerivado';
+import { useRoteiroDerivado } from '@renderer/features/roteiro';
 import { pararAudio, tocarAgenda } from '../services/mixer';
 
 /** Toca a trilha de áudio junto com a animação; refaz o agendamento ao pular na linha do tempo ou editar o roteiro. */

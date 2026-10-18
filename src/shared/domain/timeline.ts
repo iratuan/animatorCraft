@@ -1,3 +1,4 @@
+import { clamp01, suave } from '../util/numeros';
 import { ATORES, ORDEM_ATORES, type ActorId } from './characters';
 import { latexParaTexto } from './latex';
 import { rotuloDoGrafico } from './grafico';
@@ -27,8 +28,7 @@ export interface Timeline {
 
 export const TRANSICAO_POSE = 0.3;
 
-const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
-export const suave = (x: number) => { const k = clamp01(x); return k * k * (3 - 2 * k); };
+export { suave };
 
 export function textoDoConteudo(c: Conteudo): string {
   return c.tipo === 'texto' ? c.texto : c.tipo === 'grafico' ? rotuloDoGrafico(c.grafico) : c.tipo === 'imagem' ? `imagem ${c.arquivo}` : latexParaTexto(c.latex);
@@ -316,6 +316,7 @@ export function estadoEm(tl: Timeline, t: number): Estado {
   const camera = { atual: cameraAtual, anterior: cameraAnterior, progresso: suave((t - cameraDesde) / 0.8) };
   return { t, atores, quadro: itens, mao, eventoAtual, camera };
 }
+
 
 
 

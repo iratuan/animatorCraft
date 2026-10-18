@@ -74,9 +74,9 @@ export const ATORES: Record<ActorId, ActorSpec> = {
 export const ORDEM_ATORES: ActorId[] = ['cringefather', 'betason', 'erika', 'dario', 'laura', 'elizendra', 'artur', 'carol'];
 export const IDS_ORIGINAIS: readonly ActorId[] = [...ORDEM_ATORES];
 
-const semAcentoId = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 /** "Ana Júlia" -> "ana-julia" (sem acento, só letras/números e hífen). */
-export const idDoNome = (nome: string) => semAcentoId(nome).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+// sem importar shared/util de propósito: as ferramentas em Node (tools/) carregam este arquivo direto, sem resolver extensões.
+export const idDoNome = (nome: string): string => nome.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
 /** Palavras reservadas do roteiro que um personagem novo não pode usar como apelido. */
 const RESERVADAS = new Set(['professor', 'professora', 'aluno', 'todos', 'todas', 'quadro', 'lousa', 'plano', 'close', 'zoom', 'volta']);
@@ -135,6 +135,7 @@ export function restaurarAtores(lista: ActorSpec[]): void {
 export type Papel = 'professor' | 'aluno';
 export type Papeis = Record<Papel, ActorId>;
 export const PAPEIS_PADRAO: Papeis = { professor: 'cringefather', aluno: 'betason' };
+
 
 
 

@@ -1,9 +1,9 @@
 import { ATORES, MODELOS, ORDEM_ATORES, type ActorId } from '@shared/domain';
 import { useEditor } from '@renderer/store/editor-store';
-import { FONTES } from '@renderer/features/fontes/services/fontes';
-import { SeletorSkin, useSkins } from '@renderer/features/personagens/services/useSkins';
-import { useRoteiroDerivado } from '@renderer/features/roteiro/hooks/useRoteiroDerivado';
-import { fmtTempo } from '@renderer/features/palco/services/tempo';
+import { FONTES } from '@renderer/features/fontes';
+import { SeletorSkin, useSkins } from '@renderer/features/personagens';
+import { useRoteiroDerivado } from '@renderer/features/roteiro';
+import { fmtTempo } from '@renderer/features/palco';
 
 /** Aba "Aula": papéis (professor/aluno), fontes, modelos de roteiro, cheat-sheet da câmera. */
 export function AulaPanel() {
