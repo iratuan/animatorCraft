@@ -1,7 +1,7 @@
 // App empacotado (exe): tela inicial -> prompt mestre -> roteiro da IA aplicado -> editor com palco.
 import { _electron as electron } from 'playwright-core';
 import { readFileSync } from 'node:fs';
-const dest = 'evidencias/39-build-0.7.0';
+const dest = 'evidencias/39-build-0.8.0';
 let falhas = 0; const ok = (c, m) => { console.log(c ? 'ok    ' : 'FALHOU', m); if (!c) falhas++; };
 const t0 = Date.now();
 const app = await electron.launch({ executablePath: 'release/win-unpacked/StickBoard.exe', args: [] });
@@ -9,7 +9,7 @@ const win = await app.firstWindow();
 const erros = []; win.on('pageerror', (e) => erros.push(String(e)));
 await win.waitForSelector('.home h1');
 console.log('tela inicial pronta em', Date.now() - t0, 'ms (inclui abrir a janela)');
-ok(await win.locator('.home-rodape').innerText().then((t) => t.includes('0.7.0')), 'versão 0.7.0 na tela inicial');
+ok(await win.locator('.home-rodape').innerText().then((t) => t.includes('0.8.0')), 'versão 0.8.0 na tela inicial');
 await win.screenshot({ path: `${dest}/exe-01-tela-inicial.png` });
 await win.locator('[data-teste=prompt-mestre]').click();
 await win.waitForSelector('.prompt-mestre');

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { ATORES, EFEITOS_IMAGEM, NOME_EFEITO, ORDEM_ATORES, excluirFrase, reescreverDuracao, reescreverImagem, tornarSequencial, tornarSimultanea, type Acao, type Conteudo, type EfeitoImagem, type Evento, type PosicaoImagem, type TamanhoImagem, type Timeline } from '@shared/domain';
+import { TRILHA_PADRAO, ATORES, EFEITOS_IMAGEM, NOME_EFEITO, ORDEM_ATORES, nomeExibidoDaTrilha, ordenarTrilhas, trilhaDoEvento, excluirFrase, reescreverDuracao, reescreverImagem, tornarSequencial, tornarSimultanea, type Acao, type Conteudo, type EfeitoImagem, type Evento, type PosicaoImagem, type TamanhoImagem, type Timeline } from '@shared/domain';
 import { Painel } from '@renderer/components/Painel';
 import { useEditor } from '@renderer/store/editor-store';
 import { useRoteiroDerivado } from '@renderer/features/roteiro';
@@ -17,7 +17,7 @@ const PALETA = ['#f43f5e', '#8b5cf6', '#0ea5e9', '#14b8a6', '#eab308', '#f97316'
 const corDoAtor = (id: string) => COR_FAIXA[id] ?? PALETA[[...id].reduce((s, c) => s + c.charCodeAt(0), 0) % PALETA.length]!;
 
 const ALTURA_LINHA = 26;
-interface Faixa { chave: string; nome: string; cor?: string; eventos: Evento[]; linhas: number; linhaDe: Map<number, number> }
+interface Faixa { chave: string; nome: string; cor?: string; eventos: Evento[]; linhas: number; linhaDe: Map<number, number>; /** faixa de áudio: id da trilha (tem mudo e solo) */ trilha?: string }
 
 /** Eventos de uma faixa que se sobrepõem no tempo vão para linhas diferentes (ex.: o personagem fala e gesticula ao mesmo tempo). */
 function empilhar(eventos: Evento[]): { linhas: number; linhaDe: Map<number, number> } {
@@ -32,16 +32,31 @@ function empilhar(eventos: Evento[]): { linhas: number; linhaDe: Map<number, num
 }
 
 function faixas(tl: Timeline): Faixa[] {
-  const brutas: { chave: string; nome: string; cor?: string; eventos: Evento[] }[] = [];
+  const brutas: { chave: string; nome: string; cor?: string; eventos: Evento[]; trilha?: string }[] = [];
   for (const id of ORDEM_ATORES) {
     const evs = tl.eventos.filter((e) => e.acao.tipo !== 'camera' && 'ator' in e.acao && e.acao.ator === id);
     if (evs.length) brutas.push({ chave: id, nome: ATORES[id]!.nome, cor: corDoAtor(id), eventos: evs });
   }
   brutas.push({ chave: 'camera', nome: 'Câmera', cor: '#eab308', eventos: tl.eventos.filter((e) => e.acao.tipo === 'camera') });
   brutas.push({ chave: 'quadro', nome: 'Quadro', eventos: tl.eventos.filter((e) => e.acao.tipo === 'escrever' || e.acao.tipo === 'apagar') });
-  brutas.push({ chave: 'audio', nome: 'Áudio', cor: '#f472b6', eventos: tl.eventos.filter((e) => e.acao.tipo === 'audio' || (e.acao.tipo === 'fala' && !!e.acao.audio)) });
+  // uma faixa por trilha de áudio: a voz de cada personagem, os efeitos, a música e as trilhas que o roteiro criar (\"trilha chuva\")
+  for (const id of ordenarTrilhas(tl.eventos.flatMap((e) => trilhaDoEvento(e.acao) ?? []))) {
+    brutas.push({ chave: `audio:${id}`, trilha: id, nome: nomeExibidoDaTrilha(id, (a) => ATORES[a]?.nome ?? a), cor: '#f472b6', eventos: tl.eventos.filter((e) => trilhaDoEvento(e.acao) === id) });
+  }
   brutas.push({ chave: 'direcao', nome: 'Direção', eventos: tl.eventos.filter((e) => e.acao.tipo === 'esperar' || e.acao.tipo === 'nota') });
   return brutas.map((f) => ({ ...f, ...empilhar(f.eventos) }));
+}
+
+/** Mudo (M) e solo (S) da trilha de áudio; o volume fica no painel Áudio. */
+function ControleTrilha({ id }: { id: string }) {
+  const est = useEditor((s) => s.trilhas[id]) ?? TRILHA_PADRAO;
+  const definir = useEditor((s) => s.definirTrilha);
+  return (
+    <span className="ctl-trilha" onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
+      <button className={est.mudo ? 'on mudo' : ''} aria-label={`Mudo: ${id}`} aria-pressed={est.mudo} title="Mudo (M)" onClick={() => definir(id, { mudo: !est.mudo })}>M</button>
+      <button className={est.solo ? 'on solo' : ''} aria-label={`Solo: ${id}`} aria-pressed={est.solo} title="Solo (S): só as trilhas em solo tocam" onClick={() => definir(id, { solo: !est.solo })}>S</button>
+    </span>
+  );
 }
 
 const altura = (f: Faixa) => Math.max(30, f.linhas * ALTURA_LINHA + 6);
@@ -179,7 +194,7 @@ function Trilhos() {
             <div key={f.chave} style={{ height: altura(f) }} className={`camada ${selecionado === f.chave ? 'sel' : ''}`} onClick={() => ORDEM_ATORES.includes(f.chave) && set({ selecionado: f.chave })}>
               <span className="cor" style={{ background: f.cor ?? '#94a3b8' }} />
               <span className="nome">{f.nome}</span>
-              <span className="olho" title="Visível">●</span>
+              {f.trilha ? <ControleTrilha id={f.trilha} /> : <span className="olho" title="Visível">●</span>}
             </div>
           ))}
         </div>

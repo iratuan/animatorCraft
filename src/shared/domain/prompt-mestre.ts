@@ -238,6 +238,7 @@ Troque NOME por um personagem da lista (ou por "Professor"/"Aluno"). **Uma açã
 **Áudio** (somente arquivos da lista ÁUDIOS)
 - \`NOME diz "Bem-vindos!". [áudio: abertura.wav]\` — a narração gravada toca e a boca acompanha a voz; a fala dura o tempo do áudio.
 - \`[música: fundo.mp3, volume 25%]\` começa a música de fundo · \`[música: parar]\` · \`[efeito: palmas.wav]\` toca um efeito neste ponto.
+- **Trilhas**: a voz de cada personagem, os efeitos e a música ficam em trilhas separadas (o usuário dá mudo, solo e volume a cada uma). Para ter mais de uma música ou efeito ao mesmo tempo, dê nome à trilha: \`[música: chuva.wav, volume 20%, trilha ambiente]\` · \`[efeito: passos.wav, trilha passos]\` · \`[música: parar trilha ambiente]\` (sem nome, \`[música: parar]\` para todas as músicas).
 
 ## 4. AÇÕES AO MESMO TEMPO
 Por padrão cada frase espera a anterior terminar. Para juntar:

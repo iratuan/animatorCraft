@@ -49,3 +49,7 @@ Android: use o JDK do Android Studio (`JAVA_HOME=C:\Ambiente\Android Studio\jbr`
 - **Tela inicial** leve (o editor carrega em segundo plano): continuar, novo, modelos, abrir roteiro/projeto, criar personagem, manual.
 - **Prompt mestre**: texto para qualquer IA gerar roteiros válidos, montado a partir da sua biblioteca; a resposta é conferida e aplicada no app (`docs/prompt-mestre-exemplo.md`).
 - Revisão de lançamento: baterias `revisao-*` (biblioteca, sprites, clipes, importação, exportação) e ~110 testes unitários novos; dezenas de correções (veja o commit).
+
+## 0.8.0
+- Barra de ferramentas no topo (tudo também nos menus, agora com ícones), painéis redimensionáveis (arrastar, setas, duplo clique restaura), exportar/importar sprites do personagem selecionado direto da barra.
+- Trilhas de áudio: voz de cada personagem, efeitos e música em faixas próprias (M/S na linha do tempo, volume na aba Áudio, vale no MP4 e no projeto); \[música: x.wav, trilha nome]\ cria trilhas extras.

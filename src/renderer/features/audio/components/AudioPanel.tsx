@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { infoDoAudio, listarAudios } from '@shared/domain';
+import { ATORES, TRILHA_PADRAO, infoDoAudio, listarAudios, nomeExibidoDaTrilha, ordenarTrilhas, trilhaDoEvento } from '@shared/domain';
+import { useRoteiroDerivado } from '@renderer/features/roteiro';
 import { useEditor } from '@renderer/store/editor-store';
 import { excluirAudio, importarAudio } from '../services/armazenamento';
 import { pararAudio, tocarAgenda } from '../services/mixer';
@@ -16,6 +17,10 @@ export function AudioPanel() {
   const [tocando, setTocando] = useState<string | null>(null);
   const lista = listarAudios();
   void versao;
+  const { timeline } = useRoteiroDerivado();
+  const estados = useEditor((s) => s.trilhas);
+  const definirTrilha = useEditor((s) => s.definirTrilha);
+  const trilhas = ordenarTrilhas(timeline.eventos.flatMap((e) => trilhaDoEvento(e.acao) ?? []));
 
   const receber = async (arquivos: FileList | null) => {
     if (!arquivos?.length) return;
@@ -29,7 +34,7 @@ export function AudioPanel() {
   const ouvir = async (nome: string) => {
     if (tocando === nome) { pararAudio(); setTocando(null); return; }
     const d = infoDoAudio(nome)!.duracao;
-    await tocarAgenda([{ arquivo: nome, inicio: 0, fim: d, papel: 'voz', volume: 1 }], 0);
+    await tocarAgenda([{ arquivo: nome, inicio: 0, fim: d, papel: 'voz', volume: 1, trilha: 'previa' }], 0);
     setTocando(nome);
     setTimeout(() => setTocando((n) => (n === nome ? null : n)), d * 1000 + 100);
   };
@@ -40,6 +45,22 @@ export function AudioPanel() {
       <p className="dica">Importe a narração gravada (um arquivo por fala), músicas e efeitos. A fala passa a durar o tempo do áudio, a boca do personagem acompanha o volume da voz e tudo entra no MP4.</p>
       <input ref={entrada} type="file" accept="audio/*,.wav,.mp3,.ogg,.m4a,.aac" multiple hidden onChange={(e) => { void receber(e.target.files); e.target.value = ''; }} />
       <button className="botao-novo-personagem" onClick={() => entrada.current?.click()}>＋ Importar áudio…</button>
+      <h4>Trilhas da aula <small>mixagem</small></h4>
+      {trilhas.length === 0 && <p className="dica">As trilhas aparecem quando o roteiro usa áudio: uma de voz para cada personagem, uma de efeitos, uma de música — e outras que você criar com <code>, trilha nome</code>.</p>}
+      {trilhas.map((id) => {
+        const est = estados[id] ?? TRILHA_PADRAO;
+        return (
+          <div key={id} className="mixer-trilha" data-trilha={id}>
+            <b title={id}>{nomeExibidoDaTrilha(id, (a) => ATORES[a]?.nome ?? a)}</b>
+            <span className="ctl-trilha">
+              <button className={est.mudo ? 'on mudo' : ''} aria-pressed={est.mudo} title="Mudo" onClick={() => definirTrilha(id, { mudo: !est.mudo })}>M</button>
+              <button className={est.solo ? 'on solo' : ''} aria-pressed={est.solo} title="Solo" onClick={() => definirTrilha(id, { solo: !est.solo })}>S</button>
+            </span>
+            <input type="range" min={0} max={1.5} step={0.05} value={est.volume} aria-label={`Volume: ${id}`} onChange={(e) => definirTrilha(id, { volume: Number(e.target.value) })} />
+          </div>
+        );
+      })}
+      <h4>Arquivos de áudio</h4>
       {lista.length === 0 && <p className="dica">Nenhum áudio ainda.</p>}
       {lista.map((a) => (
         <div key={a.nome} className="item-audio">
@@ -58,6 +79,8 @@ export function AudioPanel() {
         <dt>Professor diz "Oi". [áudio: oi.wav]</dt><dd>narração da fala anterior</dd>
         <dt>[música: fundo.mp3, volume 25%]</dt><dd>música até <code>[música: parar]</code> ou o fim</dd>
         <dt>[efeito: palmas.wav]</dt><dd>efeito neste ponto</dd>
+        <dt>[música: chuva.wav, volume 20%, trilha ambiente]</dt><dd>outra trilha, toca junto com a música</dd>
+        <dt>[música: parar trilha ambiente]</dt><dd>para só essa trilha</dd>
       </dl>
     </div>
   );

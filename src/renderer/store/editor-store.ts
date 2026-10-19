@@ -1,8 +1,8 @@
 import { create } from 'zustand';
-import { ATORES, ROTEIRO_EXEMPLO, inserirNoCursor as inserirNoCursorTexto, type ActorId } from '@shared/domain';
+import { ATORES, ROTEIRO_EXEMPLO, TRILHA_PADRAO, inserirNoCursor as inserirNoCursorTexto, sanearTrilhas, type ActorId, type EstadoTrilha } from '@shared/domain';
 import type { FormatoVideo } from '@shared/constants/video';
 import type { Skin } from '@renderer/features/cena';
-import { gravarTexto, lerTexto } from '@renderer/features/sistema';
+import { gravarJson, gravarTexto, lerJson, lerTexto } from '@renderer/features/sistema';
 import type { PacoteLido } from '@renderer/features/personagens';
 
 const consulta = new URLSearchParams(typeof location === 'undefined' ? '' : location.search);
@@ -52,6 +52,8 @@ interface Estado {
   cursorRoteiro: number | null;
   /** muda quando a lista de áudios muda */
   versaoAudio: number;
+  /** mixagem das trilhas de áudio (voz de cada personagem, efeitos, música...): volume, mudo e solo */
+  trilhas: Record<string, EstadoTrilha>;
   /** muda quando a lista de imagens muda */
   versaoImagens: number;
   /** personagem sendo arrastado no palco e a posição provisória (0..1 da largura) */
@@ -74,6 +76,7 @@ interface Acoes {
   novaVersaoBib: () => void;
   novaVersaoPersonagens: () => void;
   novaVersaoAudio: () => void;
+  definirTrilha: (id: string, parcial: Partial<EstadoTrilha>) => void;
   novaVersaoImagens: () => void;
 }
 
@@ -106,6 +109,7 @@ export const useEditor = create<Estado & Acoes>()((set, get) => ({
   acaoInicial: null,
   cursorRoteiro: null,
   versaoAudio: 0,
+  trilhas: sanearTrilhas(lerJson('stickboard.trilhas.v1', {})),
   versaoImagens: 0,
   arrastoPalco: null,
   versaoPersonagens: 0,
@@ -134,6 +138,7 @@ export const useEditor = create<Estado & Acoes>()((set, get) => ({
     const { tocando, t } = get();
     set({ t: !tocando && t >= duracao ? 0 : t, tocando: !tocando });
   },
+  definirTrilha: (id, parcial) => set((s) => ({ trilhas: { ...s.trilhas, [id]: { ...TRILHA_PADRAO, ...s.trilhas[id], ...parcial } } })),
   novaVersaoBib: () => set((s) => ({ versaoBib: s.versaoBib + 1 })),
   novaVersaoAudio: () => set((s) => ({ versaoAudio: s.versaoAudio + 1 })),
   novaVersaoImagens: () => set((s) => ({ versaoImagens: s.versaoImagens + 1, versaoBib: s.versaoBib + 1 })),
@@ -144,6 +149,7 @@ export const useEditor = create<Estado & Acoes>()((set, get) => ({
 useEditor.subscribe((s, anterior) => {
   if (s.roteiro !== anterior.roteiro) gravarTexto('stickboard.roteiro.v2', s.roteiro);
   if (s.fonteLousa !== anterior.fonteLousa) gravarTexto('stickboard.fonte.lousa', s.fonteLousa);
+  if (s.trilhas !== anterior.trilhas) gravarJson('stickboard.trilhas.v1', s.trilhas);
   if (s.fonteFala !== anterior.fonteFala) gravarTexto('stickboard.fonte.fala', s.fonteFala);
 });
 

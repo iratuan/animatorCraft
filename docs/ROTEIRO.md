@@ -67,3 +67,7 @@ Arquivo > Novo personagem cria nome, apelidos, idade, altura, boneco de palito b
 ## Prompt mestre (roteiro por qualquer IA)
 
 Arquivo ▸ Prompt mestre para IA (ou a tela inicial) gera um texto único com o formato, todas as frases aceitas, os personagens, sprites, clipes, imagens e áudios da sua biblioteca. Cole-o em qualquer IA, traga a resposta de volta na segunda aba e o app a confere frase a frase. Um exemplo gerado está em `docs/prompt-mestre-exemplo.md`. O código fica em `src/shared/domain/prompt-mestre.ts` e os testes garantem que toda frase documentada no prompt é entendida pelo interpretador.
+
+## Trilhas de áudio
+
+A voz de cada personagem, os efeitos e a música ficam em trilhas separadas (uma faixa para cada na linha do tempo, com M = mudo e S = solo; o volume fica na aba Áudio e tudo vale no MP4). Para tocar mais de uma música ou efeito ao mesmo tempo, dê nome à trilha: `[música: chuva.wav, volume 20%, trilha ambiente]`, `[efeito: passos.wav, trilha passos]`. `[música: parar trilha ambiente]` para só aquela; `[música: parar]` para todas as músicas. Na mesma trilha de música, a nova substitui a anterior.

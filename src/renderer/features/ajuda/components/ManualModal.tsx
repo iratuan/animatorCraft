@@ -219,6 +219,24 @@ Professor desenha um gráfico de pizza: Sim=70, Não=30 no quadro.`}</Ex>
     </>),
   },
   {
+    id: 'barra', titulo: 'Barra de ferramentas e painéis',
+    corpo: (<>
+      <p>Logo abaixo dos menus fica a <b>barra de ferramentas</b>, com os atalhos mais usados: <i>Início, Novo, Abrir, Salvar</i> (projeto), <i>Desfazer/Refazer</i>, <i>Personagem</i> (novo), <i>Clipes</i> (expressões e clipes), <i>Sprites</i> (editor), <i>Exportar</i>/<i>Importar</i> (zip de sprites do personagem selecionado), <i>Prompt IA</i>, <i>MP4</i>, <i>Legendas</i>, <i>PNG</i> e <i>Manual</i>. Todo botão também está num menu, com o mesmo ícone.</p>
+      <p><b>Painéis redimensionáveis:</b> arraste a divisória entre o roteiro e o palco, entre o palco e o painel lateral, e acima da linha do tempo. Duplo clique restaura o tamanho; com a divisória focada, as setas movem de 10 em 10 px (Shift = 50). Os tamanhos ficam guardados.</p>
+      <p><b>Corrigir sprites fora do app:</b> selecione o personagem, clique em <i>Exportar</i>, edite os PNGs (mantendo os nomes) e use <i>Importar</i>. Pode mandar só os arquivos que mudaram; o resto do personagem permanece.</p>
+    </>),
+  },
+  {
+    id: 'trilhas', titulo: 'Trilhas de áudio',
+    corpo: (<>
+      <p>Cada fala narrada vai para a trilha de voz do seu personagem; efeitos e músicas têm trilhas próprias. Na linha do tempo há <b>uma faixa por trilha</b> com <b>M</b> (mudo) e <b>S</b> (solo); na aba <i>Áudio ▸ Trilhas da aula</i> cada trilha tem um controle de volume. A mixagem vale na reprodução (ao vivo) e no MP4, e é guardada no projeto.</p>
+      <Ex>{`[música: fundo.mp3, volume 25%]
+[música: chuva.wav, volume 20%, trilha ambiente]
+[efeito: passos.wav, trilha passos]
+[música: parar trilha ambiente]`}</Ex>
+      <p>Trilhas com nomes diferentes tocam juntas; na mesma trilha de música a nova substitui a anterior. <C>[música: parar]</C> para todas as músicas.</p>
+    </>),
+  },  {
     id: 'prompt-mestre', titulo: 'Prompt mestre (roteiro com qualquer IA)',
     corpo: (<>
       <p>O <b>prompt mestre</b> é um texto único que ensina qualquer IA (Claude, ChatGPT, Gemini, Llama, Copilot…) a escrever roteiros que o StickBoard entende de primeira. Abra-o pela <b>tela inicial</b> (“Gerar roteiro com qualquer IA”) ou em <b>Arquivo ▸ Prompt mestre para IA…</b>.</p>

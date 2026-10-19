@@ -1,4 +1,5 @@
 import { BarraMenu } from '@renderer/components/BarraMenu';
+import { BarraSuperior } from '@renderer/components/BarraSuperior';
 import { EditorLayout } from '@renderer/layouts/EditorLayout';
 import { useEditor } from '@renderer/store/editor-store';
 import { useMenus } from '@renderer/pages/editor/useMenus';
@@ -45,6 +46,7 @@ export function EditorPage() {
     <>
       <EditorLayout
         menu={<BarraMenu menus={menus} aberto={menuAberto} setAberto={(n) => set({ menuAberto: n })} />}
+        barra={<BarraSuperior menus={menus} />}
         ferramentas={<Ferramentas />}
         roteiro={<RoteiroPanel />}
         palco={<PalcoPanel />}

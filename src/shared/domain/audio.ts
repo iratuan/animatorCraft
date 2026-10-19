@@ -1,3 +1,4 @@
+import { semAcento } from '../util/texto';
 import type { Timeline } from './timeline';
 
 /**
@@ -39,7 +40,56 @@ export function visemaDoAudio(envelope: number[], t: number): 'a' | 'e' | 'o' | 
   return Math.floor(t * ENVELOPE_HZ / 3) % 2 === 0 ? 'e' : 'o';
 }
 
-export interface ItemAudio { arquivo: string; inicio: number; fim: number; papel: 'voz' | 'musica' | 'efeito'; volume: number }
+export interface ItemAudio { arquivo: string; inicio: number; fim: number; papel: 'voz' | 'musica' | 'efeito'; volume: number; /** trilha em que toca (ver trilhaDoEvento) */ trilha: string }
+
+// ---------------------------------------------------------------- trilhas
+// Cada fala narrada tem a trilha "voz:<personagem>"; efeitos vão para "efeitos"; músicas para "musica". "[música: x.mp3, trilha chuva]" cria outra trilha.
+// Trilhas diferentes tocam ao mesmo tempo; na mesma trilha de música, a nova substitui a anterior.
+export const TRILHA_EFEITOS = 'efeitos';
+export const TRILHA_MUSICA = 'musica';
+export const nomeDeTrilha = (s: string): string => semAcento(s).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 30) || 'trilha';
+
+/** Estado de mixagem de uma trilha: volume (0..1,5), mudo e solo. */
+export interface EstadoTrilha { volume: number; mudo: boolean; solo: boolean }
+export const TRILHA_PADRAO: EstadoTrilha = { volume: 1, mudo: false, solo: false };
+/** Quanto a trilha deixa passar: 0 se estiver muda ou se outra trilha estiver em solo; senão o volume dela. */
+export function ganhoDaTrilha(estados: Record<string, EstadoTrilha>, id: string): number {
+  if (id === 'previa') return 1; // ouvir um arquivo no painel de áudio ignora a mixagem
+  const solo = Object.values(estados).some((t) => t.solo);
+  const t = estados[id] ?? TRILHA_PADRAO;
+  if (t.mudo || (solo && !t.solo)) return 0;
+  return Math.max(0, Math.min(1.5, Number.isFinite(t.volume) ? t.volume : 1));
+}
+/** Aceita só o que tem forma de estado de trilha (dados de projeto ou de armazenamento). */
+export function sanearTrilhas(bruto: unknown): Record<string, EstadoTrilha> {
+  const out: Record<string, EstadoTrilha> = {};
+  if (!bruto || typeof bruto !== 'object' || Array.isArray(bruto)) return out;
+  for (const [id, v] of Object.entries(bruto as Record<string, unknown>).slice(0, 64)) {
+    if (!v || typeof v !== 'object') continue;
+    const o = v as Partial<EstadoTrilha>;
+    out[id.slice(0, 60)] = { volume: typeof o.volume === 'number' && Number.isFinite(o.volume) ? Math.max(0, Math.min(1.5, o.volume)) : 1, mudo: o.mudo === true, solo: o.solo === true };
+  }
+  return out;
+}
+/** Em que trilha de áudio cai um evento da linha do tempo (undefined se não tem som). */
+export function trilhaDoEvento(a: Timeline['eventos'][number]['acao']): string | undefined {
+  if (a.tipo === 'fala' && a.audio) return `voz:${a.ator}`;
+  if (a.tipo !== 'audio' || a.parar) return undefined;
+  return a.trilha ?? (a.papel === 'musica' ? TRILHA_MUSICA : a.papel === 'efeito' ? TRILHA_EFEITOS : 'voz');
+}
+/** Nome para mostrar: "Voz — CringeFather", "Efeitos", "Música", ou o nome dado pelo usuário. */
+export function nomeExibidoDaTrilha(id: string, nomeDoAtor: (ator: string) => string = (x) => x): string {
+  if (id.startsWith('voz:')) return `Voz — ${nomeDoAtor(id.slice(4))}`;
+  if (id === 'voz') return 'Voz';
+  if (id === TRILHA_EFEITOS) return 'Efeitos';
+  if (id === TRILHA_MUSICA) return 'Música';
+  return id.charAt(0).toUpperCase() + id.slice(1).replace(/-/g, ' ');
+}
+/** Vozes primeiro, depois efeitos, depois as músicas e as trilhas criadas. */
+export function ordenarTrilhas(ids: string[]): string[] {
+  const peso = (id: string) => (id.startsWith('voz') ? 0 : id === TRILHA_EFEITOS ? 1 : id === TRILHA_MUSICA ? 2 : 3);
+  return [...new Set(ids)].sort((a, b) => peso(a) - peso(b)); // estável: dentro de cada grupo vale a ordem em que aparecem no roteiro
+}
 
 /** Linha do tempo → o que toca e quando (voz de cada fala com áudio, músicas até o "parar"/fim e efeitos). */
 export function agendaDeAudio(tl: Timeline): ItemAudio[] {
@@ -49,15 +99,16 @@ export function agendaDeAudio(tl: Timeline): ItemAudio[] {
     const a = e.acao;
     if (a.tipo === 'fala' && a.audio) {
       const d = infoDoAudio(a.audio)?.duracao ?? e.fim - e.inicio;
-      itens.push({ arquivo: a.audio, inicio: e.inicio, fim: e.inicio + d, papel: 'voz', volume: 1 });
+      itens.push({ arquivo: a.audio, inicio: e.inicio, fim: e.inicio + d, papel: 'voz', volume: 1, trilha: `voz:${a.ator}` });
     } else if (a.tipo === 'audio') {
-      if (a.parar) { for (const m of musicas) if (m.fim > e.inicio) m.fim = e.inicio; continue; }
+      if (a.parar) { for (const m of musicas) if (m.fim > e.inicio && (!a.trilha || m.trilha === a.trilha)) m.fim = e.inicio; continue; }
+      const trilha = trilhaDoEvento(a)!;
       const d = infoDoAudio(a.arquivo)?.duracao ?? 0;
       if (a.papel === 'musica') {
-        for (const m of musicas) if (m.fim > e.inicio) m.fim = e.inicio; // uma música por vez
-        const item: ItemAudio = { arquivo: a.arquivo, inicio: e.inicio, fim: tl.duracao, papel: 'musica', volume: a.volume ?? 0.25 };
+        for (const m of musicas) if (m.fim > e.inicio && m.trilha === trilha) m.fim = e.inicio; // uma música por vez em cada trilha
+        const item: ItemAudio = { arquivo: a.arquivo, inicio: e.inicio, fim: tl.duracao, papel: 'musica', volume: a.volume ?? 0.25, trilha };
         musicas.push(item); itens.push(item);
-      } else itens.push({ arquivo: a.arquivo, inicio: e.inicio, fim: e.inicio + d, papel: 'efeito', volume: a.volume ?? 0.8 });
+      } else itens.push({ arquivo: a.arquivo, inicio: e.inicio, fim: e.inicio + d, papel: a.papel === 'voz' ? 'voz' : 'efeito', volume: a.volume ?? (a.papel === 'voz' ? 1 : 0.8), trilha });
     }
   }
   return itens;

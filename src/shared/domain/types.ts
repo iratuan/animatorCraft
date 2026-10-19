@@ -31,7 +31,8 @@ type AcaoBase =
   /** udio: arquivo da narração (importado); a fala dura o tempo do áudio e a boca acompanha o volume dele */
   | { tipo: 'fala'; ator: ActorId; texto: string; audio?: string }
   /** Música de fundo (até parar ou o fim), efeito sonoro ou voz solta. Não atrasa as ações seguintes. */
-  | { tipo: 'audio'; arquivo: string; papel: 'voz' | 'musica' | 'efeito'; volume?: number; parar?: boolean }
+  /** \	rilha\: nome da trilha (padrão: voz de cada personagem, \"efeitos\" e \"musica\"); trilhas diferentes tocam ao mesmo tempo. Com \parar\, \	rilha\ limita quais músicas param. */
+  | { tipo: 'audio'; arquivo: string; papel: 'voz' | 'musica' | 'efeito'; volume?: number; parar?: boolean; trilha?: string }
   | { tipo: 'escrever'; ator: ActorId; conteudo: Conteudo }
   | { tipo: 'apontar'; ator: ActorId }
   | { tipo: 'apagar' }

@@ -5,7 +5,7 @@ import { FORMATOS } from '@shared/constants/video';
 import type { GrupoMenu } from '@renderer/components/BarraMenu';
 import { desfazer, refazer, useEditor } from '@renderer/store/editor-store';
 import { useRoteiroDerivado } from '@renderer/features/roteiro';
-import { limparPacotesSalvos, lerPacote } from '@renderer/features/personagens';
+import { limparPacotesSalvos, lerPacote, montarPacoteExportacao, nomeDoZip } from '@renderer/features/personagens';
 import { gerarSrt, estadoEm, ATORES } from '@shared/domain';
 import { renderizarCena } from '@renderer/features/cena';
 import { abrirProjeto, montarProjeto } from '@renderer/features/projeto';
@@ -70,53 +70,61 @@ export function useMenus(): GrupoMenu[] {
     renderizarCena(c.getContext('2d')!, estadoEm(timeline, useEditor.getState().t), dim.w, dim.h);
     c.toBlob((b) => b && baixarArquivo(b, 'quadro.png'));
   };
+  // exporta o personagem selecionado direto, sem abrir o editor de sprites: edite os PNGs fora e importe o zip de volta
+  const exportarSelecionado = async () => {
+    const id = useEditor.getState().selecionado ?? 'cringefather';
+    set({ mensagem: 'Montando o zip de sprites…' });
+    const { zip, total } = await montarPacoteExportacao([id]);
+    set({ mensagem: total ? await plataforma.salvarPacoteSprites(zip, nomeDoZip([id])) : 'Nada para exportar: esse personagem ainda não tem sprites.' });
+  };
   const carregarModelo = (texto: string, nome: string) => { setRoteiro(texto); set({ t: 0, mensagem: `Modelo “${nome}” carregado. Troque o que está entre {chaves}.` }); };
 
   return [
     { nome: 'Arquivo', itens: [
-      { rotulo: 'Tela inicial', acao: () => navegar('/') },
+      { rotulo: 'Tela inicial', icone: 'inicio2', barra: { grupo: 0, rotulo: 'Início' }, acao: () => navegar('/') },
       { separador: true, rotulo: '' },
-      { rotulo: 'Novo roteiro em branco', acao: () => { setRoteiro('[papéis: professor=CringeFather, aluno=BetaSon]\n\n# Cena 1\n\n'); set({ t: 0 }); } },
-      ...MODELOS.map((m) => ({ rotulo: `Novo a partir do modelo: ${m.area} — ${m.nome}`, acao: () => carregarModelo(m.roteiro, m.nome) })),
+      { rotulo: 'Novo roteiro em branco', icone: 'novo', barra: { grupo: 0, rotulo: 'Novo' }, acao: () => { setRoteiro('[papéis: professor=CringeFather, aluno=BetaSon]\n\n# Cena 1\n\n'); set({ t: 0 }); } },
+      ...MODELOS.map((m) => ({ rotulo: `Novo a partir do modelo: ${m.area} — ${m.nome}`, icone: 'modelo' as const, acao: () => carregarModelo(m.roteiro, m.nome) })),
       { separador: true, rotulo: '' },
-      { rotulo: 'Abrir roteiro…', atalho: 'Ctrl+O', acao: abrirRoteiro },
-      { rotulo: 'Salvar roteiro…', atalho: 'Ctrl+S', acao: salvarRoteiro },
-      { rotulo: 'Salvar projeto completo (.zip)…', acao: salvarProjeto },
-      { rotulo: 'Abrir projeto (.zip)…', acao: abrirProjetoZip },
-      { rotulo: 'Carregar exemplo', acao: () => { setRoteiro(ROTEIRO_EXEMPLO); set({ t: 0 }); } },
-      { rotulo: 'Prompt mestre para IA (copiar e colar)…', acao: () => set({ promptMestreAberto: true }) },
-      { rotulo: 'Gerar / melhorar roteiro com IA (direto no app)…', acao: () => set({ iaAberta: true }) },
+      { rotulo: 'Abrir roteiro…', icone: 'abrir', atalho: 'Ctrl+O', acao: abrirRoteiro },
+      { rotulo: 'Salvar roteiro…', icone: 'salvar', atalho: 'Ctrl+S', acao: salvarRoteiro },
+      { rotulo: 'Salvar projeto completo (.zip)…', icone: 'salvar', barra: { grupo: 0, rotulo: 'Salvar' }, acao: salvarProjeto },
+      { rotulo: 'Abrir projeto (.zip)…', icone: 'abrir', barra: { grupo: 0, rotulo: 'Abrir' }, acao: abrirProjetoZip },
+      { rotulo: 'Carregar exemplo', icone: 'exemplo', acao: () => { setRoteiro(ROTEIRO_EXEMPLO); set({ t: 0 }); } },
+      { rotulo: 'Prompt mestre para IA (copiar e colar)…', icone: 'ia', barra: { grupo: 3, rotulo: 'Prompt IA' }, acao: () => set({ promptMestreAberto: true }) },
+      { rotulo: 'Gerar / melhorar roteiro com IA (direto no app)…', icone: 'ia', acao: () => set({ iaAberta: true }) },
       { separador: true, rotulo: '' },
-      { rotulo: 'Novo personagem…', acao: () => set({ fichaPersonagem: {} }) },
-      { rotulo: 'Expressões e clipes do personagem…', acao: () => set({ editorAnimacao: { ator: useEditor.getState().selecionado ?? 'cringefather' } }) },
-      { rotulo: 'Editar / exportar sprites dos personagens…', acao: () => set({ editorPersonagem: useEditor.getState().selecionado ?? 'cringefather' }) },
-      { rotulo: 'Inserir imagem na lousa (PNG, JPG, WebP)…', acao: () => void escolherEInserirImagem() },
-      { rotulo: 'Importar áudio (narração, música, efeito)…', acao: () => set({ aba: 'audio' }) },
-      { rotulo: 'Importar pacote de sprites (.zip)…', acao: importarPacote },
-      { rotulo: 'Remover pacotes importados', acao: async () => { await limparPacotesSalvos(); set({ mensagem: 'Pacotes removidos. Recarregue o app para voltar aos sprites originais.' }); } },
+      { rotulo: 'Novo personagem…', icone: 'personagemNovo', barra: { grupo: 2, rotulo: 'Personagem' }, acao: () => set({ fichaPersonagem: {} }) },
+      { rotulo: 'Expressões e clipes do personagem…', icone: 'clipes', barra: { grupo: 2, rotulo: 'Clipes' }, acao: () => set({ editorAnimacao: { ator: useEditor.getState().selecionado ?? 'cringefather' } }) },
+      { rotulo: 'Editar / exportar sprites dos personagens…', icone: 'sprites', barra: { grupo: 2, rotulo: 'Sprites' }, acao: () => set({ editorPersonagem: useEditor.getState().selecionado ?? 'cringefather' }) },
+      { rotulo: 'Inserir imagem na lousa (PNG, JPG, WebP)…', icone: 'imagem', acao: () => void escolherEInserirImagem() },
+      { rotulo: 'Importar áudio (narração, música, efeito)…', icone: 'audio', acao: () => set({ aba: 'audio' }) },
+      { rotulo: 'Exportar sprites do personagem selecionado (.zip)…', icone: 'exportarZip', barra: { grupo: 2, rotulo: 'Exportar' }, acao: () => void exportarSelecionado() },
+      { rotulo: 'Importar pacote de sprites (.zip)…', icone: 'importarZip', barra: { grupo: 2, rotulo: 'Importar' }, acao: importarPacote },
+      { rotulo: 'Remover pacotes importados', icone: 'lixo', acao: async () => { await limparPacotesSalvos(); set({ mensagem: 'Pacotes removidos. Recarregue o app para voltar aos sprites originais.' }); } },
     ] },
     { nome: 'Editar', itens: [
-      { rotulo: 'Desfazer', atalho: 'Ctrl+Z', acao: () => { if (desfazer()) set({ mensagem: 'Desfeito.' }); } },
-      { rotulo: 'Refazer', atalho: 'Ctrl+Y', acao: () => { if (refazer()) set({ mensagem: 'Refeito.' }); } },
+      { rotulo: 'Desfazer', icone: 'desfazer', barra: { grupo: 1, rotulo: 'Desfazer' }, atalho: 'Ctrl+Z', acao: () => { if (desfazer()) set({ mensagem: 'Desfeito.' }); } },
+      { rotulo: 'Refazer', icone: 'refazer', barra: { grupo: 1, rotulo: 'Refazer' }, atalho: 'Ctrl+Y', acao: () => { if (refazer()) set({ mensagem: 'Refeito.' }); } },
     ] },
     { nome: 'Exportar', itens: [
-      { rotulo: `Vídeo MP4 (${dim.nome})`, acao: () => void exportar() },
-      { rotulo: 'Vídeo MP4 nos dois formatos (16:9 e 9:16)', acao: () => void exportarTodos() },
-      { rotulo: 'Legendas das falas (.srt)', acao: async () => { const c = await plataforma.salvarRoteiro(gerarSrt(timeline, (id) => ATORES[id]?.nome ?? id), 'legendas.srt'); if (c) set({ mensagem: `Legendas salvas: ${c}` }); } },
-      { rotulo: 'Quadro atual (PNG)', acao: quadroAtualPng },
+      { rotulo: `Vídeo MP4 (${dim.nome})`, icone: 'video', barra: { grupo: 4, rotulo: 'MP4' }, acao: () => void exportar() },
+      { rotulo: 'Vídeo MP4 nos dois formatos (16:9 e 9:16)', icone: 'videoDois', acao: () => void exportarTodos() },
+      { rotulo: 'Legendas das falas (.srt)', icone: 'legenda', barra: { grupo: 4, rotulo: 'Legendas' }, acao: async () => { const c = await plataforma.salvarRoteiro(gerarSrt(timeline, (id) => ATORES[id]?.nome ?? id), 'legendas.srt'); if (c) set({ mensagem: `Legendas salvas: ${c}` }); } },
+      { rotulo: 'Quadro atual (PNG)', icone: 'foto', barra: { grupo: 4, rotulo: 'PNG' }, acao: quadroAtualPng },
     ] },
     { nome: 'Exibir', itens: [
-      { rotulo: 'Formato 16:9 (YouTube)', acao: () => set({ formato: '16:9' }) },
-      { rotulo: 'Formato 9:16 (Shorts)', acao: () => set({ formato: '9:16' }) },
+      { rotulo: 'Formato 16:9 (YouTube)', icone: 'formato', acao: () => set({ formato: '16:9' }) },
+      { rotulo: 'Formato 9:16 (Shorts)', icone: 'formato', acao: () => set({ formato: '9:16' }) },
       { separador: true, rotulo: '' },
-      { rotulo: 'Aproximar linha do tempo', acao: () => set({ zoom: Math.min(200, useEditor.getState().zoom * 1.3) }) },
-      { rotulo: 'Afastar linha do tempo', acao: () => set({ zoom: Math.max(25, useEditor.getState().zoom / 1.3) }) },
+      { rotulo: 'Aproximar linha do tempo', icone: 'zoomMais', acao: () => set({ zoom: Math.min(200, useEditor.getState().zoom * 1.3) }) },
+      { rotulo: 'Afastar linha do tempo', icone: 'zoomMenos', acao: () => set({ zoom: Math.max(25, useEditor.getState().zoom / 1.3) }) },
     ] },
     { nome: 'Ajuda', itens: [
-      { rotulo: 'Manual de uso', atalho: 'F1', acao: () => set({ manualAberto: true }) },
-      { rotulo: 'Prompt mestre para IA', acao: () => set({ promptMestreAberto: true }) },
-      { rotulo: 'Sintaxe do roteiro e modelos', acao: () => set({ aba: 'aula' }) },
-      { rotulo: 'Sobre o StickBoard', acao: () => set({ manualAberto: true, manualSecao: 'sobre' }) },
+      { rotulo: 'Manual de uso', icone: 'manual', barra: { grupo: 5, rotulo: 'Manual' }, atalho: 'F1', acao: () => set({ manualAberto: true }) },
+      { rotulo: 'Prompt mestre para IA', icone: 'ia', acao: () => set({ promptMestreAberto: true }) },
+      { rotulo: 'Sintaxe do roteiro e modelos', icone: 'modelo', acao: () => set({ aba: 'aula' }) },
+      { rotulo: 'Sobre o StickBoard', icone: 'sobre', acao: () => set({ manualAberto: true, manualSecao: 'sobre' }) },
     ] },
   ];
 }

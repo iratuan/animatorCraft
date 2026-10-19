@@ -1,5 +1,5 @@
 import { strFromU8, strToU8, zipSync } from 'fflate';
-import { atoresPersonalizados, listarAudios, listarImagens, registrarAtor, type ActorSpec } from '@shared/domain';
+import { atoresPersonalizados, listarAudios, listarImagens, registrarAtor, sanearTrilhas, type ActorSpec, type EstadoTrilha } from '@shared/domain';
 import { useEditor } from '@renderer/store/editor-store';
 import { aplicarPacote, descompactarComLimites, lerAnimacoes, lerEntradasSalvas, lerPacote, gravarFichas, gravarSkins, mesclarAnimacoes } from '@renderer/features/personagens';
 import { bufferBrutoDoAudio, carregarAudiosSalvos, importarAudio } from '@renderer/features/audio';
@@ -11,14 +11,14 @@ import { bytesDeUrl } from '@renderer/features/sistema';
  *   roteiro.txt · projeto.json · sprites/<personagem>/<tipo>_<nome>.png · audios/<arquivo>
  */
 const VERSAO = 1;
-interface ProjetoJson { versao: number; personagens: ActorSpec[]; skinPadrao: string; skins: Record<string, string>; fonteLousa: string; fonteFala: string; formato: string }
+interface ProjetoJson { versao: number; personagens: ActorSpec[]; skinPadrao: string; skins: Record<string, string>; fonteLousa: string; fonteFala: string; formato: string; trilhas?: Record<string, EstadoTrilha> }
 
 
 export async function montarProjeto(): Promise<{ zip: Uint8Array; sprites: number; audios: number }> {
   const s = useEditor.getState();
   const arquivos: Record<string, Uint8Array> = {};
   arquivos['roteiro.txt'] = strToU8(s.roteiro);
-  const json: ProjetoJson = { versao: VERSAO, personagens: atoresPersonalizados(), skinPadrao: s.skinPadrao, skins: s.skins, fonteLousa: s.fonteLousa, fonteFala: s.fonteFala, formato: s.formato };
+  const json: ProjetoJson = { versao: VERSAO, personagens: atoresPersonalizados(), skinPadrao: s.skinPadrao, skins: s.skins, fonteLousa: s.fonteLousa, fonteFala: s.fonteFala, formato: s.formato, trilhas: s.trilhas };
   arquivos['projeto.json'] = strToU8(JSON.stringify(json, null, 2));
   const animacoes = lerAnimacoes();
   if (animacoes.clipes.length || animacoes.expressoes.length) arquivos['animacoes.json'] = strToU8(JSON.stringify(animacoes, null, 2));
@@ -71,7 +71,7 @@ export async function abrirProjeto(zip: Uint8Array): Promise<{ sprites: number; 
   await carregarAudiosSalvos();
   const st = useEditor.getState();
   gravarSkins({ padrao: skinPadrao, porPersonagem: skins });
-  st.set({ roteiro: strFromU8(todos['roteiro.txt']), t: 0, skinPadrao, skins, fonteLousa: typeof j.fonteLousa === 'string' ? j.fonteLousa : st.fonteLousa, fonteFala: typeof j.fonteFala === 'string' ? j.fonteFala : st.fonteFala, ...(j.formato === '16:9' || j.formato === '9:16' ? { formato: j.formato } : {}) });
+  st.set({ roteiro: strFromU8(todos['roteiro.txt']), t: 0, skinPadrao, skins, trilhas: sanearTrilhas(j.trilhas), fonteLousa: typeof j.fonteLousa === 'string' ? j.fonteLousa : st.fonteLousa, fonteFala: typeof j.fonteFala === 'string' ? j.fonteFala : st.fonteFala, ...(j.formato === '16:9' || j.formato === '9:16' ? { formato: j.formato } : {}) });
   st.novaVersaoPersonagens(); st.novaVersaoAudio(); st.novaVersaoImagens();
   return { sprites, audios, personagens: personagens.length };
 }

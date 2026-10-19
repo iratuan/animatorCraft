@@ -6,6 +6,7 @@ import { DANCA_PADRAO, DURACAO_PADRAO_DANCA, FRASE_POSE, POSES_DE_DANCA, type Ex
 import type { Acao, Cena, Lado, Roteiro } from '../types';
 import { lerGrafico } from '../grafico';
 import { lerEfeito } from '../imagem';
+import { nomeDeTrilha } from '../audio';
 
 
 /** Teto de qualquer duração escrita no roteiro (10 min): um zero a mais por engano não pode travar o vídeo nem a exportação. */
@@ -264,17 +265,22 @@ function interpretarAudio(frase: string, anteriores: Acao[], avisos: string[]): 
   if (!m) return null;
   const tipo = semAcento(m[1]!);
   let corpo = m[2]!;
-  const vol = /[,;]?\s*volume\s*(\d+(?:[.,]\d+)?)\s*%?\s*$/i.exec(corpo);
-  const volume = vol ? Math.min(1, parseFloat(vol[1]!.replace(',', '.')) / 100) : undefined;
-  if (vol) corpo = corpo.slice(0, vol.index).trim();
+  // opções no fim da etiqueta, em qualquer ordem: \", volume 30%\" e \", trilha ambiente\"
+  let volume: number | undefined, trilha: string | undefined;
+  for (let i = 0; i < 2; i++) {
+    const tr = /[,;]?\s*trilha\s+([^,;]+?)\s*$/i.exec(corpo);
+    if (tr) { trilha = nomeDeTrilha(tr[1]!); corpo = corpo.slice(0, tr.index).trim(); continue; }
+    const vol = /[,;]?\s*volume\s*(\d+(?:[.,]\d+)?)\s*%?\s*$/i.exec(corpo);
+    if (vol) { volume = Math.min(1, parseFloat(vol[1]!.replace(',', '.')) / 100); corpo = corpo.slice(0, vol.index).trim(); }
+  }
   if (!corpo) { avisos.push(`Falta o nome do arquivo: "${frase}"`); return {}; }
-  if (tipo === 'musica' && /^(parar|para|fim|silencio)$/.test(semAcento(corpo))) return { nova: { tipo: 'audio', arquivo: '', papel: 'musica', parar: true } };
+  if (tipo === 'musica' && /^(parar|para|fim|silencio)$/.test(semAcento(corpo))) return { nova: { tipo: 'audio', arquivo: '', papel: 'musica', parar: true, ...(trilha ? { trilha } : {}) } };
   if (tipo === 'audio' || tipo === 'voz') {
     const ultima = anteriores[anteriores.length - 1];
     if (ultima?.tipo === 'fala' && !ultima.audio) { ultima.audio = corpo; return { anexada: true }; }
-    return { nova: { tipo: 'audio', arquivo: corpo, papel: 'voz', ...(volume !== undefined ? { volume } : {}) } };
+    return { nova: { tipo: 'audio', arquivo: corpo, papel: 'voz', ...(volume !== undefined ? { volume } : {}), ...(trilha ? { trilha } : {}) } };
   }
-  return { nova: { tipo: 'audio', arquivo: corpo, papel: tipo === 'musica' ? 'musica' : 'efeito', ...(volume !== undefined ? { volume } : {}) } };
+  return { nova: { tipo: 'audio', arquivo: corpo, papel: tipo === 'musica' ? 'musica' : 'efeito', ...(volume !== undefined ? { volume } : {}), ...(trilha ? { trilha } : {}) } };
 }
 
 // ---------------------------------------------------------------- simultaneidade

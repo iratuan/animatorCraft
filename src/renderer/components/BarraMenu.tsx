@@ -1,4 +1,7 @@
-export interface ItemMenu { rotulo: string; atalho?: string; acao?: () => void; desativado?: boolean; separador?: boolean }
+import { Icones, type NomeIcone } from '@renderer/components/Icones';
+
+/** \icone\: aparece no menu. \arra\: o item também entra na barra de ferramentas do topo (grupo = bloco de botões; rotulo = texto curto ao lado do ícone). */
+export interface ItemMenu { rotulo: string; atalho?: string; acao?: () => void; desativado?: boolean; separador?: boolean; icone?: NomeIcone; barra?: { grupo: number; rotulo: string } }
 export interface GrupoMenu { nome: string; itens: ItemMenu[] }
 
 export function BarraMenu({ menus, aberto, setAberto }: { menus: GrupoMenu[]; aberto: string | null; setAberto: (n: string | null) => void }) {
@@ -13,7 +16,7 @@ export function BarraMenu({ menus, aberto, setAberto }: { menus: GrupoMenu[]; ab
               {m.itens.map((i, k) =>
                 i.separador ? <hr key={k} /> : (
                   <button key={k} disabled={i.desativado} onClick={() => { setAberto(null); i.acao?.(); }}>
-                    <span>{i.rotulo}</span><kbd>{i.atalho}</kbd>
+                    <span className="mi">{i.icone ? Icones[i.icone] : null}</span><span className="mr">{i.rotulo}</span><kbd>{i.atalho}</kbd>
                   </button>
                 ),
               )}
