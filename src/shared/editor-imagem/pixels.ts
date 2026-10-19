@@ -120,7 +120,8 @@ export function redimensionar(p: Pixels, nw: number, nh: number): Pixels {
 
 export const corDeHex = (hex: string, a = 255): Cor => {
   const h = hex.replace('#', '');
+  if (!/^(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(h)) return { r: 0, g: 0, b: 0, a }; // texto digitado pela metade ou inválido: preto, nunca uma cor aleatória
   const v = h.length === 3 ? h.split('').map((c) => c + c).join('') : h;
   return { r: parseInt(v.slice(0, 2), 16) || 0, g: parseInt(v.slice(2, 4), 16) || 0, b: parseInt(v.slice(4, 6), 16) || 0, a };
 };
-export const hexDeCor = (c: Cor): string => `#${[c.r, c.g, c.b].map((v) => Math.round(v).toString(16).padStart(2, '0')).join('')}`;
+export const hexDeCor = (c: Cor): string => `#${[c.r, c.g, c.b].map((v) => Math.max(0, Math.min(255, Math.round(Number.isFinite(v) ? v : 0))).toString(16).padStart(2, '0')).join('')}`;

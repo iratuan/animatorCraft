@@ -8,10 +8,10 @@ const roteiro = `[papéis: professor=CringeFather, aluno=BetaSon]
 # Posição
 Professor entra pela esquerda andando. Aluno entra pela direita andando.
 Professor diz "Um momento, por favor". Aluno dança por 6 segundos. Professor aponta.`;
-await p.goto('http://127.0.0.1:5173/');
+await p.goto('http://127.0.0.1:5173/#/editor');
 await p.evaluate((r) => { localStorage.clear(); localStorage.setItem('stickboard.roteiro.v2', r); }, roteiro);
-await p.goto('http://127.0.0.1:5173/?t=4.6');
-await p.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+await p.goto('http://127.0.0.1:5173/?t=4.6#/editor');
+await p.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
 await p.waitForTimeout(800);
 const cv = p.locator('.area-palco canvas');
 const box = await cv.boundingBox();

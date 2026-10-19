@@ -21,4 +21,6 @@ export interface StickboardApi {
   /** grava o .zip de sprites exportado; devolve o caminho, ou null se o usuário cancelou */
   salvarPacoteSprites(pedido: PedidoSalvarVideo): Promise<string | null>;
   info(): Promise<InfoApp>;
+  /** copia texto para a área de transferência do sistema (o navegador do Electron bloqueia a API web) */
+  copiarTexto(texto: string): Promise<boolean>;
 }

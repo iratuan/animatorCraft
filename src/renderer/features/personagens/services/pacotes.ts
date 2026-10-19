@@ -3,7 +3,7 @@ import { analisarPacote, ATORES, EXPRESSOES, ORDEM_ATORES, registrarAtor, type N
 import { gravarFichas } from './fichas';
 import { mesclarAnimacoes, type AnimacoesJson } from './animacoes';
 import { salvarEntradas, type EntradaSalva } from './spritesSalvos';
-import { caixaCabeca, registrarSprites, type SpriteInfo } from '@renderer/features/cena';
+import { caixaCabeca, listarSprites, registrarSprites, type SpriteInfo } from '@renderer/features/cena';
 
 /** Importação de pacotes de sprites (.zip) seguindo o padrão de nomes de docs/SPRITES.md. */
 export interface PacoteLido {
@@ -22,8 +22,28 @@ export interface PacoteLido {
   }>;
 }
 
+/** Limites ao abrir um zip de fora: um arquivo corrompido ou malicioso não pode estourar a memória do aplicativo. */
+export const LIMITE_ARQUIVO_ZIP = 40 * 1024 * 1024;
+export const LIMITE_TOTAL_ZIP = 400 * 1024 * 1024;
+export const LIMITE_ENTRADAS_ZIP = 3000;
+
+/** Descompacta conferindo tamanhos antes de gastar memória (o zip declara o tamanho de cada arquivo). */
+export function descompactarComLimites(zip: Uint8Array): Record<string, Uint8Array> {
+  let total = 0, n = 0;
+  return unzipSync(zip, { filter: (f) => {
+    if (f.name.endsWith('/')) return false;
+    if (++n > LIMITE_ENTRADAS_ZIP) throw new Error('O zip tem arquivos demais (mais de ' + LIMITE_ENTRADAS_ZIP + ').');
+    if (f.originalSize > LIMITE_ARQUIVO_ZIP) throw new Error('O arquivo ' + f.name + ' é grande demais (' + Math.round(f.originalSize / 1048576) + ' MB; o limite é ' + LIMITE_ARQUIVO_ZIP / 1048576 + ' MB).');
+    total += f.originalSize;
+    if (total > LIMITE_TOTAL_ZIP) throw new Error('O zip descompactado passa de ' + LIMITE_TOTAL_ZIP / 1048576 + ' MB.');
+    return true;
+  } });
+}
+
 export function lerPacote(zip: Uint8Array, opcoes: { exigirParado?: boolean } = {}): PacoteLido {
-  const arquivos = new Map<string, Uint8Array>(Object.entries(unzipSync(zip)));
+  // por padrão, só quem ainda não tem pose_parado na biblioteca precisa mandar uma (o pacote pode trazer só o que mudou)
+  const exigirParado = opcoes.exigirParado ?? ((id: string) => !listarSprites(id as ActorId).poses.includes('parado'));
+  const arquivos = new Map<string, Uint8Array>(Object.entries(descompactarComLimites(zip)));
   const fichas: Record<string, NovoAtor> = {};
   for (const [caminho, dados] of arquivos) {
     const m = /^([a-z0-9]+(?:-[a-z0-9]+)*)\/ficha\.json$/.exec(caminho);
@@ -41,7 +61,7 @@ export function lerPacote(zip: Uint8Array, opcoes: { exigirParado?: boolean } = 
       for (const e of Array.isArray(j.expressoes) ? j.expressoes : []) animacoes.expressoes.push({ ...e, ator: m[1]! });
     } catch { /* animacoes.json ilegível: o resto do pacote segue */ }
   }
-  const relatorio = analisarPacote([...arquivos.keys()], { personagens: [...ORDEM_ATORES, ...Object.keys(fichas)], expressoes: [...EXPRESSOES], posesConhecidas: POSES_CONHECIDAS, exigirParado: opcoes.exigirParado });
+  const relatorio = analisarPacote([...arquivos.keys()], { personagens: [...ORDEM_ATORES, ...Object.keys(fichas)], expressoes: [...EXPRESSOES], posesConhecidas: POSES_CONHECIDAS, exigirParado });
   // um zip só com animacoes.json (personagem sem sprites) é válido
   if (animacoes.clipes.length || animacoes.expressoes.length) relatorio.erros = relatorio.erros.filter((e) => !e.startsWith('Nenhum sprite .png'));
   const meta: PacoteLido['meta'] = {};
@@ -89,11 +109,12 @@ async function prepararImagem(bytes: Uint8Array, bruto = false): Promise<{ url: 
 
 
 /** Aplica o pacote à biblioteca (e guarda no navegador para a próxima abertura). `substituir`: apaga os sprites antigos dos personagens do pacote. */
-export async function aplicarPacote(p: PacoteLido, substituir: boolean, opcoes: { bruto?: boolean; encaixe?: SpriteInfo['encaixe'] } = {}): Promise<{ importados: number; falhas: string[] }> {
+export async function aplicarPacote(p: PacoteLido, substituir: boolean, opcoes: { bruto?: boolean; encaixe?: SpriteInfo['encaixe'] } = {}): Promise<{ importados: number; falhas: string[]; /** false = não foi possível guardar para a próxima abertura do app */ persistido: boolean }> {
   const porPersonagem = new Map<string, EntradaSalva[]>();
   const falhas: string[] = [];
   for (const [id, ficha] of Object.entries(p.fichas)) {
-    const r = registrarAtor(ficha);
+    // o id é o da pasta do zip (os sprites estão guardados por ele), mesmo que o nome da ficha gere outro
+    const r = registrarAtor({ ...ficha, id });
     if ('erro' in r) falhas.push(`${id}: ${r.erro}`);
   }
   if (Object.keys(p.fichas).length) gravarFichas();
@@ -122,13 +143,14 @@ export async function aplicarPacote(p: PacoteLido, substituir: boolean, opcoes: 
   }
   // sprite editado no editor de imagem: a tela é a mesma de antes, então o encaixe da cabeça medido para ela continua valendo
   if (opcoes.encaixe) for (const entradas of porPersonagem.values()) for (const e of entradas) if (e.info.tipo === 'rosto') e.info.encaixe = opcoes.encaixe;
-  let importados = 0;
+  let importados = 0, persistido = true;
   for (const [id, entradas] of porPersonagem) {
+    if (!ATORES[id]) { falhas.push(`${id}: personagem desconhecido (crie o personagem ou inclua a ficha.json no pacote).`); continue; }
     await registrarSprites(id as ActorId, entradas, { substituir });
-    await salvarEntradas(id, entradas, substituir);
+    persistido = (await salvarEntradas(id, entradas, substituir)) && persistido;
     importados += entradas.length;
   }
-  return { importados, falhas };
+  return { importados, falhas, persistido };
 }
 
 

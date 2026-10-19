@@ -73,8 +73,12 @@ export async function registrarSprites(id: ActorId, entradas: { info: SpriteInfo
   if (opcoes.substituir) p.sprites = [];
   await Promise.all(entradas.map((e) => carregar(e.info, e.url)));
   for (const { info } of entradas) {
-    const mesmo = (s: SpriteInfo) => (s.tipo ?? 'pose') === (info.tipo ?? 'pose') && s.tags[0] === info.tags[0] && (s.variante ?? null) === (info.variante ?? null);
-    p.sprites = p.sprites.filter((s) => !mesmo(s));
+    const mesmoNome = (s: SpriteInfo) => (s.tipo ?? 'pose') === (info.tipo ?? 'pose') && s.tags[0] === info.tags[0];
+    const mesmo = (s: SpriteInfo) => mesmoNome(s) && (s.variante ?? null) === (info.variante ?? null);
+    // pose_andar.png (imagem única) e pose_andar_1.png (quadros) não convivem: o que chega agora substitui o outro tipo, senão a imagem
+    // única viraria um quadro perdido da animação e o zip exportado seria recusado na importação (\"versão sem número e com número\")
+    const incompativel = (s: SpriteInfo) => mesmoNome(s) && ((s.variante ?? null) === null) !== ((info.variante ?? null) === null);
+    p.sprites = p.sprites.filter((s) => !mesmo(s) && !incompativel(s));
     p.sprites.push(info);
   }
   sincronizarExpressoes(id);

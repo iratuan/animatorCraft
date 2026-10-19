@@ -27,9 +27,9 @@ const abrirEditorDe = async (espaco) => {
 const salvarEFechar = async () => { await EI.getByRole('button', { name: 'Salvar no sprite' }).click(); await p.waitForSelector('.ei', { state: 'detached', timeout: 15000 }); await p.waitForTimeout(500); };
 
 secao('criar personagem e desenhar o parado');
-await p.goto('http://127.0.0.1:5173/'); await p.evaluate(() => localStorage.clear());
-await p.goto('http://127.0.0.1:5173/?teste=1');
-await p.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+await p.goto('http://127.0.0.1:5173/#/editor'); await p.evaluate(() => localStorage.clear());
+await p.goto('http://127.0.0.1:5173/?teste=1#/editor');
+await p.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
 await p.getByText('Arquivo').first().click(); await p.getByText('Novo personagem…').click();
 await p.getByPlaceholder('ex.: Tia Marta').fill('Zeca'); await p.getByRole('button', { name: 'Criar personagem' }).click();
 await p.waitForTimeout(500);
@@ -68,8 +68,8 @@ await p.getByRole('button', { name: 'Fechar' }).click();
 
 secao('o personagem aparece e fala no palco com os sprites desenhados');
 await p.evaluate(() => localStorage.setItem('stickboard.roteiro.v2', '# Cena\nZeca entra pela esquerda andando.\nZeca diz "Olá, eu sou o Zeca!".'));
-await p.goto('http://127.0.0.1:5173/?teste=1&t=3.5');
-await p.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+await p.goto('http://127.0.0.1:5173/?teste=1&t=3.5#/editor');
+await p.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
 await p.waitForTimeout(1500);
 const cv = p.locator('.area-palco canvas');
 const achou = await cv.evaluate((c) => { const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; const cores = { verde: 0, azul: 0 }; for (let i = 0; i < d.length; i += 4) { /* o palco é em escala de cinza: procura o corpo escuro/claro do desenho */ if (d[i] > 20 && d[i] < 230 && Math.abs(d[i] - d[i + 1]) < 3) cores.verde++; } return cores.verde; });
@@ -77,8 +77,8 @@ ok(achou > 3000, `o sprite desenhado aparece no palco (${achou} px de cinza do p
 await p.screenshot({ path: `${dest}/14-personagem-novo-no-palco.png`, clip: await cv.boundingBox() });
 
 secao('persistência depois de recarregar');
-await p.goto('http://127.0.0.1:5173/?teste=1');
-await p.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+await p.goto('http://127.0.0.1:5173/?teste=1#/editor');
+await p.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
 await p.getByText('Arquivo').first().click(); await p.getByText('Editar / exportar sprites dos personagens…').click();
 await p.locator('.seletor-personagem button', { hasText: 'Zeca' }).click();
 ok(await p.locator('[data-espaco="pose_parado"]').evaluate((e) => !e.classList.contains('vazio')), 'o parado continua existindo depois de recarregar');
@@ -91,9 +91,9 @@ await p.keyboard.press('Escape');
 secao('toque de verdade (tela sensível ao toque do tablet)');
 const ctxT = await b.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true, isMobile: false });
 const pt = await ctxT.newPage(); pt.on('pageerror', (e) => erros.push(String(e)));
-await pt.goto('http://127.0.0.1:5173/'); await pt.evaluate(() => localStorage.clear());
-await pt.goto('http://127.0.0.1:5173/?ator=laura&teste=1');
-await pt.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+await pt.goto('http://127.0.0.1:5173/#/editor'); await pt.evaluate(() => localStorage.clear());
+await pt.goto('http://127.0.0.1:5173/?ator=laura&teste=1#/editor');
+await pt.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
 await pt.getByText('Editar / exportar sprites de Laura').click();
 await pt.locator('[data-espaco="rosto_brava"]').click();
 await pt.waitForFunction(() => !!window.__motorEditor && window.__motorEditor.ui.camadas.length > 0, null, { timeout: 20000 });

@@ -63,3 +63,7 @@ Arquivo > Novo personagem cria nome, apelidos, idade, altura, boneco de palito b
 - `Erika faz cara de apaixonada.` · qualquer expressão que o personagem tenha (as 10 padrão, as criadas para o boneco e os sprites `rosto_<nome>.png`).
 - `Dario faz o clipe tchau.` (toca uma vez) · `Dario faz o clipe "dança do foguete" por 6 segundos.` · clipes criados em Personagem ▸ Expressões e clipes. Nome desconhecido gera aviso.
 - Durações escritas no roteiro têm teto de 10 minutos.
+
+## Prompt mestre (roteiro por qualquer IA)
+
+Arquivo ▸ Prompt mestre para IA (ou a tela inicial) gera um texto único com o formato, todas as frases aceitas, os personagens, sprites, clipes, imagens e áudios da sua biblioteca. Cole-o em qualquer IA, traga a resposta de volta na segunda aba e o app a confere frase a frase. Um exemplo gerado está em `docs/prompt-mestre-exemplo.md`. O código fica em `src/shared/domain/prompt-mestre.ts` e os testes garantem que toda frase documentada no prompt é entendida pelo interpretador.

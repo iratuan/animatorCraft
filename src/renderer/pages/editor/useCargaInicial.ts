@@ -1,25 +1,15 @@
 import { useEffect } from 'react';
 import { useEditor } from '@renderer/store/editor-store';
-import { carregarFontes } from '@renderer/features/fontes';
-import { carregarAudiosSalvos } from '@renderer/features/audio';
-import { carregarImagensSalvas } from '@renderer/features/imagens';
-import { carregarPacotesSalvos, carregarPersonagens } from '@renderer/features/personagens';
+import { carregarFontesDoApp, carregarImagensEAudios, carregarSprites } from '@renderer/bootstrap';
 
-/** Ao abrir o app: carrega os sprites, reaplica os pacotes importados antes e espera as fontes. */
+/** Ao abrir o editor: carrega os sprites, reaplica os pacotes importados antes e espera as fontes. */
 export function useCargaInicial() {
   const set = useEditor((s) => s.set);
   useEffect(() => {
-    carregarPersonagens()
-      .then(() => carregarPacotesSalvos())
-      .then((n) => {
-        set({ spritesOk: true, mensagem: n ? `Pronto. ${n} sprites de pacotes importados foram reaplicados.` : 'Pronto.' });
-        useEditor.getState().novaVersaoBib();
-      })
+    carregarSprites()
+      .then((n) => set({ spritesOk: true, mensagem: n ? `Pronto. ${n} sprites de pacotes importados foram reaplicados.` : 'Pronto.' }))
       .catch((e: Error) => set({ mensagem: `Falha ao carregar personagens: ${e.message}` }));
-    void carregarImagensSalvas().then(() => useEditor.getState().novaVersaoImagens());
-    void carregarAudiosSalvos().then(() => useEditor.getState().novaVersaoAudio());
-    void carregarFontes().then(() => set({ fontesOk: true }));
+    void carregarImagensEAudios();
+    void carregarFontesDoApp();
   }, [set]);
 }
-
-

@@ -2,7 +2,7 @@ import { _electron as electron } from 'playwright-core';
 const app = await electron.launch({ executablePath: 'release/win-unpacked/StickBoard.exe', args: [] });
 const win = await app.firstWindow();
 const erros = []; win.on('pageerror', (e) => erros.push(String(e)));
-await win.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+await win.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
 await win.getByText('Arquivo').first().click();
 await win.getByText('Editar / exportar sprites dos personagens…').click();
 await win.locator('[data-espaco="rosto_brava"]').first().click().catch(() => {});

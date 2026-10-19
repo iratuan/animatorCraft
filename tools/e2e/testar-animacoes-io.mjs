@@ -13,13 +13,13 @@ const URL = 'http://127.0.0.1:5173/';
 const novaPagina = async (perfil = true) => {
   const ctx = await b.newContext({ viewport: { width: 1600, height: 900 }, acceptDownloads: true });
   const p = await ctx.newPage(); p.erros = []; p.on('pageerror', (e) => p.erros.push(String(e)));
-  await p.goto(URL + '?ator=betason');
-  await p.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+  await p.goto(URL + '?ator=betason#/editor');
+  await p.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
   await p.waitForTimeout(400);
   return p;
 };
 const menu = async (p, grupo, item) => { await p.getByText(grupo, { exact: true }).first().click(); await p.getByText(item, { exact: false }).first().click(); };
-const recarregar = async (p, q = '') => { await p.goto(URL + (q || '?ator=betason')); await p.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 }); await p.waitForTimeout(500); };
+const recarregar = async (p, q = '') => { await p.goto(URL + (q || '?ator=betason') + '#/editor'); await p.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 }); await p.waitForTimeout(500); };
 const importarZip = async (p, zip, nome = 'pacote.zip') => {
   const [fc] = await Promise.all([p.waitForEvent('filechooser'), menu(p, 'Arquivo', 'Importar pacote de sprites')]);
   await fc.setFiles({ name: nome, mimeType: 'application/zip', buffer: Buffer.from(zip) });

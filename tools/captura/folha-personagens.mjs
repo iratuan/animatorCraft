@@ -5,7 +5,7 @@ import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 const destino = process.argv[2] ?? 'evidencias/folha';
-const base = 'http://127.0.0.1:5173/';
+const base = 'http://127.0.0.1:5173/#/editor';
 mkdirSync(destino, { recursive: true });
 const roteiro = `# Folha
 

@@ -1,13 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { App } from '@renderer/App';
 import { ErroBoundary } from '@renderer/components/ErroBoundary';
-import { useEditor } from '@renderer/store/editor-store';
 import './assets/estilos/global.css';
-import { carregarPersonagensSalvos } from '@renderer/features/personagens';
 
-// os personagens criados pelo usuário precisam existir antes da primeira interpretação do roteiro
-const skins = carregarPersonagensSalvos();
-useEditor.setState({ skinPadrao: skins.padrao, skins: skins.porPersonagem });
-
+// A tela inicial abre sem carregar sprites, fontes nem personagens salvos: quem precisa deles os pede (ver bootstrap.ts).
 createRoot(document.getElementById('root')!).render(<ErroBoundary><App /></ErroBoundary>);
-

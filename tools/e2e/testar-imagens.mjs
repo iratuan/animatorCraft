@@ -5,7 +5,7 @@ const b = await chromium.launch({ channel: 'msedge', headless: true });
 const ctx = await b.newContext({ viewport: { width: 1600, height: 900 } });
 const p = await ctx.newPage();
 const erros = []; p.on('pageerror', (e) => erros.push(String(e)));
-await p.goto('http://127.0.0.1:5173/');
+await p.goto('http://127.0.0.1:5173/#/editor');
 // cria um PNG de teste (diagrama colorido) dentro da página e salva em disco
 const b64 = await p.evaluate(() => {
   const c = document.createElement('canvas'); c.width = 640; c.height = 400; const x = c.getContext('2d');
@@ -19,8 +19,8 @@ const b64 = await p.evaluate(() => {
 writeFileSync(`${dest}/ciclo-da-agua.png`, Buffer.from(b64, 'base64'));
 const roteiro = `[papéis: professor=CringeFather, aluno=BetaSon]\n\n# Imagem\nProfessor entra pela esquerda andando. Aluno entra pela direita andando.\nProfessor diz "Vamos ver o ciclo da água.".\nProfessor aponta.\nEspera 3 segundos.`;
 await p.evaluate((r) => { localStorage.clear(); localStorage.setItem('stickboard.roteiro.v2', r); }, roteiro);
-await p.goto('http://127.0.0.1:5173/?t=0');
-await p.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+await p.goto('http://127.0.0.1:5173/?t=0#/editor');
+await p.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
 // 1) cursor dentro da frase da fala
 await p.evaluate(() => { const ta = document.querySelector('#campo-roteiro'); ta.focus(); const pos = ta.value.indexOf('Vamos ver') + 4; ta.setSelectionRange(pos, pos); ta.dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowRight', bubbles: true })); });
 // 2) importa e insere
@@ -41,8 +41,8 @@ void durTotal;
 await p.close();
 const q = await ctx.newPage();
 q.on('pageerror', (e) => erros.push(String(e)));
-await q.goto('http://127.0.0.1:5173/?t=0');
-await q.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+await q.goto('http://127.0.0.1:5173/?t=0#/editor');
+await q.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
 // pega o início do evento da imagem pelo bloco da linha do tempo
 const blocos = await q.locator('.bloco').evaluateAll((els) => els.map((e) => ({ t: e.title, left: parseFloat(e.style.left) })));
 const img = blocos.find((x) => /mostra imagem/.test(x.t));
@@ -50,8 +50,8 @@ const zoom = await q.evaluate(() => 70);
 const inicio = img.left / zoom;
 console.log('bloco da imagem:', img.t, '| início', inicio.toFixed(2), 's');
 for (const [nome, dt] of [['02-entrando-surgir', 0.35], ['03-no-lugar', 1.2]]) {
-  await q.goto(`http://127.0.0.1:5173/?t=${(inicio + dt).toFixed(2)}`);
-  await q.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+  await q.goto(`http://127.0.0.1:5173/?t=${(inicio + dt).toFixed(2)}#/editor`);
+  await q.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
   await q.waitForTimeout(900);
   const box = await q.locator('.area-palco canvas').boundingBox();
   await q.screenshot({ path: `${dest}/${nome}.png`, clip: box });
@@ -90,8 +90,8 @@ const [dlp] = await Promise.all([q.waitForEvent('download'), q.getByText('Salvar
 await dlp.saveAs(`${dest}/projeto-com-imagem.zip`);
 const novo = await b.newContext({ viewport: { width: 1600, height: 900 } });
 const r = await novo.newPage(); r.on('pageerror', (e) => erros.push(String(e)));
-await r.goto('http://127.0.0.1:5173/');
-await r.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+await r.goto('http://127.0.0.1:5173/#/editor');
+await r.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
 await r.getByText('Arquivo').first().click();
 const [fc] = await Promise.all([r.waitForEvent('filechooser'), r.getByText('Abrir projeto (.zip)…').click()]);
 await fc.setFiles(`${dest}/projeto-com-imagem.zip`);

@@ -10,6 +10,7 @@ const api: StickboardApi = {
   abrirPacoteSprites: () => ipcRenderer.invoke(CANAIS_IPC.pacoteAbrir),
   salvarPacoteSprites: (pedido) => ipcRenderer.invoke(CANAIS_IPC.pacoteSalvar, pedido),
   info: () => ipcRenderer.invoke(CANAIS_IPC.infoApp),
+  copiarTexto: (texto) => ipcRenderer.invoke(CANAIS_IPC.copiarTexto, texto),
 };
 
 contextBridge.exposeInMainWorld('stickboard', api);

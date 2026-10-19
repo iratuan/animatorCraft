@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 const man = JSON.parse(readFileSync('src/renderer/assets/personagens/personagens.json', 'utf8'));
 const b = await chromium.launch({ channel: 'msedge', headless: true });
 const p = await b.newPage();
-await p.goto('http://127.0.0.1:5173/');
+await p.goto('http://127.0.0.1:5173/#/editor');
 const res = await p.evaluate(async (man) => {
   const carregar = async (u) => { const i = new Image(); i.src = u; await i.decode(); return i; };
   const out = [];

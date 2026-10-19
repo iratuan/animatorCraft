@@ -5,12 +5,12 @@ const p = await b.newPage({ viewport: { width: 1600, height: 900 } });
 const erros = []; p.on('pageerror', (e) => erros.push(String(e)));
 const rot = `[papéis: professor=CringeFather, aluno=BetaSon]\n\n# Escrita\nProfessor entra pela esquerda andando.\nProfessor escreve "Quadrado da soma" no quadro.\nProfessor escreve $(a+b)^2 = a^2 + 2ab + b^2$ no quadro.\nProfessor desenha o gráfico de y = x^2 - 2 no quadro.`;
 // preferências antigas de "mão com marcador" ou "traço a traço" não podem trazer a mão de volta
-await p.goto('http://127.0.0.1:5173/');
+await p.goto('http://127.0.0.1:5173/#/editor');
 await p.evaluate((r) => { localStorage.clear(); localStorage.setItem('stickboard.roteiro.v2', r); localStorage.setItem('stickboard.escrita', 'mao'); }, rot);
 const instantes = [['01-texto-sendo-revelado', 3.4], ['02-equacao-sendo-revelada', 6.2], ['03-grafico-sendo-traçado', 9.3]];
 for (const [nome, t] of instantes) {
-  await p.goto(`http://127.0.0.1:5173/?t=${t}`);
-  await p.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+  await p.goto(`http://127.0.0.1:5173/?t=${t}#/editor`);
+  await p.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
   await p.waitForTimeout(900);
   const canvas = p.locator('.area-palco canvas');
   // a mão antiga era pintada com cinza (220,220,220) numa área grande; conta esses pixels no quadro inteiro

@@ -153,6 +153,7 @@ export function duracaoDoClipe(c: Clipe): number {
 
 /** Posição de animação do clipe no tempo local `t` (segundos desde que a pose começou). */
 export function avaliarClipe(c: Clipe, t: number): Transformacao {
+  t = Number.isNaN(t) ? 0 : Math.max(0, Math.min(1e9, t)); // instante inválido não pode virar NaN no desenho
   const total = duracaoDoClipe(c);
   const tt = c.loop ? t % total : Math.min(t, total - 1e-6);
   let acc = 0;
@@ -183,7 +184,7 @@ export interface ClipePersonalizado extends Clipe {
   substitui?: PoseId;
 }
 
-const semAcentoClipe = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const semAcentoClipe = (s: string) => (typeof s === 'string' ? s : '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 /** "Tchau Longo!" -> "tchau-longo" */
 export const nomeDeClipe = (s: string): string => semAcentoClipe(s).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 

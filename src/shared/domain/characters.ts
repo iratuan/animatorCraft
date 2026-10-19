@@ -81,13 +81,22 @@ export const idDoNome = (nome: string): string => nome.normalize('NFD').replace(
 /** Palavras reservadas do roteiro que um personagem novo não pode usar como apelido. */
 const RESERVADAS = new Set(['professor', 'professora', 'aluno', 'todos', 'todas', 'quadro', 'lousa', 'plano', 'close', 'zoom', 'volta']);
 
-export interface NovoAtor { nome: string; apelidos?: string[]; idade?: string; descricao?: string; altura?: number; modeloPalito?: ModeloPalito; expressaoPadrao?: ExpressaoId; dancaPadrao?: string; corPele?: string }
+export interface NovoAtor { /** só na criação: id escolhido (a pasta do pacote); sem ele o id vem do nome */ id?: string; nome: string; apelidos?: string[]; idade?: string; descricao?: string; altura?: number; modeloPalito?: ModeloPalito; expressaoPadrao?: ExpressaoId; dancaPadrao?: string; corPele?: string }
 
-/** Cria ou atualiza um personagem personalizado. Devolve o id, ou um texto de erro. */
+// cópias de EXPRESSOES e POSES_DE_DANCA (poses.ts): este arquivo não importa nada em tempo de execução porque tools/sprites/importar-sprites.mjs o carrega direto no Node; personagens.test.ts confere que as listas não se afastam
+export const EXPRESSOES_ACEITAS: readonly string[] = ['neutra', 'feliz', 'triste', 'brava', 'surpresa', 'confusa', 'sarcastica', 'assustada', 'empolgada', 'entediada'];
+export const DANCAS_ACEITAS: readonly string[] = ['danca_funky', 'danca_atual', 'danca_ballet', 'danca_descoordenada', 'danca_hippie'];
+const MODELOS_PALITO: readonly ModeloPalito[] = ['professor', 'aluno', 'mae', 'cacula', 'priminha'];
+const COR_VALIDA = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
+const texto = (v: unknown, max: number): string => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+
+/** Cria ou atualiza um personagem personalizado. Devolve o id, ou um texto de erro. Aceita dados vindos de arquivos (zip, projeto): tudo é conferido. */
 export function registrarAtor(n: NovoAtor, idExistente?: ActorId): { id: ActorId } | { erro: string } {
-  const nome = n.nome.trim();
+  if (!n || typeof n !== 'object') return { erro: 'Ficha do personagem inválida.' };
+  const nome = texto(n.nome, 60);
   if (!nome) return { erro: 'Dê um nome ao personagem.' };
-  const id = idExistente ?? idDoNome(nome);
+  const idPedido = typeof n.id === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(n.id) && n.id.length <= 40 ? n.id : '';
+  const id = idExistente ?? (idPedido || idDoNome(nome));
   if (!id) return { erro: 'O nome precisa ter letras ou números.' };
   if (!idExistente && ATORES[id]) return { erro: `Já existe um personagem chamado "${ATORES[id]!.nome}".` };
   if (idExistente && !ATORES[idExistente]?.personalizado) return { erro: 'Só personagens criados por você podem ser editados.' };
@@ -95,7 +104,7 @@ export function registrarAtor(n: NovoAtor, idExistente?: ActorId): { id: ActorId
   const outros = Object.values(ATORES).filter((o) => o.id !== id);
   const dono = (a: string) => outros.find((o) => o.apelidos.includes(a));
   // apelidos que o usuário escreveu: erro se forem palavra do roteiro ou de outro personagem
-  const pedidos = [...new Set((n.apelidos ?? []).map(limpo).filter(Boolean))];
+  const pedidos = [...new Set((Array.isArray(n.apelidos) ? n.apelidos : []).filter((a): a is string => typeof a === 'string').slice(0, 20).map(limpo).filter(Boolean))];
   const reservado = pedidos.find((a) => RESERVADAS.has(a));
   if (reservado) return { erro: `"${reservado}" é uma palavra do roteiro; use outro apelido.` };
   const ocupado = pedidos.find((a) => dono(a));
@@ -106,10 +115,11 @@ export function registrarAtor(n: NovoAtor, idExistente?: ActorId): { id: ActorId
   if (!apelidos.length) return { erro: 'Esse nome conflita com palavras do roteiro ou com outro personagem; escolha outro.' };
   const slots = Object.values(ATORES).length;
   ATORES[id] = {
-    id, nome, apelidos, idade: n.idade?.trim() || '', descricao: n.descricao?.trim() || '',
-    altura: Math.min(640, Math.max(220, n.altura ?? 440)), temSprites: false, modeloPalito: n.modeloPalito ?? 'aluno',
-    expressaoPadrao: n.expressaoPadrao ?? 'feliz', slotPadrao: ATORES[id]?.slotPadrao ?? 0.15 + ((slots * 0.17) % 0.7),
-    personalizado: true, dancaPadrao: n.dancaPadrao, corPele: n.corPele,
+    id, nome, apelidos, idade: texto(n.idade, 40), descricao: texto(n.descricao, 400),
+    altura: Math.min(640, Math.max(220, typeof n.altura === 'number' && Number.isFinite(n.altura) ? n.altura : 440)), temSprites: false,
+    modeloPalito: MODELOS_PALITO.includes(n.modeloPalito as ModeloPalito) ? (n.modeloPalito as ModeloPalito) : 'aluno',
+    expressaoPadrao: EXPRESSOES_ACEITAS.includes(n.expressaoPadrao as string) ? (n.expressaoPadrao as ExpressaoId) : 'feliz', slotPadrao: ATORES[id]?.slotPadrao ?? 0.15 + ((slots * 0.17) % 0.7),
+    personalizado: true, dancaPadrao: DANCAS_ACEITAS.includes(n.dancaPadrao as string) ? n.dancaPadrao : undefined, corPele: typeof n.corPele === 'string' && COR_VALIDA.test(n.corPele) ? n.corPele : idExistente ? ATORES[id]?.corPele : undefined, // editar pela ficha não pode apagar a cor da pele
   };
   if (!ORDEM_ATORES.includes(id)) ORDEM_ATORES.push(id);
   return { id };

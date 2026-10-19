@@ -2,7 +2,7 @@ import { strToU8, zipSync } from 'fflate';
 import { ATORES, EXPRESSOES, ROSTOS_ESPECIAIS, type ActorId } from '@shared/domain';
 import { type SpriteInfo } from '@renderer/features/cena';
 import { bytesDeUrl } from '@renderer/features/sistema';
-import { lerEntradasSalvas } from './spritesSalvos';
+import { lerEntradasSalvas, personagensSubstituidos } from './spritesSalvos';
 import { lerAnimacoes } from './animacoes';
 import { manifestoOriginal, urlOriginal } from './bibliotecaSprites';
 
@@ -33,6 +33,7 @@ export const nomeDoZip =(ids: ActorId[]) => (ids.length === 1 ? `sprites-${ids[0
 
 export async function montarPacoteExportacao(ids: ActorId[]): Promise<{ zip: Uint8Array; total: number }> {
   const salvos = await lerEntradasSalvas();
+  const substituidos = await personagensSubstituidos(); // importados com \"substituir\": os originais do app deles não valem mais
   const arquivos: Record<string, Uint8Array> = {
     'LEIA-ME.txt': strToU8(leiaMe()),
   };
@@ -40,15 +41,19 @@ export async function montarPacoteExportacao(ids: ActorId[]): Promise<{ zip: Uin
   for (const id of ids) {
     const lista = new Map<string, { info: SpriteInfo; dados: Uint8Array }>();
     const pendentes: Promise<void>[] = [];
-    for (const s of manifestoOriginal[id]?.sprites ?? []) {
+    for (const s of substituidos.has(id) ? [] : manifestoOriginal[id]?.sprites ?? []) {
       const url = urlOriginal(s.arquivo);
       if (url) pendentes.push(bytesDeUrl(url).then((dados) => { lista.set(chave(s), { info: s, dados }); }));
     }
     await Promise.all(pendentes);
-    for (const e of salvos.filter((x) => x.personagem === id)) lista.set(chave(e.info), { info: e.info, dados: await bytesDeUrl(e.url) }); // o que o usuário importou vale mais que o original
+    for (const e of salvos.filter((x) => x.personagem === id)) {
+      // imagem única e quadros numerados do mesmo nome não convivem: o importado remove do original o outro tipo (como o app faz ao carregar)
+      for (const [k, x] of lista) if ((x.info.tipo ?? 'pose') === (e.info.tipo ?? 'pose') && x.info.tags[0] === e.info.tags[0] && ((x.info.variante ?? null) === null) !== ((e.info.variante ?? null) === null)) lista.delete(k);
+      lista.set(chave(e.info), { info: e.info, dados: await bytesDeUrl(e.url) }); // o que o usuário importou vale mais que o original
+    }
     const spec = ATORES[id];
     if (spec?.personalizado) {
-      arquivos[`${id}/ficha.json`] = strToU8(JSON.stringify({ nome: spec.nome, apelidos: spec.apelidos, idade: spec.idade, descricao: spec.descricao, altura: spec.altura, modeloPalito: spec.modeloPalito, expressaoPadrao: spec.expressaoPadrao, dancaPadrao: spec.dancaPadrao }, null, 2));
+      arquivos[`${id}/ficha.json`] = strToU8(JSON.stringify({ nome: spec.nome, apelidos: spec.apelidos, idade: spec.idade, descricao: spec.descricao, altura: spec.altura, modeloPalito: spec.modeloPalito, expressaoPadrao: spec.expressaoPadrao, dancaPadrao: spec.dancaPadrao, corPele: spec.corPele }, null, 2));
       total++;
     }
     const proprias = { clipes: lerAnimacoes().clipes.filter((c) => c.ator === id), expressoes: lerAnimacoes().expressoes.filter((x) => x.ator === id) };

@@ -15,10 +15,16 @@ export function ImportarPacoteModal() {
 
   const confirmar = async () => {
     set({ mensagem: 'Importando sprites…' });
-    const { importados, falhas } = await aplicarPacote(importacao.pacote, importacao.substituir);
-    set({ importacao: null });
-    novaVersao();
-    set({ mensagem: falhas.length ? `Importados ${importados} sprites; ${falhas.length} falharam: ${falhas[0]}` : `Pacote importado: ${importados} sprites. A biblioteca e as animações já usam os novos sprites.` });
+    try {
+      const { importados, falhas, persistido } = await aplicarPacote(importacao.pacote, importacao.substituir);
+      set({ importacao: null });
+      novaVersao();
+      const aviso = persistido ? '' : ' Atenção: não consegui guardar no aparelho; ao fechar o app os sprites voltam ao que eram.';
+      set({ mensagem: (falhas.length ? `Importados ${importados} sprites; ${falhas.length} falharam: ${falhas[0]}` : `Pacote importado: ${importados} sprites. A biblioteca e as animações já usam os novos sprites.`) + aviso });
+    } catch (e) {
+      set({ importacao: null, mensagem: `Não consegui importar o pacote: ${(e as Error).message}` });
+      novaVersao();
+    }
   };
 
   return (

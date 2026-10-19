@@ -20,6 +20,7 @@ const SECOES: Secao[] = [
         <li><b>Linha do tempo</b> (embaixo): uma faixa por personagem, mais Câmera, Quadro e Direção.</li>
         <li><b>Barra de ferramentas</b> (esquerda, ícones): inserem trechos prontos no roteiro.</li>
       </ul>
+      <p>Ao abrir o programa você cai na <b>tela inicial</b>: continue o último roteiro, comece um em branco ou de um modelo, ou peça o roteiro a uma IA com o <b>prompt mestre</b>. <b>Arquivo ▸ Tela inicial</b> volta para ela.</p>
       <p>Comece por <b>Arquivo ▸ Novo a partir do modelo</b> (matemática, ciências ou inglês), troque o que está entre <C>{'{chaves}'}</C> e aperte reproduzir.</p>
     </>),
   },
@@ -218,7 +219,18 @@ Professor desenha um gráfico de pizza: Sim=70, Não=30 no quadro.`}</Ex>
     </>),
   },
   {
-    id: 'ia', titulo: 'Roteiro com IA',
+    id: 'prompt-mestre', titulo: 'Prompt mestre (roteiro com qualquer IA)',
+    corpo: (<>
+      <p>O <b>prompt mestre</b> é um texto único que ensina qualquer IA (Claude, ChatGPT, Gemini, Llama, Copilot…) a escrever roteiros que o StickBoard entende de primeira. Abra-o pela <b>tela inicial</b> (“Gerar roteiro com qualquer IA”) ou em <b>Arquivo ▸ Prompt mestre para IA…</b>.</p>
+      <ol>
+        <li><b>Copiar o prompt:</b> informe o assunto, a matéria, a série, a duração e quem faz o Professor e o Aluno; clique em <i>Copiar prompt</i> (ou <i>Salvar como arquivo</i>) e cole na IA que preferir.</li>
+        <li><b>Colar o roteiro da IA:</b> cole a resposta na segunda aba. O app ignora conversa e cercas de código, confere cada frase com o interpretador e lista o que não entendeu — cole esses avisos de volta na IA pedindo a correção. Quando estiver sem avisos, <i>Substituir</i> ou <i>Acrescentar</i> ao roteiro (Ctrl+Z desfaz).</li>
+      </ol>
+      <p>O prompt <b>carrega tudo dentro dele</b>, gerado na hora a partir da sua biblioteca: o formato do arquivo, todas as frases aceitas (entrar, falar, estados, poses, danças, lousa, fórmulas, gráficos, imagens com efeitos, câmera, áudio e ações simultâneas), as armadilhas mais comuns, sequências prontas, um exemplo completo e <b>os seus personagens</b> com apelidos, expressões extras, poses de sprite, clipes, e os nomes das <b>imagens</b> e <b>áudios</b> que você importou. Ao criar um personagem, um clipe ou importar um arquivo, o prompt seguinte já os inclui.</p>
+      <p>“Melhorar o roteiro atual” gera um prompt que leva o seu roteiro junto, para a IA reescrevê-lo seguindo o seu pedido.</p>
+    </>),
+  },  {
+    id: 'ia', titulo: 'Roteiro com IA (direto no app)',
     corpo: (<>
       <p><b>Arquivo ▸ Gerar / melhorar roteiro com IA…</b> escreve o roteiro por você: informe assunto, matéria, série, duração, quem é o professor e o aluno e quem mais pode aparecer. O programa envia as regras do formato e a lista dos seus personagens e <b>confere a resposta com o próprio interpretador</b>: se algo não for entendido, pede a correção à IA (até duas vezes). Depois você escolhe <i>Substituir</i> ou <i>Acrescentar</i>; <b>Ctrl+Z</b> desfaz.</p>
       <p>O modo <i>Melhorar o roteiro atual</i> acrescenta reações e gestos enquanto os outros falam, ou segue o pedido que você escrever.</p>

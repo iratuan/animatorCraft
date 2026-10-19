@@ -8,7 +8,7 @@ export { carregarPersonagens } from './services/bibliotecaSprites';
 export { carregarPersonagensSalvos, gravarSkins } from './services/cadastro';
 export { obterSprite } from './services/exportarSprites';
 export { gravarFichas } from './services/fichas';
-export { aplicarPacote, lerPacote } from './services/pacotes';
+export { aplicarPacote, descompactarComLimites, lerPacote } from './services/pacotes';
 export { carregarPacotesSalvos, lerEntradasSalvas, limparPacotesSalvos } from './services/spritesSalvos';
 export type { PacoteLido } from './services/pacotes';
 

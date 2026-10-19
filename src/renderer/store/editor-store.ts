@@ -8,6 +8,8 @@ import type { PacoteLido } from '@renderer/features/personagens';
 const consulta = new URLSearchParams(typeof location === 'undefined' ? '' : location.search);
 
 export type AbaLateral = 'props' | 'biblioteca' | 'imagens' | 'audio' | 'aula';
+/** Algo que a tela inicial pede e o editor executa assim que carregar (precisa dos sprites). */
+export type AcaoInicial = 'abrir-projeto' | 'novo-personagem' | 'editar-sprites';
 export interface ImportacaoPendente { pacote: PacoteLido; substituir: boolean; nome: string }
 
 interface Estado {
@@ -43,6 +45,9 @@ interface Estado {
   /** seção do manual a mostrar ao abrir (ex.: 'sobre') */
   manualSecao: string | null;
   iaAberta: boolean;
+  /** janela do prompt mestre (texto para colar em qualquer IA e conferência da resposta) */
+  promptMestreAberto: boolean;
+  acaoInicial: AcaoInicial | null;
   /** posição do cursor no campo do roteiro (null = nunca clicou); usada para inserir conteúdo no trecho certo */
   cursorRoteiro: number | null;
   /** muda quando a lista de áudios muda */
@@ -97,6 +102,8 @@ export const useEditor = create<Estado & Acoes>()((set, get) => ({
   manualAberto: false,
   manualSecao: null,
   iaAberta: false,
+  promptMestreAberto: false,
+  acaoInicial: null,
   cursorRoteiro: null,
   versaoAudio: 0,
   versaoImagens: 0,

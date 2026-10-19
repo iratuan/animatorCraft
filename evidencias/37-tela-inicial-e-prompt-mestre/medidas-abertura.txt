@@ -1,0 +1,2 @@
+abertura da tela inicial (ms): 63, 63, 63, 65, 69
+média: 65

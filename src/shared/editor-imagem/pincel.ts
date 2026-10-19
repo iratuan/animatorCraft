@@ -1,6 +1,11 @@
 import { clamp01 } from '../util/numeros';
 import { apagarPixel, sobreporPixel, type Cor, type Mascara, type Pixels } from './pixels';
 
+/** Coordenadas além disto (toque perdido, zoom extremo) são levadas para a borda: o traço continua visível e o laço de carimbos continua curto. */
+export const LIMITE_COORDENADA = 8192;
+export const coordenadaSegura = (v: number): number => Math.max(-LIMITE_COORDENADA, Math.min(LIMITE_COORDENADA, v));
+const numero = (v: number, min: number, max: number, padrao: number): number => (Number.isFinite(v) ? Math.max(min, Math.min(max, v)) : padrao);
+
 export interface OpcoesPincel {
   /** diâmetro em px */
   tamanho: number;
@@ -26,7 +31,11 @@ export class Traco {
   /** retângulo alterado desde a última chamada de `aplicar` */
   private sujo: { x0: number; y0: number; x1: number; y1: number } | null = null;
 
-  constructor(private readonly camada: Pixels, private readonly op: OpcoesPincel, private readonly mascara: Mascara | null = null) {
+  private readonly op: OpcoesPincel;
+
+  constructor(private readonly camada: Pixels, op: OpcoesPincel, private readonly mascara: Mascara | null = null) {
+    // valores fora do esperado (NaN, infinito, negativo) viram valores seguros: nunca travam o desenho nem corrompem pixels
+    this.op = { ...op, tamanho: numero(op.tamanho, 0.5, 4096, 8), dureza: numero(op.dureza, 0, 100, 100), opacidade: numero(op.opacidade, 0, 1, 1) };
     this.cobertura = new Float32Array(camada.w * camada.h);
     this.antes = new Uint8ClampedArray(camada.data);
   }
@@ -59,6 +68,8 @@ export class Traco {
 
   /** Leva o pincel até (x,y), carimbando ao longo do caminho; `pressao` (0..1) vem da caneta e escala o diâmetro. */
   mover(x: number, y: number, pressao = 1): void {
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+    x = coordenadaSegura(x); y = coordenadaSegura(y); pressao = numero(pressao, 0, 1, 1);
     const raio = Math.max(0.5, (this.op.tamanho * pressao) / 2), passo = Math.max(0.75, raio * 0.2);
     if (!this.ultimo) { this.carimbar(x, y, pressao); this.ultimo = { x, y }; return; }
     const dx = x - this.ultimo.x, dy = y - this.ultimo.y, dist = Math.hypot(dx, dy);

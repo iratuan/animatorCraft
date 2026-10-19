@@ -36,10 +36,10 @@ const aproxima = (a, b, tol = 3) => a.every((v, i) => Math.abs(v - b[i]) <= tol)
 // ---------------------------------------------------------------- abre o app e o editor num espaço vazio
 secao('abrir o editor');
 const roteiroAntes = () => p.evaluate(() => document.querySelector('#campo-roteiro')?.value ?? null);
-await p.goto('http://127.0.0.1:5173/');
+await p.goto('http://127.0.0.1:5173/#/editor');
 await p.evaluate(() => localStorage.clear());
-await p.goto('http://127.0.0.1:5173/?ator=laura&teste=1');
-await p.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+await p.goto('http://127.0.0.1:5173/?ator=laura&teste=1#/editor');
+await p.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
 await p.getByText('Editar / exportar sprites de Laura').click();
 await p.waitForTimeout(400);
 ok(await p.locator('.espaco-png').count() > 10, 'cada espaço tem botão PNG além do editor');
@@ -389,15 +389,15 @@ void meta;
 await p.getByRole('button', { name: 'Fechar' }).click();
 // no palco: a Laura com a expressão editada
 await p.evaluate(() => localStorage.setItem('stickboard.roteiro.v2', '[papéis: professor=CringeFather, aluno=BetaSon]\n\n# T\nLaura entra pela esquerda andando.\nLaura faz cara de feliz.\n[close em Laura]'));
-await p.goto('http://127.0.0.1:5173/?ator=laura&t=3');
-await p.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+await p.goto('http://127.0.0.1:5173/?ator=laura&t=3#/editor');
+await p.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
 await p.waitForTimeout(1200);
 await p.screenshot({ path: `${dest}/10-no-palco.png`, clip: await p.locator('.area-palco canvas').boundingBox() });
 
 // ---------------------------------------------------------------- imagem grande e desempenho
 secao('imagem grande e desempenho');
-await p.goto('http://127.0.0.1:5173/?ator=laura&teste=1');
-await p.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+await p.goto('http://127.0.0.1:5173/?ator=laura&teste=1#/editor');
+await p.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
 await p.getByText('Editar / exportar sprites de Laura').click();
 await p.locator('[data-espaco="rosto_triste"]').click();
 await p.waitForFunction(() => !!window.__motorEditor, null, { timeout: 15000 });

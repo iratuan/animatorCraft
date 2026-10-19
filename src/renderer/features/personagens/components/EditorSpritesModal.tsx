@@ -51,9 +51,9 @@ export function EditorSpritesModal() {
       const zip = zipSync({ [`${id}/${e.tipo}_${e.nome}.png`]: new Uint8Array(await arquivo.arrayBuffer()) });
       const pacote = lerPacote(zip, { exigirParado: false });
       if (pacote.relatorio.erros.length) { avisar(`Não deu: ${pacote.relatorio.erros[0]}`); return; }
-      const { falhas } = await aplicarPacote(pacote, false);
+      const { falhas, persistido } = await aplicarPacote(pacote, false);
       novaVersao();
-      avisar(falhas.length ? `Falhou: ${falhas[0]}` : `${e.tipo}_${e.nome} atualizado para ${ATORES[id]!.nome}.`);
+      avisar(falhas.length ? `Falhou: ${falhas[0]}` : `${e.tipo}_${e.nome} atualizado para ${ATORES[id]!.nome}.${persistido ? '' : ' Atenção: não consegui guardar no aparelho; ao fechar o app volta ao que era.'}`);
     } catch (erro) { avisar(`Não consegui ler a imagem: ${(erro as Error).message}`); }
   };
 

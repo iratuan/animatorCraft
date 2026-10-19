@@ -1,0 +1,31 @@
+.home { height: 100%; overflow: auto; padding: 28px max(16px, calc((100% - 960px) / 2)) 24px; display: flex; flex-direction: column; gap: 22px; background: radial-gradient(1200px 500px at 50% -120px, #2c2c2c, var(--bg0)); }
+.home-topo { display: flex; gap: 18px; align-items: center; }
+.home-topo h1 { margin: 0; font-size: 30px; letter-spacing: .4px; color: var(--laranja); }
+.home-topo p { margin: 4px 0 0; color: var(--txt2); font-size: 14px; line-height: 1.5; max-width: 560px; }
+.home-boneco { width: 84px; height: 84px; flex: none; fill: none; stroke: #f2f2f2; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.home-boneco circle { fill: #f2f2f2; }
+.home-boneco .lousa { stroke: var(--laranja); stroke-width: 1.8; }
+.home h2 { margin: 0 0 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .7px; color: var(--txt2); font-weight: 600; }
+
+.home-principais { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+.home-card { display: flex; flex-direction: column; gap: 6px; text-align: left; padding: 16px 18px; border-radius: 8px; background: var(--bg2); border: 1px solid #000; min-height: 104px; }
+.home-card b { font-size: 15px; color: #fff; }
+.home-card span { color: var(--txt2); line-height: 1.45; }
+.home-card .home-resumo { color: var(--txt); }
+.home-card:hover, .home-card:focus-visible { border-color: var(--azul); background: var(--bg3); outline: 0; }
+.home-card.destaque { border-color: var(--azul); }
+.home-card.ia { border-color: var(--laranja); }
+.home-card.ia:hover, .home-card.ia:focus-visible { border-color: #ffa05f; }
+
+.home-modelos { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; }
+.home-modelo { display: flex; flex-direction: column; gap: 3px; text-align: left; padding: 12px 14px; border-radius: 6px; background: var(--bg1); border: 1px solid transparent; }
+.home-modelo small { color: var(--laranja); font-size: 11px; }
+.home-modelo b { color: #fff; }
+.home-modelo span { color: var(--txt2); font-size: 12px; line-height: 1.4; }
+.home-modelo:hover, .home-modelo:focus-visible { border-color: var(--azul); outline: 0; }
+
+.home-mais { display: flex; flex-wrap: wrap; gap: 8px; }
+.home-mais button { padding: 8px 14px; border-radius: 16px; background: var(--bg3); }
+.home-mais button:hover, .home-mais button:focus-visible { background: var(--azul); color: #fff; outline: 0; }
+.home-rodape { margin-top: auto; padding-top: 8px; color: var(--txt2); font-size: 12px; }
+@media (max-width: 560px) { .home-topo { flex-direction: column; align-items: flex-start; } .home-topo p { font-size: 13px; } }

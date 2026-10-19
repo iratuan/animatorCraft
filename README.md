@@ -44,3 +44,8 @@ Android: use o JDK do Android Studio (`JAVA_HOME=C:\Ambiente\Android Studio\jbr`
 ## Testes
 - `npm test`: testes de domínio (roteiro, timeline, áudio, gráficos, IA, personagens, desfazer).
 - `npm run e2e`: testes de tela no navegador (com `npm run dev:web` rodando): simultâneas, posição no palco, áudio com MP4, gráficos, IA (servidor simulado), projeto, editor de sprites.
+
+## 0.7.0
+- **Tela inicial** leve (o editor carrega em segundo plano): continuar, novo, modelos, abrir roteiro/projeto, criar personagem, manual.
+- **Prompt mestre**: texto para qualquer IA gerar roteiros válidos, montado a partir da sua biblioteca; a resposta é conferida e aplicada no app (`docs/prompt-mestre-exemplo.md`).
+- Revisão de lançamento: baterias `revisao-*` (biblioteca, sprites, clipes, importação, exportação) e ~110 testes unitários novos; dezenas de correções (veja o commit).

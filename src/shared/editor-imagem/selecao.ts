@@ -39,8 +39,9 @@ export function mascaraElipse(w: number, h: number, x: number, y: number, rw: nu
 export function mascaraLaco(w: number, h: number, pontos: { x: number; y: number }[]): Mascara {
   const m = criarMascara(w, h);
   if (pontos.length < 3) return m;
-  const ys = pontos.map((p) => p.y);
-  for (let y = Math.max(0, Math.floor(Math.min(...ys))); y < Math.min(h, Math.ceil(Math.max(...ys))); y++) {
+  let ymin = Infinity, ymax = -Infinity; // (sem Math.min(...lista): um laço longo estouraria a pilha)
+  for (const p of pontos) { if (p.y < ymin) ymin = p.y; if (p.y > ymax) ymax = p.y; }
+  for (let y = Math.max(0, Math.floor(ymin)); y < Math.min(h, Math.ceil(ymax)); y++) {
     const cruz: number[] = [], yc = y + 0.5;
     for (let i = 0; i < pontos.length; i++) {
       const a = pontos[i]!, b = pontos[(i + 1) % pontos.length]!;

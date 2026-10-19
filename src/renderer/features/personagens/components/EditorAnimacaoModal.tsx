@@ -65,7 +65,7 @@ export function EditorAnimacaoModal() {
   const tem = listarSprites(id);
   void versaoBib; void lista;
 
-  const fechar = () => { carregarAnimacoesSalvas(); setPrevia(null); set({ editorAnimacao: null }); novaVersaoPersonagens(); };
+  const fechar = () => { carregarAnimacoesSalvas(); setPrevia(null); setAbertoDe(null); set({ editorAnimacao: null }); novaVersaoPersonagens(); }; // ao reabrir, volta à aba pedida e sem rascunhos
   const atualizar = () => { setLista((n) => n + 1); novaVersaoPersonagens(); };
 
   // ---------------------------------------------------------------- expressões
@@ -79,12 +79,14 @@ export function EditorAnimacaoModal() {
   /** coloca o rascunho no domínio para a prévia (só vale até salvar ou fechar) */
   const aplicarExprRascunho = (r: RascunhoExpr) => {
     const nome = nomeDeExpressao(r.nome);
+    carregarAnimacoesSalvas(); // volta ao que está salvo: sem isso, cada letra digitada deixaria uma expressão-fantasma ("s", "so", "son"…) no registro
     if (!nome) return;
     definirExpressoesBoneco([...expressoesBoneco().filter((e) => !(e.ator === id && (e.nome === nome || e.nome === r.original))), { ator: id, nome, quadros: r.quadros }]);
   };
   const salvarExpr = () => {
     if (!exprRasc) return;
     if (!nomeExpr) { setMsg('Dê um nome à expressão (letras e números).'); return; }
+    carregarAnimacoesSalvas(); // descarta a prévia do rascunho; o que vale é o que está salvo
     // o nome pode coincidir com um sprite rosto_<nome> (a mesma expressão vale nos dois estilos), mas não com outra expressão do boneco
     const original = exprRasc.original;
     if (base.has(nomeExpr) || (exprRasc.existentes.includes(nomeExpr) && original !== nomeExpr)) { setMsg(`“${nomeExpr}” já existe para ${espec.nome}. Use outro nome.`); return; }
@@ -109,6 +111,7 @@ export function EditorAnimacaoModal() {
   const opcoesSprite = [...new Set(['parado', ...tem.poses])];
   const mudarClipe = (r: RascunhoClipe) => {
     setClipeRasc(r);
+    carregarAnimacoesSalvas(); // volta ao que está salvo: sem isso, cada letra digitada deixaria um clipe-fantasma no registro
     if (!nomeDeClipe(r.nome) || !r.passos.length) return;
     const novo = clipeDoRascunho(id, r);
     definirClipesPersonalizados([...clipesPersonalizados().filter((c) => !mesmoClipe(c, id, novo.id, novo.estilo) && !(r.original && mesmoClipe(c, id, r.original.id, r.original.estilo))), novo], poseValida);
@@ -127,6 +130,7 @@ export function EditorAnimacaoModal() {
     const nome = nomeDeClipe(clipeRasc.nome);
     if (!nome) { setMsg('Dê um nome ao clipe (letras e números).'); return; }
     if (!clipeRasc.passos.length) { setMsg('Acrescente pelo menos um passo.'); return; }
+    carregarAnimacoesSalvas(); // descarta a prévia do rascunho; o que vale é o que está salvo
     const novo = clipeDoRascunho(id, clipeRasc);
     const chave = `${novo.id}|${novo.estilo}`, orig = clipeRasc.original ? `${clipeRasc.original.id}|${clipeRasc.original.estilo}` : null;
     const outros = clipesPersonalizados().filter((c) => c.ator !== id || (`${c.id}|${c.estilo}` !== chave && `${c.id}|${c.estilo}` !== orig));

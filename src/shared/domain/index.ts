@@ -19,3 +19,5 @@ export * from './imagem';
 
 export { ROTEIRO_EXEMPLO } from './exemplo';
 export * from './expressoes';
+export * from './prompt-mestre';
+export * from './resumo';

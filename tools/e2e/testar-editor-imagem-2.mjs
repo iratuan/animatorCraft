@@ -29,9 +29,9 @@ const arrastar = async (pts, passos = 6) => { const a = await tela(pts[0][0], pt
 const limpar = () => M((m) => { m.confirmarFlutuante(); while (m.doc.camadas.length > 1) m.excluirCamada(); m.doc.ativa = 0; m.definir('ferramenta', 'selRet'); m.selecionarTudo(); m.apagarConteudo(); m.desselecionar(); });
 const abrirApp = async (consulta = '?ator=laura&teste=1', viewport) => {
   if (viewport) await p.setViewportSize(viewport);
-  await p.goto('http://127.0.0.1:5173/'); await p.evaluate(() => localStorage.clear());
-  await p.goto(`http://127.0.0.1:5173/${consulta}`);
-  await p.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+  await p.goto('http://127.0.0.1:5173/#/editor'); await p.evaluate(() => localStorage.clear());
+  await p.goto(`http://127.0.0.1:5173/${consulta}#/editor`);
+  await p.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
 };
 const abrirEditorDe = async (espaco) => {
   if (!(await p.locator('.modal.largo').count())) await p.getByText('Editar / exportar sprites de Laura').click();

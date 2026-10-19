@@ -310,3 +310,5 @@ code { background: #111; padding: 1px 5px; border-radius: 3px; font-size: 12px; 
 .campo-linha input { width: 60px; padding: 4px 6px; background: var(--bg1); border: 1px solid #000; border-radius: 4px; color: var(--txt); }
 .msg-anim { color: #9be39b; }
 @media (max-width: 900px) { .anim-corpo { grid-template-columns: 1fr; } .anim-dir { position: static; } }
+
+.carregando-tela { height: 100%; display: grid; place-items: center; color: var(--txt2); font-size: 14px; }

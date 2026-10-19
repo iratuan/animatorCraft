@@ -2,7 +2,7 @@ import { _electron as electron } from 'playwright-core';
 const app = await electron.launch({ executablePath: 'release/win-unpacked/StickBoard.exe', args: [] });
 const win = await app.firstWindow();
 const erros = []; win.on('pageerror', (e) => erros.push(String(e)));
-await win.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+await win.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
 await win.getByText('Expressões e clipes de CringeFather…').click();
 await win.getByRole('button', { name: '＋ Nova expressão' }).click();
 await win.getByLabel('Nome da expressão').fill('Desconfiado');

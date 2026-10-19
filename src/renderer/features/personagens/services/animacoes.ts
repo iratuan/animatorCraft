@@ -39,7 +39,8 @@ export function removerAnimacoesDe(ator: string): void {
 export const lerAnimacoes = (): AnimacoesJson => ({ clipes: clipesPersonalizados(), expressoes: expressoesBoneco() });
 
 /** Junta o que veio de um projeto: o que chega substitui o que tem o mesmo personagem+nome(+estilo); o resto fica. */
-export function mesclarAnimacoes(novas: Partial<AnimacoesJson>): void {
+export function mesclarAnimacoes(novas: Partial<AnimacoesJson> | null | undefined): void {
+  if (!novas || typeof novas !== 'object') return;
   const chaveC = (c: ClipePersonalizado) => `${c.ator}|${c.id ?? ''}|${c.estilo}`;
   const chaveE = (e: ExpressaoBoneco) => `${e.ator}|${e.nome}`;
   const clipes = Array.isArray(novas.clipes) ? novas.clipes : [], expressoes = Array.isArray(novas.expressoes) ? novas.expressoes : [];

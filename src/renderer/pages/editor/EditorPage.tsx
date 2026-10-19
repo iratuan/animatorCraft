@@ -10,10 +10,14 @@ import { useReproducao, PalcoPanel } from '@renderer/features/palco';
 import { useAtalhos } from './useAtalhos';
 import { ImportarPacoteModal, PersonagemModal, EditorSpritesModal, EditorAnimacaoModal } from '@renderer/features/personagens';
 import { IaModal } from '@renderer/features/ia';
-import { ManualModal } from '@renderer/features/ajuda';
 import { EditorImagemModal } from '@renderer/features/editor-imagem';
 import { useCargaInicial } from '@renderer/pages/editor/useCargaInicial';
 import { RoteiroPanel, useRoteiroDerivado } from '@renderer/features/roteiro';
+import { prepararPersonagens } from '@renderer/bootstrap';
+
+// os personagens criados pelo usuário precisam existir antes da primeira interpretação do roteiro
+prepararPersonagens();
+if (new URLSearchParams(location.search).has('teste')) void import('./gancho-teste');
 
 function BarraStatus() {
   const mensagem = useEditor((s) => s.mensagem);
@@ -53,7 +57,6 @@ export function EditorPage() {
       <EditorAnimacaoModal />
       <EditorImagemModal />
       <PersonagemModal />
-      <ManualModal />
       <IaModal />
     </>
   );

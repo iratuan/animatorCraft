@@ -95,11 +95,13 @@ export const espelharDocumento = (d: Documento, horizontal: boolean): void => tr
 export const girarDocumento = (d: Documento, horario: boolean): void => transformar(d, (p) => girar90(p, horario));
 /** Muda o tamanho da imagem toda (as camadas são reamostradas). */
 export function redimensionarDocumento(d: Documento, w: number, h: number): void {
+  if (!Number.isFinite(w) || !Number.isFinite(h)) return;
   w = Math.min(LIMITE_LADO, Math.max(1, Math.round(w))); h = Math.min(LIMITE_LADO, Math.max(1, Math.round(h)));
   transformar(d, (p) => redimensionar(p, w, h));
 }
 /** Muda o tamanho da tela sem reamostrar: o conteúdo fica em (dx,dy) e o resto é recortado ou fica transparente. */
 export function redimensionarTela(d: Documento, w: number, h: number, dx: number, dy: number): void {
+  if (![w, h, dx, dy].every(Number.isFinite)) return;
   w = Math.min(LIMITE_LADO, Math.max(1, Math.round(w))); h = Math.min(LIMITE_LADO, Math.max(1, Math.round(h)));
   transformar(d, (p) => { const o = criarPixels(w, h); colarSobre(o, p, Math.round(dx), Math.round(dy)); return o; });
 }

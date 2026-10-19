@@ -1,0 +1,7 @@
+1
+00:00:02,500 --> 00:00:04,400
+CringeFather: Vamos testar a exportação!
+
+2
+00:00:07,600 --> 00:00:09,900
+BetaSon: Funciona? Ação, emoção e acentuação!

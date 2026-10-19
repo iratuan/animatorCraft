@@ -1,16 +1,18 @@
-import { Traco, type OpcoesPincel } from './pincel';
+import { Traco, coordenadaSegura, type OpcoesPincel } from './pincel';
 import { sobreporPixel, type Cor, type Mascara, type Pixels } from './pixels';
 
 export type Forma = 'linha' | 'retangulo' | 'elipse';
 
 /** Contorno de uma forma desenhado com o pincel (mesmas opções de tamanho, dureza e opacidade). */
 export function contornoDeForma(camada: Pixels, forma: Forma, x0: number, y0: number, x1: number, y1: number, op: OpcoesPincel, mascara: Mascara | null = null): void {
+  if (![x0, y0, x1, y1].every(Number.isFinite)) return;
+  [x0, y0, x1, y1] = [x0, y0, x1, y1].map(coordenadaSegura) as [number, number, number, number];
   const t = new Traco(camada, op, mascara);
   if (forma === 'linha') { t.mover(x0, y0); t.mover(x1, y1); }
   else if (forma === 'retangulo') { for (const [x, y] of [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]] as const) t.mover(x, y); }
   else {
     const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, rx = Math.abs(x1 - x0) / 2, ry = Math.abs(y1 - y0) / 2;
-    const n = Math.max(24, Math.ceil(Math.PI * (rx + ry) / 2));
+    const n = Math.min(2000, Math.max(24, Math.ceil(Math.PI * (rx + ry) / 2)));
     for (let i = 0; i <= n; i++) { const a = (i / n) * Math.PI * 2; t.mover(cx + Math.cos(a) * rx, cy + Math.sin(a) * ry); }
   }
   t.aplicar();

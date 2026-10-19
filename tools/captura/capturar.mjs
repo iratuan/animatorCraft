@@ -5,7 +5,7 @@ import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 const destino = process.argv[2] ?? 'evidencias';
-const base = process.argv[3] ?? 'http://127.0.0.1:5173/';
+const base = process.argv[3] ?? 'http://127.0.0.1:5173/#/editor';
 mkdirSync(destino, { recursive: true });
 
 const browser = await chromium.launch({ channel: 'msedge', headless: true });

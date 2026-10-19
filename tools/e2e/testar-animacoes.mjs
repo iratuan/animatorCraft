@@ -6,9 +6,9 @@ const ok = (c, m) => { if (c) passou++; else { falhas++; console.log('FALHOU:', 
 const b = await chromium.launch({ channel: 'msedge', headless: true });
 const p = await b.newPage({ viewport: { width: 1600, height: 900 } });
 const erros = []; p.on('pageerror', (e) => erros.push(String(e)));
-const pronto = async () => { await p.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 }); await p.waitForTimeout(500); };
-await p.goto('http://127.0.0.1:5173/'); await p.evaluate(() => localStorage.clear());
-await p.goto('http://127.0.0.1:5173/?ator=betason'); await pronto();
+const pronto = async () => { await p.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 }); await p.waitForTimeout(500); };
+await p.goto('http://127.0.0.1:5173/#/editor'); await p.evaluate(() => localStorage.clear());
+await p.goto('http://127.0.0.1:5173/?ator=betason#/editor'); await pronto();
 
 // ---- expressão nova
 await p.getByText('Expressões e clipes de BetaSon…').click();
@@ -66,19 +66,19 @@ await p.getByRole('button', { name: 'Fechar' }).last().click();
 // ---- usar no roteiro (e persistência: recarrega a página)
 const rot = '# T\nBetason entra pela esquerda andando.\nBetason faz cara de apaixonada.\nBetason faz o clipe tchau.\nBetason faz o clipe tchau por 3 segundos.\nBetason faz cara de nojo.\nBetason faz o clipe inexistente.';
 await p.evaluate((r) => localStorage.setItem('stickboard.roteiro.v2', r), rot);
-await p.goto('http://127.0.0.1:5173/?t=4'); await pronto();
+await p.goto('http://127.0.0.1:5173/?t=4#/editor'); await pronto();
 const avisos = await p.locator('.roteiro-avisos, [title*="aviso"], .aviso').allInnerTexts().catch(() => []);
 const corpo = await p.locator('body').innerText();
 ok(corpo.includes('Betason: clipe tchau') || corpo.includes('Betason: clipe tchau'.replace('Betason', 'BetaSon')), 'linha do tempo mostra o clipe');
 await p.screenshot({ path: `${dest}/04-roteiro-com-clipe-chibi.png` });
 await p.evaluate(() => localStorage.setItem('stickboard.skins.v1', JSON.stringify({ padrao: 'stickman', porPersonagem: {} })));
-await p.goto('http://127.0.0.1:5173/?t=4.4'); await pronto();
+await p.goto('http://127.0.0.1:5173/?t=4.4#/editor'); await pronto();
 await p.screenshot({ path: `${dest}/05-roteiro-com-clipe-stickman.png` });
 // o personagem tem de aparecer no palco durante o clipe, nos dois estilos (intensidade absurda já tirou o boneco da tela)
 const escuros = () => p.locator('.area-palco canvas').evaluate((c) => { const x = c.getContext('2d'); const w = c.width, h = c.height; const d = x.getImageData(Math.floor(w * 0.03), Math.floor(h * 0.3), Math.floor(w * 0.2), Math.floor(h * 0.65)).data; let n = 0; for (let i = 0; i < d.length; i += 4) if (d[i] < 90) n++; return n; });
 ok(await escuros() > 150, 'estilo Stickman: personagem visível durante o clipe');
 await p.evaluate(() => localStorage.setItem('stickboard.skins.v1', JSON.stringify({ padrao: 'chibi', porPersonagem: {} })));
-await p.goto('http://127.0.0.1:5173/?t=3.2'); await pronto();
+await p.goto('http://127.0.0.1:5173/?t=3.2#/editor'); await pronto();
 ok(await escuros() > 150, 'estilo Chibi: personagem visível durante o clipe');
 console.log('avisos do roteiro (esperados: nojo e inexistente):', avisos);
 console.log('erros de página', erros);

@@ -14,4 +14,5 @@ export async function salvarSpriteEditado(id: ActorId, tipo: 'pose' | 'rosto' | 
   if (pacote.relatorio.erros.length) throw new Error(pacote.relatorio.erros[0]);
   const r = await aplicarPacote(pacote, false, { bruto: true, encaixe });
   if (r.falhas.length) throw new Error(r.falhas[0]);
+  if (!r.persistido) throw new Error('O sprite foi aplicado, mas não consegui guardá-lo no aparelho (espaço ou permissão). Exporte o personagem (.zip) para não perdê-lo.');
 }

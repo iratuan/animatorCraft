@@ -24,7 +24,8 @@ export function useRoteiroDerivado() {
   const versaoPersonagens = useEditor((s) => s.versaoPersonagens);
   const versaoImagens = useEditor((s) => s.versaoImagens);
 
-  const { roteiro, timeline } = useMemo(() => derivar(texto, `${versaoPersonagens}.${versaoBib}.${spritesOk}`), [texto, versaoPersonagens, versaoBib, spritesOk]);
+  const versaoAudio = useEditor((s) => s.versaoAudio); // a duração das falas vem dos áudios importados: importar ou excluir um áudio muda a linha do tempo
+  const { roteiro, timeline } = useMemo(() => derivar(texto, `${versaoPersonagens}.${versaoBib}.${spritesOk}.${versaoAudio}`), [texto, versaoPersonagens, versaoBib, spritesOk, versaoAudio]);
   const estado = useMemo(() => estadoEm(timeline, t), [timeline, t]);
   const dim = FORMATOS[formato];
 

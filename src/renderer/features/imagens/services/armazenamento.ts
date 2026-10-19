@@ -1,4 +1,4 @@
-import { registrarImagem, removerImagem, type InfoImagem } from '@shared/domain';
+import { chaveImagem, listarImagens, registrarImagem, removerImagem, type InfoImagem } from '@shared/domain';
 import { esquecerImagemQuadro, guardarImagemQuadro } from '@renderer/features/cena';
 import { criarLoja } from '@renderer/features/sistema';
 
@@ -33,6 +33,8 @@ export async function importarImagem(arquivo: File): Promise<InfoImagem> {
     ({ bmp, w, h } = await decodificar(dados, mime));
   }
   const info: InfoImagem = { nome: arquivo.name.replace(/\s+/g, '-'), w, h };
+  // \"Ciclo.PNG\" e \"ciclo.png\" são o mesmo nome no roteiro: a importação nova substitui a antiga, inclusive no armazenamento
+  for (const antigo of listarImagens().filter((x) => chaveImagem(x.nome) === chaveImagem(info.nome) && x.nome !== info.nome)) await excluirImagem(antigo.nome);
   registrarImagem(info); guardarImagemQuadro(info.nome, bmp);
   await loja.guardar({ nome: info.nome, mime, dados, w, h }).catch(() => { /* sem IndexedDB: a imagem vale só nesta sessão */ });
   return info;

@@ -17,9 +17,9 @@ const browser = await chromium.launch({ channel: 'msedge', headless: true });
 const ctx = await browser.newContext({ viewport: { width: 1600, height: 900 }, acceptDownloads: true });
 const page = await ctx.newPage();
 page.on('pageerror', (e) => console.log('pageerror', e));
-await page.goto('http://127.0.0.1:5173/');
+await page.goto('http://127.0.0.1:5173/#/editor');
 await page.evaluate(() => localStorage.clear());
-await page.goto('http://127.0.0.1:5173/');
+await page.goto('http://127.0.0.1:5173/?recarga=1#/editor');
 await page.fill('.roteiro textarea', roteiro);
 if (formato === '9:16') await page.click('text=9:16');
 

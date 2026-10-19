@@ -34,11 +34,16 @@ async function escolherCodecAudio(): Promise<{ config: AudioEncoderConfig; codec
   return null;
 }
 
+/** Limite de duração: o MP4 é montado na memória (8 Mbps ≈ 60 MB por minuto), então vídeos muito longos precisam ser divididos em partes. */
+export const LIMITE_SEGUNDOS_EXPORTACAO = 15 * 60;
+
 export interface OpcoesExport { w: number; h: number; fps: number; onProgresso?: (p: number) => void; sinal?: { cancelado: boolean }; avisos?: (m: string) => void }
 
 /** Renderiza cada frame com a mesma função do preview e codifica em H.264/MP4 (WebCodecs). */
 export async function exportarMp4(tl: Timeline, op: OpcoesExport): Promise<Blob> {
   const { w, h, fps } = op;
+  if (!(tl.duracao > 0)) throw new Error('O roteiro está vazio: não há nada para exportar.');
+  if (tl.duracao > LIMITE_SEGUNDOS_EXPORTACAO) throw new Error(`O vídeo tem ${Math.round(tl.duracao / 60)} minutos e o limite é ${LIMITE_SEGUNDOS_EXPORTACAO / 60}. Divida o roteiro em partes (uma por aula ou cena).`);
   const { config, codecMuxer } = await escolherCodec(w, h, fps);
 
   // áudio: mistura a trilha inteira antes (voz, música e efeitos) e, se o aparelho codifica áudio, vai junto no MP4
@@ -54,14 +59,16 @@ export async function exportarMp4(tl: Timeline, op: OpcoesExport): Promise<Blob>
     error: (e) => { erro = e as Error; },
   });
   encoder.configure(config);
+  const fechar = () => { try { if (encoder.state !== 'closed') encoder.close(); } catch { /* já fechado */ } };
 
   const canvas = document.createElement('canvas');
   canvas.width = w; canvas.height = h;
   const ctx = canvas.getContext('2d')!;
   const total = Math.max(1, Math.ceil((tl.duracao + 0.5) * fps));
 
+  try {
   for (let i = 0; i < total; i++) {
-    if (op.sinal?.cancelado) { encoder.close(); throw new Error('Exportação cancelada.'); }
+    if (op.sinal?.cancelado) throw new Error('Exportação cancelada.');
     if (erro) throw erro;
     renderizarCena(ctx, estadoEm(tl, i / fps), w, h);
     const frame = new VideoFrame(canvas, { timestamp: Math.round((i * 1e6) / fps), duration: Math.round(1e6 / fps) });
@@ -72,6 +79,8 @@ export async function exportarMp4(tl: Timeline, op: OpcoesExport): Promise<Blob>
   }
   await encoder.flush();
   if (erro) throw erro;
+  } catch (e) { fechar(); throw e; } // um erro no meio (cena, memória, codificador) não pode deixar o codificador aberto
+  fechar();
   if (mix && ca) await codificarAudio(mix, ca.config, (chunk, meta) => muxer.addAudioChunk(chunk, meta));
   muxer.finalize();
   op.onProgresso?.(1);

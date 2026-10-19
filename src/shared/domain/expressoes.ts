@@ -31,7 +31,7 @@ export interface ExpressaoBoneco {
   quadros: RostoBoneco[];
 }
 
-const semAcento = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const semAcento = (s: string) => (typeof s === 'string' ? s : '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 /** "Com Sono!" -> "com-sono" */
 export const nomeDeExpressao = (s: string): string => semAcento(s).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
@@ -44,12 +44,12 @@ export function definirExpressoesDeSprites(ator: string, nomes: string[]): void 
 }
 export function esquecerExpressoesDe(ator: string): void { deSprites.delete(ator); deBoneco = deBoneco.filter((e) => e.ator !== ator); }
 
-const rostoValido = (r: RostoBoneco): boolean => (OLHOS as readonly string[]).includes(r.olho) && (BOCAS as readonly string[]).includes(r.boca) && Number.isFinite(r.sobr);
+const rostoValido = (r: RostoBoneco): boolean => !!r && typeof r === 'object' && (OLHOS as readonly string[]).includes(r.olho) && (BOCAS as readonly string[]).includes(r.boca) && Number.isFinite(r.sobr);
 
 /** Substitui todas as expressões de boneco (as que o usuário criou). Entradas inválidas são descartadas. */
 export function definirExpressoesBoneco(lista: ExpressaoBoneco[]): void {
   const vistos = new Set<string>();
-  deBoneco = lista.flatMap((e): ExpressaoBoneco[] => {
+  deBoneco = (Array.isArray(lista) ? lista : []).flatMap((e): ExpressaoBoneco[] => {
     const nome = nomeDeExpressao(e?.nome ?? '');
     const chave = `${e?.ator}|${nome}`;
     const quadros = (Array.isArray(e?.quadros) ? e.quadros : []).filter(rostoValido).slice(0, MAX_QUADROS_EXPRESSAO)

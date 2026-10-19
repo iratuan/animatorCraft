@@ -1,4 +1,4 @@
-import { calcularEnvelope, listarAudios, registrarAudio, removerAudio, type InfoAudio } from '@shared/domain';
+import { calcularEnvelope, chaveAudio, listarAudios, registrarAudio, removerAudio, type InfoAudio } from '@shared/domain';
 import { criarLoja } from '@renderer/features/sistema';
 
 /**
@@ -19,6 +19,7 @@ export async function importarAudio(arquivo: File): Promise<InfoAudio> {
   const mono = new Float32Array(buffer.length);
   for (let c = 0; c < buffer.numberOfChannels; c++) { const d = buffer.getChannelData(c); for (let i = 0; i < d.length; i++) mono[i]! += d[i]! / buffer.numberOfChannels; }
   const info: InfoAudio = { nome: arquivo.name, duracao: buffer.duration, envelope: calcularEnvelope(mono, buffer.sampleRate) };
+  for (const antigo of listarAudios().filter((x) => chaveAudio(x.nome) === chaveAudio(info.nome) && x.nome !== info.nome)) await excluirAudio(antigo.nome); // mesmo nome com outra caixa: o novo substitui o antigo
   registrarAudio(info);
   await loja.guardar({ nome: info.nome, mime: arquivo.type, dados, duracao: info.duracao, envelope: info.envelope ?? [] }).catch(() => { /* sem IndexedDB: o áudio vale só nesta sessão */ });
   cacheBuffers.set(info.nome.toLowerCase(), buffer);

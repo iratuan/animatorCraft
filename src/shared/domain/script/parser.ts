@@ -13,7 +13,7 @@ const MAX_SEGUNDOS = 600;
 const lerSegundos = (s: string): number => Math.min(MAX_SEGUNDOS, Math.max(0, parseFloat(s.replace(',', '.')) || 0));
 
 /** Adjetivo falado -> pose e/ou expressão. */
-const ESTADOS: Record<string, { pose?: PoseId; expressao?: ExpressaoId }> = {
+export const ESTADOS: Record<string, { pose?: PoseId; expressao?: ExpressaoId }> = {
   confuso: { pose: 'confuso', expressao: 'confusa' },
   surpreso: { pose: 'surpreso', expressao: 'surpresa' },
   bravo: { pose: 'bravo', expressao: 'brava' },
@@ -31,7 +31,7 @@ const ESTADOS: Record<string, { pose?: PoseId; expressao?: ExpressaoId }> = {
   chorando: { pose: 'chorando', expressao: 'triste' },
 };
 
-const VERBOS_FALA = ['diz', 'fala', 'grita', 'pergunta', 'responde', 'sussurra', 'reclama', 'exclama'];
+export const VERBOS_FALA = ['diz', 'fala', 'grita', 'pergunta', 'responde', 'sussurra', 'reclama', 'exclama'];
 
 interface FraseComPosicao { texto: string; ini: number; fim: number }
 
@@ -133,9 +133,11 @@ function interpretarFrase(frase: string, avisos: string[], presentes: Set<ActorI
   // Remove trechos literais antes de analisar verbos, para que o conteúdo não seja confundido com comandos.
   const norm = aplicarPapeis(semAcento(frase.replace(/"[^"]*"/g, ' ').replace(/\$[^$]+\$/g, ' ')), papeis);
 
-  const espera = /\b(espera|pausa|aguarda)\b.*?(\d+(?:[.,]\d+)?)\s*segundo/.exec(norm);
+  // o nome de um clipe ou de uma pose pode ser uma palavra de comando ("faz o clipe pausa por 3 segundos"): nesse caso a frase não é um comando de pausa/apagar
+  const nomeDeRecurso = /\b(faz|executa|toca|usa|roda)\b.*\bclipe\b/.test(norm) || /\b(?:faz|assume|usa) a pose [a-z0-9]+(?:-[a-z0-9]+)*\b/.test(norm);
+  const espera = nomeDeRecurso ? null : /\b(espera|pausa|aguarda)\b.*?(\d+(?:[.,]\d+)?)\s*segundo/.exec(norm);
   if (espera) return [{ tipo: 'esperar', segundos: lerSegundos(espera[2]!) }];
-  if (/\bapaga\b/.test(norm) && !/\bimagem\b/.test(norm)) return [{ tipo: 'apagar' }];
+  if (!nomeDeRecurso && /\bapaga\b/.test(norm) && !/\bimagem\b/.test(norm)) return [{ tipo: 'apagar' }];
 
   // "Professor e Aluno dançam juntos" / "Todos dançam": uma ação por ator, todas começando juntas.
   let atores = acharAtores(norm);

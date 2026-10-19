@@ -15,10 +15,10 @@ for (const skin of ['chibi', 'stickman']) for (const formato of ['16:9', '9:16']
   const ctx = await browser.newContext({ viewport: { width: 1600, height: 900 }, acceptDownloads: true });
   const page = await ctx.newPage();
   page.on('pageerror', (e) => { falhas++; console.log('pageerror', e); });
-  await page.goto('http://127.0.0.1:5173/');
+  await page.goto('http://127.0.0.1:5173/#/editor');
   await page.evaluate(([r, c, e, s]) => { localStorage.clear(); localStorage.setItem('stickboard.roteiro.v2', r); localStorage.setItem('stickboard.clipes.v1', JSON.stringify(c)); localStorage.setItem('stickboard.expressoes.v1', JSON.stringify(e)); localStorage.setItem('stickboard.skins.v1', JSON.stringify({ padrao: s, porPersonagem: {} })); }, [roteiro, clipes, expressoes, skin]);
-  await page.goto('http://127.0.0.1:5173/');
-  await page.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+  await page.goto('http://127.0.0.1:5173/?recarga=1#/editor');
+  await page.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
   if (formato === '9:16') await page.click('text=9:16');
   const [download] = await Promise.all([page.waitForEvent('download', { timeout: 280000 }), page.click('text=Exportar MP4')]);
   const arquivo = join(destino, `anim-${skin}-${formato.replace(':', 'x')}.mp4`);

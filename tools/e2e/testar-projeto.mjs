@@ -11,10 +11,10 @@ const b = await chromium.launch({ channel: 'msedge', headless: true });
 const ctx1 = await b.newContext({ viewport: { width: 1600, height: 900 }, acceptDownloads: true });
 const p = await ctx1.newPage();
 const erros = []; p.on('pageerror', (e) => erros.push(String(e)));
-await p.goto('http://127.0.0.1:5173/');
+await p.goto('http://127.0.0.1:5173/#/editor');
 await p.evaluate(() => localStorage.clear());
-await p.goto('http://127.0.0.1:5173/');
-await p.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+await p.goto('http://127.0.0.1:5173/?recarga=1#/editor');
+await p.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
 // personagem novo
 await p.getByText('Arquivo').first().click(); await p.getByText('Novo personagem…').click();
 await p.getByPlaceholder('ex.: Tia Marta').fill('Tia Marta'); await p.getByRole('button', { name: 'Criar personagem' }).click();
@@ -32,8 +32,8 @@ await ctx1.close();
 // contexto novo e vazio: abre o projeto
 const ctx2 = await b.newContext({ viewport: { width: 1600, height: 900 } });
 const q = await ctx2.newPage(); q.on('pageerror', (e) => erros.push(String(e)));
-await q.goto('http://127.0.0.1:5173/');
-await q.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+await q.goto('http://127.0.0.1:5173/#/editor');
+await q.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
 await q.getByText('Arquivo').first().click();
 const [fc] = await Promise.all([q.waitForEvent('filechooser'), q.getByText('Abrir projeto (.zip)…').click()]);
 await fc.setFiles(`${dest}/projeto.zip`);

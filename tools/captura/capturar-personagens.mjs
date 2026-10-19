@@ -5,7 +5,7 @@ import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 const destino = process.argv[2] ?? 'evidencias/personagens';
-const base = 'http://127.0.0.1:5173/';
+const base = 'http://127.0.0.1:5173/#/editor';
 mkdirSync(destino, { recursive: true });
 
 const roteiro = `# Elenco
@@ -23,7 +23,7 @@ async function abrir(query) {
   await page.evaluate((r) => { localStorage.clear(); localStorage.setItem('stickboard.roteiro', r); }, roteiro);
   await page.goto(`${base}?${query}`);
   await page.waitForSelector('canvas');
-  await page.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+  await page.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
   await page.waitForTimeout(500);
 }
 const foto = async (nome, clip) => { await page.screenshot({ path: join(destino, nome), clip }); console.log('ok', nome); };

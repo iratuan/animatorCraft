@@ -7,7 +7,7 @@ const arq = 'src/renderer/assets/personagens/personagens.json';
 const man = JSON.parse(readFileSync(arq, 'utf8'));
 const b = await chromium.launch({ channel: 'msedge', headless: true });
 const p = await b.newPage();
-await p.goto('http://127.0.0.1:5173/');
+await p.goto('http://127.0.0.1:5173/#/editor');
 const melhor = await p.evaluate(async ({ pers, rosto, pid }) => {
   const carregar = async (u) => { const i = new Image(); i.src = u; await i.decode(); return i; };
   const parado = pers.sprites.find((s) => s.tags[0] === 'parado');

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ATORES, ORDEM_ATORES, gerarRoteiro, promptGerar, promptMelhorar, type PedidoRoteiro } from '@shared/domain';
+import { ATORES, ORDEM_ATORES, gerarRoteiro, promptGerar, promptMelhorar, promptSistema, type PedidoRoteiro } from '@shared/domain';
+import { bibliotecaAtual } from '@renderer/features/prompt-mestre';
 import { useEditor } from '@renderer/store/editor-store';
 import { criarPedidoIA, gravarConfigIA, lerConfigIA, PREDEFINICOES, type ConfigIA } from '../services/cliente';
 
@@ -28,7 +29,7 @@ export function IaModal() {
     setErro(''); setResultado(null); setOcupado(true);
     try {
       const msg = modo === 'novo' ? promptGerar(pedido) : promptMelhorar(roteiroAtual, instrucao);
-      const r = await gerarRoteiro(criarPedidoIA(cfg), msg);
+      const r = await gerarRoteiro(criarPedidoIA(cfg), msg, 2, promptSistema(bibliotecaAtual(modo === 'novo' ? pedido.personagens : [])));
       setResultado({ roteiro: r.roteiro, avisos: r.avisosFinais, rodadas: r.rodadas });
     } catch (e) {
       const m = (e as Error).message;

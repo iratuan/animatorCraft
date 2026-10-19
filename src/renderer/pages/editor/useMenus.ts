@@ -1,10 +1,13 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MODELOS, ROTEIRO_EXEMPLO } from '@shared/domain';
 import { FORMATOS } from '@shared/constants/video';
 import type { GrupoMenu } from '@renderer/components/BarraMenu';
 import { desfazer, refazer, useEditor } from '@renderer/store/editor-store';
 import { useRoteiroDerivado } from '@renderer/features/roteiro';
 import { limparPacotesSalvos, lerPacote } from '@renderer/features/personagens';
-import { gerarSrt, ATORES } from '@shared/domain';
+import { gerarSrt, estadoEm, ATORES } from '@shared/domain';
+import { renderizarCena } from '@renderer/features/cena';
 import { abrirProjeto, montarProjeto } from '@renderer/features/projeto';
 import { escolherEInserirImagem } from '@renderer/features/imagens';
 import { useExportar } from '@renderer/features/exportacao';
@@ -15,6 +18,9 @@ export function useMenus(): GrupoMenu[] {
   const formato = useEditor((s) => s.formato);
   const roteiro = useEditor((s) => s.roteiro);
   const set = useEditor((s) => s.set);
+  const navegar = useNavigate();
+  const spritesOk = useEditor((s) => s.spritesOk);
+  const acaoInicial = useEditor((s) => s.acaoInicial);
   const setRoteiro = useEditor((s) => s.setRoteiro);
   const { exportar, exportarTodos } = useExportar();
   const { timeline } = useRoteiroDerivado();
@@ -50,10 +56,26 @@ export function useMenus(): GrupoMenu[] {
       set({ mensagem: `Projeto aberto: ${r.personagens} personagem(ns), ${r.sprites} sprites, ${r.audios} áudio(s).` });
     } catch (e) { set({ mensagem: `Não consegui abrir o projeto: ${(e as Error).message}` }); }
   };
+  // pedidos da tela inicial que precisam dos sprites carregados (abrir projeto, criar personagem, editar sprites)
+  useEffect(() => {
+    if (!acaoInicial || !spritesOk) return;
+    set({ acaoInicial: null });
+    if (acaoInicial === 'abrir-projeto') void abrirProjetoZip();
+    else if (acaoInicial === 'novo-personagem') set({ fichaPersonagem: {} });
+    else set({ editorPersonagem: useEditor.getState().selecionado ?? 'cringefather' });
+  }, [acaoInicial, spritesOk]);
+  // o quadro sai na resolução do vídeo (1920×1080 ou 1080×1920), não no tamanho que o palco tem na janela
+  const quadroAtualPng = () => {
+    const c = document.createElement('canvas'); c.width = dim.w; c.height = dim.h;
+    renderizarCena(c.getContext('2d')!, estadoEm(timeline, useEditor.getState().t), dim.w, dim.h);
+    c.toBlob((b) => b && baixarArquivo(b, 'quadro.png'));
+  };
   const carregarModelo = (texto: string, nome: string) => { setRoteiro(texto); set({ t: 0, mensagem: `Modelo “${nome}” carregado. Troque o que está entre {chaves}.` }); };
 
   return [
     { nome: 'Arquivo', itens: [
+      { rotulo: 'Tela inicial', acao: () => navegar('/') },
+      { separador: true, rotulo: '' },
       { rotulo: 'Novo roteiro em branco', acao: () => { setRoteiro('[papéis: professor=CringeFather, aluno=BetaSon]\n\n# Cena 1\n\n'); set({ t: 0 }); } },
       ...MODELOS.map((m) => ({ rotulo: `Novo a partir do modelo: ${m.area} — ${m.nome}`, acao: () => carregarModelo(m.roteiro, m.nome) })),
       { separador: true, rotulo: '' },
@@ -62,7 +84,8 @@ export function useMenus(): GrupoMenu[] {
       { rotulo: 'Salvar projeto completo (.zip)…', acao: salvarProjeto },
       { rotulo: 'Abrir projeto (.zip)…', acao: abrirProjetoZip },
       { rotulo: 'Carregar exemplo', acao: () => { setRoteiro(ROTEIRO_EXEMPLO); set({ t: 0 }); } },
-      { rotulo: 'Gerar / melhorar roteiro com IA…', acao: () => set({ iaAberta: true }) },
+      { rotulo: 'Prompt mestre para IA (copiar e colar)…', acao: () => set({ promptMestreAberto: true }) },
+      { rotulo: 'Gerar / melhorar roteiro com IA (direto no app)…', acao: () => set({ iaAberta: true }) },
       { separador: true, rotulo: '' },
       { rotulo: 'Novo personagem…', acao: () => set({ fichaPersonagem: {} }) },
       { rotulo: 'Expressões e clipes do personagem…', acao: () => set({ editorAnimacao: { ator: useEditor.getState().selecionado ?? 'cringefather' } }) },
@@ -80,7 +103,7 @@ export function useMenus(): GrupoMenu[] {
       { rotulo: `Vídeo MP4 (${dim.nome})`, acao: () => void exportar() },
       { rotulo: 'Vídeo MP4 nos dois formatos (16:9 e 9:16)', acao: () => void exportarTodos() },
       { rotulo: 'Legendas das falas (.srt)', acao: async () => { const c = await plataforma.salvarRoteiro(gerarSrt(timeline, (id) => ATORES[id]?.nome ?? id), 'legendas.srt'); if (c) set({ mensagem: `Legendas salvas: ${c}` }); } },
-      { rotulo: 'Quadro atual (PNG)', acao: () => document.querySelector<HTMLCanvasElement>('.area-palco canvas')?.toBlob((b) => b && baixarArquivo(b, 'quadro.png')) },
+      { rotulo: 'Quadro atual (PNG)', acao: quadroAtualPng },
     ] },
     { nome: 'Exibir', itens: [
       { rotulo: 'Formato 16:9 (YouTube)', acao: () => set({ formato: '16:9' }) },
@@ -91,6 +114,7 @@ export function useMenus(): GrupoMenu[] {
     ] },
     { nome: 'Ajuda', itens: [
       { rotulo: 'Manual de uso', atalho: 'F1', acao: () => set({ manualAberto: true }) },
+      { rotulo: 'Prompt mestre para IA', acao: () => set({ promptMestreAberto: true }) },
       { rotulo: 'Sintaxe do roteiro e modelos', acao: () => set({ aba: 'aula' }) },
       { rotulo: 'Sobre o StickBoard', acao: () => set({ manualAberto: true, manualSecao: 'sobre' }) },
     ] },

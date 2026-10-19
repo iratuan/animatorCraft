@@ -33,8 +33,11 @@ export interface OpcoesPacote {
   expressoes: string[];
   /** poses que o app já conhece (as demais são avisadas como "pose nova") */
   posesConhecidas?: string[];
-  /** padrão true: exige pose_parado. O editor de sprites desliga ao trocar um único arquivo. */
-  exigirParado?: boolean;
+  /**
+   * padrão true: exige pose_parado no pacote. O editor de sprites desliga ao trocar um único arquivo. Pode ser uma função por personagem:
+   * quem já tem pose_parado no app não precisa mandar de novo (\"pode mandar só os arquivos que mudaram\").
+   */
+  exigirParado?: boolean | ((personagem: string) => boolean);
 }
 
 export interface ResumoPersonagem {
@@ -141,7 +144,8 @@ export function analisarPacote(caminhos: string[], op: OpcoesPacote): RelatorioP
         if (nums.some((v, i) => v !== i + 1)) rel.avisos.push(`${id}: os quadros de "${n}" deveriam ser 1..${nums.length} sem buracos (recebi ${nums.join(', ')}).`);
       }
     }
-    if (op.exigirParado !== false && !nomesPose.includes(POSE_OBRIGATORIA)) rel.erros.push(`${id}: falta a pose obrigatória pose_${POSE_OBRIGATORIA}.png.`);
+    const exigir = typeof op.exigirParado === 'function' ? op.exigirParado(id) : op.exigirParado !== false;
+    if (exigir && !nomesPose.includes(POSE_OBRIGATORIA)) rel.erros.push(`${id}: falta a pose obrigatória pose_${POSE_OBRIGATORIA}.png.`);
     const conhecidas = new Set(op.posesConhecidas ?? []);
     for (const n of nomesPose) if (op.posesConhecidas && !conhecidas.has(n)) rel.avisos.push(`${id}: pose nova "${n}". No roteiro: "${id} faz a pose ${n}."`);
     rel.resumo[id] = {

@@ -12,10 +12,10 @@ const casos = [
   ['pizza', 'Professor desenha um gráfico de pizza: Sim=70, Não=20, Talvez=10 no quadro.'],
 ];
 for (const [nome, texto] of casos) {
-  await p.goto('http://127.0.0.1:5173/');
+  await p.goto('http://127.0.0.1:5173/#/editor');
   await p.evaluate((r) => { localStorage.clear(); localStorage.setItem('stickboard.roteiro.v2', r); }, rot(texto));
-  await p.goto('http://127.0.0.1:5173/?t=8');
-  await p.waitForFunction(() => !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
+  await p.goto('http://127.0.0.1:5173/?t=8#/editor');
+  await p.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
   await p.waitForTimeout(900);
   const box = await p.locator('.area-palco canvas').boundingBox();
   await p.screenshot({ path: `${dest}/${nome}.png`, clip: box });
