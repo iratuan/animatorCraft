@@ -36,4 +36,31 @@ describe('personagens criados pelo usuário', () => {
     expect(ATORES['professora-lia']!.apelidos).not.toContain('professora');
     removerAtor('professora-lia');
   });
+
+  it('elenco oficial inclui Véia, Véio, Paraíba e Mingau com danças e poses válidas', () => {
+    expect(ATORES.veia).toBeDefined();
+    expect(ATORES.veio).toBeDefined();
+    expect(ATORES.paraiba).toBeDefined();
+    expect(ATORES.mingau).toBeDefined();
+    expect(ORDEM_ATORES).toContain('veia');
+    expect(ORDEM_ATORES).toContain('veio');
+    expect(ORDEM_ATORES).toContain('paraiba');
+    expect(ORDEM_ATORES).toContain('mingau');
+
+    const roteiro = `Véia entra pela esquerda andando. Véia diz "Onde você pensa que vai, Cringe?". Ao mesmo tempo, Paraíba dança por 2 segundos. Mingau entra pelo centro. Mingau diz "Miau!".`;
+    const r = parseRoteiro(roteiro);
+    expect(r.avisos).toEqual([]);
+    expect(r.cenas[0]!.acoes.some((a) => 'ator' in a && a.ator === 'veia')).toBe(true);
+    expect(r.cenas[0]!.acoes.some((a) => 'ator' in a && a.ator === 'paraiba')).toBe(true);
+    expect(r.cenas[0]!.acoes.some((a) => 'ator' in a && a.ator === 'mingau')).toBe(true);
+  });
+
+  it('Erika é a personagem mais alta de todo o elenco', () => {
+    expect(ATORES.erika).toBeDefined();
+    for (const [id, ator] of Object.entries(ATORES)) {
+      if (id !== 'erika') {
+        expect(ATORES.erika.altura, `Erika (${ATORES.erika.altura}px) deve ser maior que ${ator.nome} (${ator.altura}px)`).toBeGreaterThan(ator.altura);
+      }
+    }
+  });
 });

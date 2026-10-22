@@ -69,4 +69,25 @@ Professor entra pela esquerda andando. Aluno entra correndo pela direita. Profes
     const r = parseRoteiro('[papéis: professor=BetaSon, aluno=CringeFather]\n[close no aluno]');
     expect(r.cenas[0]!.acoes).toEqual([{ tipo: 'camera', alvo: 'personagem', ator: 'cringefather' }]);
   });
+
+  it('interpreta tags de cenário, formato de produção e sem lousa por cena', () => {
+    const script = `# Episódio Podcast
+[cenário: podcast]
+[formato: podcast]
+Professor diz "Bem-vindos ao episódio!".
+
+# Plantão Urgente
+[cenário: telejornal]
+[formato: telejornal]
+[sem lousa]
+Aluno diz "Últimas notícias!".`;
+    const r = parseRoteiro(script);
+    expect(r.avisos).toEqual([]);
+    expect(r.cenas).toHaveLength(2);
+    expect(r.cenas[0]!.cenario).toBe('podcast');
+    expect(r.cenas[0]!.formato).toBe('podcast');
+    expect(r.cenas[1]!.cenario).toBe('telejornal');
+    expect(r.cenas[1]!.formato).toBe('telejornal');
+    expect(r.cenas[1]!.semLousa).toBe(true);
+  });
 });

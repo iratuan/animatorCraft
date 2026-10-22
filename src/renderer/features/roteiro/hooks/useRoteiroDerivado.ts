@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { ATORES, construirTimeline, infoDaImagem, estadoEm, parseRoteiro, type Roteiro, type Timeline } from '@shared/domain';
+import { ATORES, construirTimeline, infoDaImagem, estadoEm, parseRoteiro, detectarConflitosTimeline, type Roteiro, type Timeline } from '@shared/domain';
 import { FORMATOS } from '@shared/constants/video';
 import { layoutDe, temPose, verificarLousa } from '@renderer/features/cena';
 import { useEditor } from '@renderer/store/editor-store';
@@ -14,19 +14,32 @@ function derivar(texto: string, versao: string) {
   return ultimo;
 }
 
-/** Tudo que se deduz do texto do roteiro: ações, linha do tempo, estado no instante atual e avisos do editor. */
-export function useRoteiroDerivado() {
+export interface RoteiroEstatico {
+  roteiro: Roteiro;
+  timeline: Timeline;
+  dim: { w: number; h: number };
+  avisos: string[];
+  conflitos: ReturnType<typeof detectarConflitosTimeline>;
+}
+
+/**
+ * Roteiro estático (baixa frequência): deduções do texto do roteiro, linha do tempo,
+ * avisos e dimensões. NÃO subscreve ao tempo `t`, evitando re-renderizar painéis
+ * estáticos 60 vezes por segundo durante a reprodução da animação.
+ */
+export function useRoteiroEstatico(): RoteiroEstatico {
   const texto = useEditor((s) => s.roteiro);
-  const t = useEditor((s) => s.t);
   const formato = useEditor((s) => s.formato);
   const spritesOk = useEditor((s) => s.spritesOk);
   const versaoBib = useEditor((s) => s.versaoBib);
   const versaoPersonagens = useEditor((s) => s.versaoPersonagens);
   const versaoImagens = useEditor((s) => s.versaoImagens);
-
   const versaoAudio = useEditor((s) => s.versaoAudio); // a duração das falas vem dos áudios importados: importar ou excluir um áudio muda a linha do tempo
-  const { roteiro, timeline } = useMemo(() => derivar(texto, `${versaoPersonagens}.${versaoBib}.${spritesOk}.${versaoAudio}`), [texto, versaoPersonagens, versaoBib, spritesOk, versaoAudio]);
-  const estado = useMemo(() => estadoEm(timeline, t), [timeline, t]);
+
+  const { roteiro, timeline } = useMemo(
+    () => derivar(texto, `${versaoPersonagens}.${versaoBib}.${spritesOk}.${versaoAudio}`),
+    [texto, versaoPersonagens, versaoBib, spritesOk, versaoAudio]
+  );
   const dim = FORMATOS[formato];
 
   // o conteúdo escrito em cada cena precisa caber na lousa
@@ -61,8 +74,38 @@ export function useRoteiroDerivado() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeline, versaoImagens]);
 
-  const avisos = [...roteiro.avisos, ...avisosLousa, ...avisosPoses, ...avisosImagens];
-  return { roteiro, timeline, estado, dim, avisos };
+  // conflitos da linha do tempo (sobreposição indevida de falas ou movimentos)
+  const conflitos = useMemo(() => detectarConflitosTimeline(timeline), [timeline]);
+  const avisosConflitos = useMemo(() => conflitos.map((c) => c.mensagem), [conflitos]);
+
+  const avisos = useMemo(
+    () => [...roteiro.avisos, ...avisosLousa, ...avisosPoses, ...avisosImagens, ...avisosConflitos],
+    [roteiro.avisos, avisosLousa, avisosPoses, avisosImagens, avisosConflitos]
+  );
+
+  return { roteiro, timeline, dim, avisos, conflitos };
+}
+
+/**
+ * Estado dinâmico da cena no instante atual `t` (alta frequência: 60 fps durante reprodução).
+ * Subscreve ao tempo `t` do editor e calcula o estado interpolado dos atores, câmera e lousa.
+ */
+export function useEstadoCena(timelineProp?: Timeline) {
+  const t = useEditor((s) => s.t);
+  const { timeline: tlEstatica } = useRoteiroEstatico();
+  const timeline = timelineProp ?? tlEstatica;
+  const estado = useMemo(() => estadoEm(timeline, t), [timeline, t]);
+  return { estado, t };
+}
+
+/**
+ * Tudo que se deduz do texto do roteiro: ações, linha do tempo, estado no instante atual e avisos do editor.
+ * Mantido para retrocompatibilidade; componentes estáticos devem usar `useRoteiroEstatico()`.
+ */
+export function useRoteiroDerivado() {
+  const estatico = useRoteiroEstatico();
+  const { estado } = useEstadoCena(estatico.timeline);
+  return { ...estatico, estado };
 }
 
 

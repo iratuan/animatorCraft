@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { construirTimeline, estadoEm } from '../timeline';
-import { posicionarNoRoteiro, reescreverDuracao, tornarSequencial, tornarSimultanea } from './editar';
+import { posicionarNoRoteiro, reescreverDuracao, substituirFala, tornarSequencial, tornarSimultanea } from './editar';
 import { parseRoteiro } from './parser';
 
 const tl = (t: string) => { const r = parseRoteiro(t); return { r, tl: construirTimeline(r) }; };
@@ -114,6 +114,13 @@ describe('posição inserida pelo arrasto no palco', () => {
     const { r, tl: l } = tl('[papéis: professor=CringeFather, aluno=BetaSon]\n\n# Posição\nProfessor entra pela esquerda andando. Aluno entra pela direita andando. CringeFather fica na posição 45%.\nProfessor diz "Um momento, por favor." Aluno dança por 6 segundos. Professor aponta.');
     expect(r.avisos).toEqual([]);
     expect(estadoEm(l, 4.17).atores.cringefather!.x).toBeCloseTo(0.45);
+  });
+
+  it('substituirFala troca o trecho do roteiro corretamente preservando o restante', () => {
+    const roteiro = 'Erika entra pela esquerda andando. Erika diz "Olá turma!" feliz. Erika aponta.';
+    const o = tl(roteiro).tl.eventos[1]!.origem!;
+    const editado = substituirFala(roteiro, o, 'Erika diz "Nova fala!" feliz.');
+    expect(editado).toBe('Erika entra pela esquerda andando. Erika diz "Nova fala!" feliz. Erika aponta.');
   });
 });
 

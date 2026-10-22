@@ -4,7 +4,7 @@ import {
   expressoesDe, MAX_PASSOS_CLIPE, MAX_QUADROS_EXPRESSAO, MOVIMENTOS, NOME_EXPRESSAO, NOME_POSE, nomeDeClipe, nomeDeExpressao, OLHOS, ORDEM_ATORES, POSES,
   type ActorId, type ClipePersonalizado, type EstiloClipe, type ExpressaoBoneco, type Movimento, type PassoClipe, type PoseId, type RostoBoneco,
 } from '@shared/domain';
-import { listarSprites, type Skin } from '@renderer/features/cena';
+import { listarSprites } from '@renderer/features/cena';
 import { Miniatura } from '@renderer/components/Miniatura';
 import { useEditor } from '@renderer/store/editor-store';
 import { carregarAnimacoesSalvas, salvarClipes, salvarExpressoes } from '../services/animacoes';
@@ -15,7 +15,7 @@ const NOME_MOV: Record<Movimento, string> = {
 };
 const NOME_OLHO: Record<(typeof OLHOS)[number], string> = { normal: 'Normais', grande: 'Grandes', meia: 'Meio fechados', estreito: 'Estreitos (bravos)' };
 const NOME_BOCA: Record<(typeof BOCAS)[number], string> = { sorriso: 'Sorriso', triste: 'Triste', o: 'Surpresa (O)', reta: 'Reta', lado: 'De lado', dentes: 'Dentes', onda: 'Ondulada', aberta: 'Aberta' };
-const NOME_ESTILO: Record<EstiloClipe, string> = { ambos: 'Chibi e Stickman', chibi: 'Só Chibi', stickman: 'Só Stickman' };
+const NOME_ESTILO: Record<EstiloClipe, string> = { stickman: 'Stickman', ambos: 'Stickman' };
 
 /** `existentes`: nomes das expressões do boneco que já estavam salvas quando a edição começou (o rascunho em si já está no registro, para a prévia) */
 interface RascunhoExpr { original?: string; nome: string; quadros: RostoBoneco[]; existentes: string[] }
@@ -33,12 +33,11 @@ function clipeDoRascunho(ator: ActorId, r: RascunhoClipe): ClipePersonalizado {
     ...(r.substitui ? { substitui: r.substitui as PoseId } : {}),
   };
 }
-const mesmoClipe = (c: ClipePersonalizado, ator: string, id: string, estilo: EstiloClipe) => c.ator === ator && c.id === id && c.estilo === estilo;
+const mesmoClipe = (c: ClipePersonalizado, ator: string, id: string, estilo: EstiloClipe) => c.ator === ator && c.id === id && (c.estilo ?? 'stickman') === estilo;
 
 /**
- * Expressões e clipes de um personagem. Expressões: o rosto do boneco (olhos, sobrancelha, boca; até 4 quadros para animar) e,
- * no estilo Chibi, o sprite rosto_<nome>. Clipes: sequências de passos (sprite do chibi, pose do boneco, movimento e duração)
- * usadas no roteiro com "Fulano faz o clipe nome.".
+ * Expressões e clipes de um personagem no estilo Stickman. Expressões: o rosto do boneco (olhos, sobrancelha, boca; até 4 quadros para animar).
+ * Clipes: sequências de passos (pose do boneco stickman, movimento e duração) usadas no roteiro com "Fulano faz o clipe nome.".
  */
 export function EditorAnimacaoModal() {
   const alvo = useEditor((s) => s.editorAnimacao);
@@ -50,10 +49,8 @@ export function EditorAnimacaoModal() {
   const [exprRasc, setExprRasc] = useState<RascunhoExpr | null>(null);
   const [clipeRasc, setClipeRasc] = useState<RascunhoClipe | null>(null);
   const [previa, setPrevia] = useState<string | null>(null);
-  const [estiloPrevia, setEstiloPrevia] = useState<Skin | null>(null);
   const [lista, setLista] = useState(0); // força a releitura dos registros depois de salvar/excluir
   const [msg, setMsg] = useState('');
-  const [quadroSprite, setQuadroSprite] = useState(1);
   const [abertoDe, setAbertoDe] = useState<ActorId | null>(null);
   if (!alvo) return null;
   const id: ActorId = alvo.ator;
@@ -114,7 +111,8 @@ export function EditorAnimacaoModal() {
     carregarAnimacoesSalvas(); // volta ao que está salvo: sem isso, cada letra digitada deixaria um clipe-fantasma no registro
     if (!nomeDeClipe(r.nome) || !r.passos.length) return;
     const novo = clipeDoRascunho(id, r);
-    definirClipesPersonalizados([...clipesPersonalizados().filter((c) => !mesmoClipe(c, id, novo.id, novo.estilo) && !(r.original && mesmoClipe(c, id, r.original.id, r.original.estilo))), novo], poseValida);
+    const estiloClipe: EstiloClipe = novo.estilo ?? 'stickman';
+    definirClipesPersonalizados([...clipesPersonalizados().filter((c) => !mesmoClipe(c, id, novo.id, estiloClipe) && !(r.original && mesmoClipe(c, id, r.original.id, r.original.estilo))), novo], poseValida);
     setPrevia(`${ap} fica na posição 50%.\n${ap} faz o clipe ${novo.id}.\n${ap} faz o clipe ${novo.id}.`);
   };
   const mudarPasso = (i: number, parte: Partial<PassoClipe>) => clipeRasc && mudarClipe({ ...clipeRasc, passos: clipeRasc.passos.map((p, k) => (k === i ? { ...p, ...parte } : p)) });
@@ -132,19 +130,21 @@ export function EditorAnimacaoModal() {
     if (!clipeRasc.passos.length) { setMsg('Acrescente pelo menos um passo.'); return; }
     carregarAnimacoesSalvas(); // descarta a prévia do rascunho; o que vale é o que está salvo
     const novo = clipeDoRascunho(id, clipeRasc);
-    const chave = `${novo.id}|${novo.estilo}`, orig = clipeRasc.original ? `${clipeRasc.original.id}|${clipeRasc.original.estilo}` : null;
-    const outros = clipesPersonalizados().filter((c) => c.ator !== id || (`${c.id}|${c.estilo}` !== chave && `${c.id}|${c.estilo}` !== orig));
-    if (clipeRasc.existentes.includes(chave) && chave !== orig) { setMsg(`Já existe o clipe “${nome}” (${NOME_ESTILO[novo.estilo]}). Use outro nome ou estilo.`); return; }
+    const origId = clipeRasc.original?.id;
+    const jaExiste = origId !== novo.id && clipesPersonalizados().some((c) => c.ator === id && c.id === novo.id);
+    if (jaExiste) { setMsg(`Já existe o clipe “${nome}”. Use outro nome.`); return; }
+    const outros = clipesPersonalizados().filter((c) => c.ator !== id || (c.id !== novo.id && c.id !== origId));
     salvarClipes([...outros, novo]);
     setMsg(`Clipe “${nome}” salvo. No roteiro: ${espec.nome} faz o clipe ${nome}.`);
     setClipeRasc(null); atualizar();
   };
   const excluirClipe = (c: ClipePersonalizado) => {
-    salvarClipes(clipesPersonalizados().filter((x) => !mesmoClipe(x, id, c.id, c.estilo)));
+    salvarClipes(clipesPersonalizados().filter((x) => !mesmoClipe(x, id, c.id, c.estilo ?? 'stickman')));
     setMsg(`Clipe “${c.nome}” excluído.`); setClipeRasc(null); atualizar();
   };
   const editarClipe = (c: ClipePersonalizado) => {
-    const r: RascunhoClipe = { original: { id: c.id, estilo: c.estilo }, nome: c.nome, estilo: c.estilo, loop: c.loop, substitui: c.substitui ?? '', existentes: meus.map((x) => `${x.id}|${x.estilo}`), passos: c.passos.map((p) => ({ ...p, tags: [...p.tags] })) };
+    const estilo: EstiloClipe = c.estilo ?? 'stickman';
+    const r: RascunhoClipe = { original: { id: c.id, estilo }, nome: c.nome, estilo, loop: c.loop, substitui: c.substitui ?? '', existentes: meus.map((x) => `${x.id}|${x.estilo ?? 'stickman'}`), passos: c.passos.map((p) => ({ ...p, tags: [...p.tags] })) };
     setClipeRasc(r); setPrevia(`${ap} fica na posição 50%.\n${ap} faz o clipe ${c.id}.\n${ap} faz o clipe ${c.id}.`);
   };
 
@@ -218,15 +218,6 @@ export function EditorAnimacaoModal() {
                 </div>
               ))}
               {exprRasc.quadros.length < MAX_QUADROS_EXPRESSAO && <button onClick={() => { const r = { ...exprRasc, quadros: [...exprRasc.quadros, { ...exprRasc.quadros[exprRasc.quadros.length - 1]! }] }; setExprRasc(r); aplicarExprRascunho(r); }}>＋ Quadro de animação</button>}
-              <h4>Estilo Chibi <small>sprite rosto_{nomeExpr || '<nome>'}.png</small></h4>
-              <div className="novo-sprite">
-                <button disabled={!nomeExpr} onClick={() => editarSprite(nomeExpr)}>Desenhar no editor de imagem</button>
-                <label className="campo-linha">Quadro de animação nº
-                  <input aria-label="Número do quadro do sprite" type="number" min={1} max={12} value={quadroSprite} onChange={(e) => setQuadroSprite(Math.max(1, Math.min(12, Number(e.target.value) || 1)))} />
-                </label>
-                <button disabled={!nomeExpr} onClick={() => editarSprite(`${nomeExpr}_${quadroSprite}`)}>Desenhar quadro {quadroSprite}</button>
-              </div>
-              <p className="dica">Com <code>rosto_{nomeExpr || 'nome'}_1.png</code>, <code>_2</code>… a expressão do Chibi também é animada (8 quadros por segundo).</p>
               <div className="modal-botoes">
                 <button onClick={() => { carregarAnimacoesSalvas(); setExprRasc(null); setPrevia(null); atualizar(); }}>Cancelar</button>
                 <button className="primario" onClick={salvarExpr}>Salvar expressão</button>
@@ -234,12 +225,12 @@ export function EditorAnimacaoModal() {
             </>)}
 
             {aba === 'clipes' && !clipeRasc && (<>
-              <p className="dica">Clipe = sequência de passos (sprite do Chibi, pose do Stickman, movimento, duração). No roteiro: <code>{espec.nome} faz o clipe tchau por 4 segundos.</code> Sem “por N segundos” o clipe toca uma vez.</p>
+              <p className="dica">Clipe = sequência de passos (pose do Stickman, movimento, duração). No roteiro: <code>{espec.nome} faz o clipe tchau por 4 segundos.</code> Sem “por N segundos” o clipe toca uma vez.</p>
               <ul className="lista-anim">
                 {meus.map((c) => (
                   <li key={`${c.id}-${c.estilo}`} data-clipe={c.id}>
                     <b>{c.nome}</b>
-                    <small>{NOME_ESTILO[c.estilo]} · {c.passos.length} passo(s) · {duracaoDoClipe(c).toFixed(1)} s{c.loop ? ' · repete' : ''}{c.substitui ? ` · substitui “${NOME_POSE[c.substitui]}”` : ''}</small>
+                    <small>{c.passos.length} passo(s) · {duracaoDoClipe(c).toFixed(1)} s{c.loop ? ' · repete' : ''}{c.substitui ? ` · substitui “${NOME_POSE[c.substitui]}”` : ''}</small>
                     <span className="acoes-lista">
                       <button onClick={() => setPrevia(`${ap} fica na posição 50%.\n${ap} faz o clipe ${c.id}.\n${ap} faz o clipe ${c.id}.`)}>Prévia</button>
                       <button onClick={() => inserir(`${espec.nome} faz o clipe ${c.id}.`)}>Inserir no roteiro</button>
@@ -311,14 +302,8 @@ export function EditorAnimacaoModal() {
           </div>
 
           <div className="anim-dir">
-            <b>Prévia</b>
-            <div className="seletor-personagem">
-              <button className={estiloPrevia === null ? 'on' : ''} onClick={() => setEstiloPrevia(null)}>Estilo atual</button>
-              <button className={estiloPrevia === 'chibi' ? 'on' : ''} onClick={() => setEstiloPrevia('chibi')}>Chibi</button>
-              <button className={estiloPrevia === 'stickman' ? 'on' : ''} onClick={() => setEstiloPrevia('stickman')}>Stickman</button>
-            </div>
-            {aba === 'expressoes' && exprRasc && nomeExpr && !tem.rostos.includes(nomeExpr) && <p className="dica">No estilo Chibi esta expressão ainda não tem sprite (rosto_{nomeExpr}.png): o rosto não muda. Use “Desenhar no editor de imagem”.</p>}
-            {previa ? <PreviaAnimacao ator={id} roteiro={previa} estilo={estiloPrevia} /> : <p className="dica">Escolha uma expressão ou clipe para ver a prévia aqui.</p>}
+            <b>Prévia (Stickman)</b>
+            {previa ? <PreviaAnimacao ator={id} roteiro={previa} estilo="stickman" /> : <p className="dica">Escolha uma expressão ou clipe para ver a prévia aqui.</p>}
           </div>
         </div>
 

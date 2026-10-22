@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -68 120 128" width="100%" height="100%" style="overflow: visible;">
+  
+  <g id="cringefather-cabeca">
+    <ellipse cx="0" cy="0" rx="36" ry="36" fill="#fff" stroke="#14161a" stroke-width="3.36" />
+    <ellipse cx="-14" cy="-4" rx="7.225" ry="7.225" fill="#fff" stroke="#14161a" stroke-width="2.16" />
+    <ellipse cx="14" cy="-4" rx="7.225" ry="7.225" fill="#fff" stroke="#14161a" stroke-width="2.16" />
+    <ellipse cx="-14" cy="-4" rx="2.7455" ry="2.7455" fill="#14161a" />
+    <ellipse cx="14" cy="-4" rx="2.7455" ry="2.7455" fill="#14161a" />
+    <path d="M -21.225,-4 A 7.225,7.225 0 0,1 -6.775,-4 Z" fill="#fff" stroke="#14161a" stroke-width="1.92" />
+    <path d="M 6.775,-4 A 7.225,7.225 0 0,1 21.225,-4 Z" fill="#fff" stroke="#14161a" stroke-width="1.92" />
+    <path d="M -18,-14 Q -10,-17 -2,-15" fill="none" stroke="#14161a" stroke-width="2.64" stroke-linecap="round" />
+    <path d="M 2,-22 Q 10,-25 18,-21" fill="none" stroke="#14161a" stroke-width="2.64" stroke-linecap="round" />
+    <path d="M -24,-14 L -4,-14 L -4,0 L -24,0 Z" fill="none" stroke="#14161a" stroke-width="2.88" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 4,-14 L 24,-14 L 24,0 L 4,0 Z" fill="none" stroke="#14161a" stroke-width="2.88" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -4,-7 L 4,-7" fill="none" stroke="#14161a" stroke-width="2.88" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -24,-7 L -32,-7 M 24,-7 L 32,-7" fill="none" stroke="#14161a" stroke-width="2.16" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -8,14 Q 2,13 12,9" fill="none" stroke="#14161a" stroke-width="2.52" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -32,-18 C -36,-38 -20,-50 -8,-45 C -4,-62 14,-62 20,-48 C 30,-58 42,-44 36,-22 C 40,-12 36,0 32,8 L 30,-6 C 24,-18 10,-22 0,-18 C -14,-22 -26,-14 -32,-18 Z" fill="#fff" stroke="#14161a" stroke-width="2.88" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -16,-34 L -6,-22 M 4,-38 L 8,-22 M 18,-32 L 20,-16" fill="#ffffff" stroke="#14161a" stroke-width="1.92" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+</svg>

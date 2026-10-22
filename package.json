@@ -1,7 +1,7 @@
 {
   "name": "stickboard",
   "productName": "StickBoard",
-  "version": "0.8.0",
+  "version": "0.8.2",
   "description": "Gerador de vídeos whiteboard com personagens animados, para ensino de ciências, matemática e inglês",
   "author": "StickBoard",
   "private": true,
@@ -18,7 +18,7 @@
     "dist": "npm run build && electron-builder --win",
     "dist:dir": "npm run build && electron-builder --win --dir",
     "android:sync": "cross-env SEM_ELECTRON=1 vite build && cap sync android",
-    "android:apk": "npm run android:sync && cd android && gradlew.bat assembleDebug"
+    "android:apk": "npm run android:sync && cd android && gradlew.bat assembleDebug && cd .. && node -e \"require('fs').copyFileSync('android/app/build/outputs/apk/debug/app-debug.apk', 'release/StickBoard-' + require('./package.json').version + '.apk')\""
   },
   "dependencies": {
     "@capacitor/android": "^7.0.0",
@@ -31,6 +31,7 @@
     "@fontsource/kalam": "^5.3.0",
     "@fontsource/patrick-hand": "^5.3.0",
     "fflate": "^0.8.2",
+    "katex": "^0.19.0",
     "mp4-muxer": "^5.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -40,6 +41,7 @@
   "devDependencies": {
     "@capacitor/cli": "^7.0.0",
     "@electron/packager": "^18.3.0",
+    "@types/katex": "^0.16.8",
     "@types/node": "^22.0.0",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
@@ -56,12 +58,39 @@
   "build": {
     "appId": "com.stickboard.app",
     "productName": "StickBoard",
-    "directories": { "output": "release" },
-    "files": ["dist/**", "dist-electron/**", "package.json"],
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**",
+      "dist-electron/**",
+      "package.json"
+    ],
     "electronDist": "node_modules/electron/dist",
-    "win": { "signAndEditExecutable": false, "icon": "assets/icon.png", "target": [{ "target": "nsis", "arch": ["x64"] }, { "target": "portable", "arch": ["x64"] }] },
-    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true },
-    "portable": { "artifactName": "StickBoard-${version}-portatil.exe" }
+    "win": {
+      "signAndEditExecutable": false,
+      "icon": "assets/icon.png",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "portable": {
+      "artifactName": "StickBoard-${version}-portatil.exe"
+    }
   }
 }
-

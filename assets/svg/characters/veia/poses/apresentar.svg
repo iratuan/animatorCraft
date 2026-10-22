@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-110 -65 220 250" width="100%" height="100%" style="overflow: visible;">
+  
+  <g id="veia-corpo-inteiro">
+    <path d="M 5.2,12.4 L -3.5,47.4 L -4.7,81.3" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 5.2,12.4 L -3.5,47.4 L -4.7,81.3" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 5.2,12.4 L -3.5,47.4 L -4.4,74.5" fill="none" stroke="#14161a" stroke-width="17.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 5.2,12.4 L -3.5,47.4 L -4.4,74.5" fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="-9.4" cy="83.0" r="3" fill="#ffffff" stroke="#14161a" stroke-width="2.6" />
+    <circle cx="-4.7" cy="81.3" r="6" fill="#ffffff" stroke="#14161a" stroke-width="2.6" />
+    <path d="M 0.0,72.0 L -10.0,117.8 L -14.0,163.6" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,72.0 L -10.0,117.8 L -14.0,163.6" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -19.01832833278455,159.64991222444058 L 0.9816716672154513,161.64991222444058 L 0.9816716672154513,165.64991222444058 L -19.01832833278455,165.64991222444058 Z" fill="#14161a" stroke="#14161a" stroke-width="2.6" stroke-linejoin="round" />
+    <line x1="-14.018328332784549" y1="159.64991222444058" x2="-8.018328332784549" y2="155.64991222444058" stroke="#14161a" stroke-width="1.8199999999999998" />
+    <path d="M 0.0,72.0 L 10.0,117.8 L 14.0,163.6" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,72.0 L 10.0,117.8 L 14.0,163.6" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 9.018328332784549,159.64991222444058 L 29.01832833278455,161.64991222444058 L 29.01832833278455,165.64991222444058 L 9.018328332784549,165.64991222444058 Z" fill="#14161a" stroke="#14161a" stroke-width="2.6" stroke-linejoin="round" />
+    <line x1="14.018328332784549" y1="159.64991222444058" x2="20.01832833278455" y2="155.64991222444058" stroke="#14161a" stroke-width="1.8199999999999998" />
+    <path d="M -16,68 L 16,68 L 38.01832833278455,153.64991222444058 L -38.01832833278455,153.64991222444058 Z" fill="#ffffff" stroke="#14161a" stroke-width="3.3800000000000003" stroke-linejoin="round" />
+    <g transform="translate(2.6, 42.2)">
+    <path d="M -15,-10 L 15,-10 L 19,68 L -19,68 Z" fill="#fff" stroke="#14161a" stroke-width="3.3800000000000003" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -14,-8 A 3,3 0 1,1 -8,-8 A 3,3 0 1,1 -2,-6 A 3,3 0 1,1 4,-6 A 3,3 0 1,1 10,-8 A 3,3 0 1,1 16,-8" fill="none" stroke="#14161a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <path d="M 5.2,12.4 L 40.9,7.4 L 73.5,-2.0" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 5.2,12.4 L 40.9,7.4 L 73.5,-2.0" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 5.2,12.4 L 40.9,7.4 L 67.0,-0.1" fill="none" stroke="#14161a" stroke-width="17.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 5.2,12.4 L 40.9,7.4 L 67.0,-0.1" fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="76.6" cy="2.0" r="3" fill="#ffffff" stroke="#14161a" stroke-width="2.6" />
+    <circle cx="73.5" cy="-2.0" r="6" fill="#ffffff" stroke="#14161a" stroke-width="2.6" />
+    <path d="M 5.2,12.4 L 5.2,-13.6" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 5.2,12.4 L 5.2,-13.6" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <g id="veia-cabeca" transform="translate(5.2, -34.0)">
+    <ellipse cx="0" cy="0" rx="34" ry="34" fill="#fff" stroke="#14161a" stroke-width="3.12" />
+    <ellipse cx="-12.5" cy="-3" rx="8" ry="8" fill="#fff" stroke="#14161a" stroke-width="2.16" />
+    <ellipse cx="12.5" cy="-3" rx="8" ry="8" fill="#fff" stroke="#14161a" stroke-width="2.16" />
+    <ellipse cx="-12.5" cy="-3" rx="3.04" ry="3.04" fill="#14161a" />
+    <ellipse cx="12.5" cy="-3" rx="3.04" ry="3.04" fill="#14161a" />
+    <path d="M -18,-16 Q -10,-17 -2,-16" fill="none" stroke="#14161a" stroke-width="2.64" stroke-linecap="round" />
+    <path d="M 2,-16 Q 10,-17 18,-16" fill="none" stroke="#14161a" stroke-width="2.64" stroke-linecap="round" />
+    <path d="M -10,12 L 10,12" fill="none" stroke="#14161a" stroke-width="2.52" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -32,-10 C -42,-24 -36,-46 -18,-48 C -8,-58 12,-58 22,-46 C 38,-44 42,-24 32,-10 C 26,-22 14,-24 0,-24 C -14,-24 -24,-22 -32,-10 Z" fill="#fff" stroke="#14161a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -20,-34 A 4,4 0 1,1 -14,-34 M -6,-40 A 4,4 0 1,1 0,-40 M 8,-40 A 4,4 0 1,1 14,-40 M 18,-32 A 4,4 0 1,1 24,-32" fill="#ffffff" stroke="#14161a" stroke-width="1.92" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+  </g>
+</svg>

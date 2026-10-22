@@ -28,6 +28,7 @@ export async function importarImagem(arquivo: File): Promise<InfoImagem> {
     const k = LIMITE_PX / Math.max(w, h), c = document.createElement('canvas');
     c.width = Math.round(w * k); c.height = Math.round(h * k);
     c.getContext('2d')!.drawImage(bmp, 0, 0, c.width, c.height);
+    bmp.close();
     const blob = await new Promise<Blob>((ok, erro) => c.toBlob((b) => (b ? ok(b) : erro(new Error('não consegui reduzir a imagem'))), 'image/png'));
     dados = await blob.arrayBuffer(); mime = 'image/png';
     ({ bmp, w, h } = await decodificar(dados, mime));

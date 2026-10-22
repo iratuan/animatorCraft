@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 240" width="100%" height="100%">
+  <!-- Tampo curvo e futurista da bancada de telejornal -->
+  <path d="M 40,65 Q 420,35 800,65 L 750,195 Q 420,165 90,195 Z" fill="#ffffff" stroke="#14161a" stroke-width="4" stroke-linejoin="round"/>
+  <!-- Borda superior chanfrada de iluminação de estúdio -->
+  <path d="M 40,65 Q 420,35 800,65 L 790,78 Q 420,48 50,78 Z" fill="#f1f3f5" stroke="#14161a" stroke-width="2"/>
+  <!-- Painel frontal com logo de jornalismo stickman -->
+  <rect x="260" y="95" width="320" height="70" rx="8" fill="#ffffff" stroke="#14161a" stroke-width="2.5"/>
+  <text x="420" y="140" font-family="sans-serif" font-weight="900" font-size="24" text-anchor="middle" fill="#14161a" letter-spacing="6">NEWS 24H</text>
+  <!-- Tablet e folhas de pauta sobre a bancada -->
+  <g transform="translate(360, 52) rotate(-5)">
+    <rect x="0" y="0" width="45" height="30" rx="4" fill="#ffffff" stroke="#14161a" stroke-width="2"/>
+    <rect x="5" y="4" width="35" height="22" rx="2" fill="none" stroke="#14161a" stroke-width="1.2"/>
+  </g>
+  <g transform="translate(435, 54) rotate(4)">
+    <polygon points="0,0 35,0 35,25 0,25" fill="#ffffff" stroke="#14161a" stroke-width="1.8"/>
+    <line x1="5" y1="6" x2="30" y2="6" stroke="#14161a" stroke-width="1"/>
+    <line x1="5" y1="12" x2="25" y2="12" stroke="#14161a" stroke-width="1"/>
+    <line x1="5" y1="18" x2="28" y2="18" stroke="#14161a" stroke-width="1"/>
+  </g>
+  <!-- Base metálica estrutural -->
+  <line x1="160" y1="195" x2="160" y2="235" stroke="#14161a" stroke-width="6" stroke-linecap="round"/>
+  <line x1="680" y1="195" x2="680" y2="235" stroke="#14161a" stroke-width="6" stroke-linecap="round"/>
+  <line x1="120" y1="235" x2="200" y2="235" stroke="#14161a" stroke-width="4" stroke-linecap="round"/>
+  <line x1="640" y1="235" x2="720" y2="235" stroke="#14161a" stroke-width="4" stroke-linecap="round"/>
+</svg>

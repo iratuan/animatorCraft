@@ -1,2 +1,3 @@
 /** API pública da feature "projeto": o resto do app só importa daqui. */
-export { abrirProjeto, montarProjeto } from './services/projeto';
+export { abrirProjeto, montarProjeto, salvarProjetoZip } from './services/projeto';
+export { ConfirmarFecharProjetoModal } from './components/ConfirmarFecharProjetoModal';

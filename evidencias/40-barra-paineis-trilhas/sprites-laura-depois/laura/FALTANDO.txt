@@ -1,0 +1,7 @@
+Ainda não existem para Laura (crie com estes nomes exatos e importe o zip):
+
+  rosto_triste.png
+  rosto_brava.png
+  rosto_confusa.png
+  rosto_assustada.png
+  rosto_entediada.png

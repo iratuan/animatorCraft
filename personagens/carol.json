@@ -1,0 +1,79 @@
+{
+  "versao": 1,
+  "id": "carol",
+  "nome": "Carol",
+  "apelidos": [
+    "carol",
+    "carolzinha"
+  ],
+  "descricao": "Amiga do BetaSon. Alta e magricela, rabo de cavalo longo com elástico, calça jeans e camiseta moderna com estampa de raio. Esperta e cheia de atitude.",
+  "idade": "11 anos",
+  "altura": 475,
+  "temSprites": false,
+  "modeloPalito": "aluno",
+  "expressaoPadrao": "feliz",
+  "slotPadrao": 0.55,
+  "dancaPadrao": "danca_street",
+  "visual": {
+    "formato": "stickman",
+    "acessorios": []
+  },
+  "clipesProprios": [
+    {
+      "id": "pose-atitude",
+      "nome": "Pose de atitude",
+      "ator": "carol",
+      "categoria": "Movimento",
+      "loop": false,
+      "passos": [
+        {
+          "tags": [
+            "bracos-cruzados",
+            "parado"
+          ],
+          "dur": 0.7,
+          "mov": "inclinar",
+          "amp": 4,
+          "espelhar": false
+        },
+        {
+          "tags": [
+            "bracos-cruzados",
+            "parado"
+          ],
+          "dur": 0.8,
+          "mov": "respirar",
+          "espelhar": false
+        }
+      ]
+    },
+    {
+      "id": "tchau-descolado",
+      "nome": "Tchau descolado",
+      "ator": "carol",
+      "categoria": "Movimento",
+      "loop": false,
+      "passos": [
+        {
+          "tags": [
+            "comemorar",
+            "parado"
+          ],
+          "dur": 0.5,
+          "mov": "balancar",
+          "amp": 6,
+          "espelhar": false
+        },
+        {
+          "tags": [
+            "parado-calmo",
+            "parado"
+          ],
+          "dur": 0.5,
+          "mov": "respirar",
+          "espelhar": false
+        }
+      ]
+    }
+  ]
+}

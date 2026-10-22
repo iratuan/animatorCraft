@@ -5,8 +5,17 @@ import type { GrupoMenu, ItemMenu } from '@renderer/components/BarraMenu';
  * Barra de ferramentas do topo: os itens dos menus marcados com `barra` (início, projeto, desfazer, personagens, IA, exportar, ajuda).
  * Vem dos próprios menus, então botão e menu nunca divergem.
  */
+function extrairItens(itens: ItemMenu[]): (ItemMenu & { barra: { grupo: number; rotulo: string } })[] {
+  const achados: (ItemMenu & { barra: { grupo: number; rotulo: string } })[] = [];
+  for (const i of itens) {
+    if (i.barra && i.acao) achados.push(i as ItemMenu & { barra: { grupo: number; rotulo: string } });
+    if (i.itens) achados.push(...extrairItens(i.itens));
+  }
+  return achados;
+}
+
 export function BarraSuperior({ menus }: { menus: GrupoMenu[] }) {
-  const itens = menus.flatMap((m) => m.itens).filter((i): i is ItemMenu & { barra: { grupo: number; rotulo: string } } => !!i.barra && !!i.acao);
+  const itens = extrairItens(menus.flatMap((m) => m.itens));
   const grupos = [...new Set(itens.map((i) => i.barra.grupo))].sort((a, b) => a - b);
   return (
     <div className="barra-superior" role="toolbar" aria-label="Ferramentas gerais">

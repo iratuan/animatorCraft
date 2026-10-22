@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%">
+  <!-- Fundo estúdio com painéis acústicos stickman -->
+  <rect width="1280" height="720" fill="#ffffff"/>
+  
+  <!-- Linha do horizonte do estúdio -->
+  <line x1="0" y1="560" x2="1280" y2="560" stroke="#14161a" stroke-width="2" stroke-dasharray="8 6"/>
+
+  <!-- Placas acústicas hexagonais / retangulares estilizadas ao fundo -->
+  <g opacity="0.4" stroke="#14161a" stroke-width="2" fill="none">
+    <!-- Placa 1 -->
+    <rect x="150" y="80" width="140" height="200" rx="6"/>
+    <line x1="170" y1="80" x2="170" y2="280"/>
+    <line x1="200" y1="80" x2="200" y2="280"/>
+    <line x1="230" y1="80" x2="230" y2="280"/>
+    <line x1="260" y1="80" x2="260" y2="280"/>
+
+    <!-- Placa 2 Central com letreiro neon ON AIR -->
+    <rect x="520" y="60" width="240" height="110" rx="10" fill="#ffffff"/>
+    <rect x="530" y="70" width="220" height="90" rx="6" stroke-width="2.5"/>
+    <text x="640" y="125" font-family="sans-serif" font-weight="900" font-size="34" text-anchor="middle" fill="#14161a" letter-spacing="6">ON AIR</text>
+
+    <!-- Placa 3 -->
+    <rect x="990" y="80" width="140" height="200" rx="6"/>
+    <line x1="1010" y1="80" x2="1010" y2="280"/>
+    <line x1="1040" y1="80" x2="1040" y2="280"/>
+    <line x1="1070" y1="80" x2="1070" y2="280"/>
+    <line x1="1100" y1="80" x2="1100" y2="280"/>
+  </g>
+
+  <!-- Iluminação superior pendente (Spotlights de estúdio) -->
+  <line x1="320" y1="0" x2="320" y2="70" stroke="#14161a" stroke-width="2.5"/>
+  <polygon points="305,70 335,70 345,100 295,100" fill="#ffffff" stroke="#14161a" stroke-width="2.5"/>
+  <line x1="960" y1="0" x2="960" y2="70" stroke="#14161a" stroke-width="2.5"/>
+  <polygon points="945,70 975,70 985,100 935,100" fill="#ffffff" stroke="#14161a" stroke-width="2.5"/>
+
+  <!-- Cadeiras de estúdio (encostos atrás da bancada) -->
+  <!-- Cadeira esquerda -->
+  <rect x="300" y="320" width="110" height="140" rx="16" fill="#ffffff" stroke="#14161a" stroke-width="3"/>
+  <line x1="355" y1="460" x2="355" y2="540" stroke="#14161a" stroke-width="5"/>
+  
+  <!-- Cadeira direita -->
+  <rect x="870" y="320" width="110" height="140" rx="16" fill="#ffffff" stroke="#14161a" stroke-width="3"/>
+  <line x1="925" y1="460" x2="925" y2="540" stroke="#14161a" stroke-width="5"/>
+
+  <!-- Bancada Principal em primeiro plano -->
+  <g transform="translate(240, 440)">
+    <!-- Bancada -->
+    <polygon points="40,50 760,50 820,190 -20,190" fill="#ffffff" stroke="#14161a" stroke-width="4" stroke-linejoin="round"/>
+    <polygon points="60,40 740,40 760,50 40,50" fill="#f8f9fa" stroke="#14161a" stroke-width="2.5" stroke-linejoin="round"/>
+    <rect x="260" y="80" width="280" height="75" rx="8" fill="#ffffff" stroke="#14161a" stroke-width="2.5" stroke-dasharray="6 3"/>
+    <text x="400" y="125" font-family="sans-serif" font-weight="900" font-size="22" text-anchor="middle" fill="#14161a" letter-spacing="4">PODCAST TALK</text>
+    <line x1="100" y1="190" x2="100" y2="270" stroke="#14161a" stroke-width="6" stroke-linecap="round"/>
+    <line x1="700" y1="190" x2="700" y2="270" stroke="#14161a" stroke-width="6" stroke-linecap="round"/>
+
+    <!-- Caneca Host -->
+    <g transform="translate(180, 20) scale(0.7)">
+      <rect x="12" y="15" width="28" height="34" rx="4" fill="#ffffff" stroke="#14161a" stroke-width="2.5"/>
+      <path d="M 40,22 C 52,22 52,40 40,40" fill="none" stroke="#14161a" stroke-width="2.5"/>
+      <path d="M 20,10 Q 18,5 22,2" fill="none" stroke="#14161a" stroke-width="1.5"/>
+    </g>
+
+    <!-- Caneca Convidado -->
+    <g transform="translate(600, 20) scale(0.7)">
+      <rect x="12" y="15" width="28" height="34" rx="4" fill="#ffffff" stroke="#14161a" stroke-width="2.5"/>
+      <path d="M 40,22 C 52,22 52,40 40,40" fill="none" stroke="#14161a" stroke-width="2.5"/>
+      <path d="M 28,10 Q 32,5 28,2" fill="none" stroke="#14161a" stroke-width="1.5"/>
+    </g>
+  </g>
+
+  <!-- Microfones Boom dos dois lados da bancada -->
+  <!-- Mic Host -->
+  <g transform="translate(350, 310) scale(0.9)">
+    <line x1="35" y1="190" x2="55" y2="100" stroke="#14161a" stroke-width="4.5" stroke-linecap="round"/>
+    <circle cx="55" cy="100" r="7" fill="#ffffff" stroke="#14161a" stroke-width="2.5"/>
+    <line x1="55" y1="100" x2="95" y2="40" stroke="#14161a" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="95" cy="40" r="11" fill="none" stroke="#14161a" stroke-width="2"/>
+    <g transform="translate(90, 25) rotate(-25)">
+      <rect x="-8" y="-16" width="16" height="32" rx="5" fill="#ffffff" stroke="#14161a" stroke-width="2.5"/>
+      <line x1="-8" y1="-5" x2="8" y2="-5" stroke="#14161a" stroke-width="1.2"/>
+      <line x1="-8" y1="3" x2="8" y2="3" stroke="#14161a" stroke-width="1.2"/>
+    </g>
+  </g>
+
+  <!-- Mic Convidado -->
+  <g transform="translate(850, 310) scale(-0.9, 0.9)">
+    <line x1="35" y1="190" x2="55" y2="100" stroke="#14161a" stroke-width="4.5" stroke-linecap="round"/>
+    <circle cx="55" cy="100" r="7" fill="#ffffff" stroke="#14161a" stroke-width="2.5"/>
+    <line x1="55" y1="100" x2="95" y2="40" stroke="#14161a" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="95" cy="40" r="11" fill="none" stroke="#14161a" stroke-width="2"/>
+    <g transform="translate(90, 25) rotate(-25)">
+      <rect x="-8" y="-16" width="16" height="32" rx="5" fill="#ffffff" stroke="#14161a" stroke-width="2.5"/>
+      <line x1="-8" y1="-5" x2="8" y2="-5" stroke="#14161a" stroke-width="1.2"/>
+      <line x1="-8" y1="3" x2="8" y2="3" stroke="#14161a" stroke-width="1.2"/>
+    </g>
+  </g>
+</svg>

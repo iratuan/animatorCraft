@@ -1,0 +1,21 @@
+{
+  "versao": 1,
+  "id": "betason",
+  "nome": "BetaSon",
+  "apelidos": [
+    "betason",
+    "beta",
+    "betinha"
+  ],
+  "descricao": "Filho do mais velho. Cabelo castanho-escuro cacheado, óculos redondos, moletom de alien. Divertido, desastre em exatas, fluente em inglês.",
+  "idade": "11 anos",
+  "altura": 440,
+  "temSprites": true,
+  "modeloPalito": "aluno",
+  "expressaoPadrao": "feliz",
+  "slotPadrao": 0.87,
+  "visual": {
+    "formato": "stickman",
+    "acessorios": []
+  }
+}

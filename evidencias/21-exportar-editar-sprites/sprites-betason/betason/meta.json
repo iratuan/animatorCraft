@@ -1,0 +1,92 @@
+{
+  "personagem": "betason",
+  "nome": "BetaSon",
+  "ancora": {},
+  "encaixe": {
+    "boca-a": {
+      "x": -1,
+      "y": 0,
+      "escala": 1.02
+    },
+    "empolgada": {
+      "x": -2,
+      "y": 2,
+      "escala": 1.1
+    },
+    "sarcastica": {
+      "x": 1,
+      "y": 2,
+      "escala": 1.1
+    },
+    "entediada": {
+      "x": 0,
+      "y": 0,
+      "escala": 1.1
+    },
+    "neutra": {
+      "x": 3,
+      "y": 1,
+      "escala": 1.02
+    },
+    "boca-m": {
+      "x": 1,
+      "y": 2,
+      "escala": 1.1
+    },
+    "triste": {
+      "x": 1,
+      "y": 3,
+      "escala": 1.1
+    },
+    "feliz": {
+      "x": -1,
+      "y": 0,
+      "escala": 1.02
+    },
+    "olhos-fechados": {
+      "x": 1,
+      "y": 2,
+      "escala": 1.02
+    },
+    "boca-o": {
+      "x": 2,
+      "y": 0,
+      "escala": 1.06
+    },
+    "surpresa": {
+      "x": 2,
+      "y": 0,
+      "escala": 1.06
+    },
+    "assustada": {
+      "x": 0,
+      "y": -1,
+      "escala": 1.06
+    },
+    "confusa": {
+      "x": 0,
+      "y": 2,
+      "escala": 1.06
+    },
+    "boca-e": {
+      "x": -2,
+      "y": 2,
+      "escala": 1.1
+    },
+    "brava": {
+      "x": -1,
+      "y": -3,
+      "escala": 0.86
+    }
+  },
+  "cabeca": {
+    "x": 0.03,
+    "y": 0,
+    "w": 0.94,
+    "h": 0.38
+  },
+  "base": {
+    "w": 102,
+    "h": 269
+  }
+}

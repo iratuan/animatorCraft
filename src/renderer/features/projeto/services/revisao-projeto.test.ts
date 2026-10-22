@@ -2,7 +2,7 @@
 import { strToU8, unzipSync, zipSync } from 'fflate';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { ATORES, acharClipe, clipesPersonalizados, definirClipesPersonalizados, definirExpressoesBoneco, ehExpressao, registrarAtor, removerAtor } from '@shared/domain';
-import { useEditor } from '@renderer/store/editor-store';
+import { useEditor, limparHistorico, podeDesfazer, podeRefazer } from '@renderer/store/editor-store';
 import { abrirProjeto, montarProjeto } from './projeto';
 
 /**
@@ -14,9 +14,9 @@ class Memoria { private m = new Map<string, string>(); getItem(k: string) { retu
 
 const criados: string[] = [];
 beforeEach(() => { (globalThis as { localStorage?: unknown }).localStorage = new Memoria(); definirClipesPersonalizados([]); definirExpressoesBoneco([]); });
-afterEach(() => { for (const id of criados.splice(0)) removerAtor(id); definirClipesPersonalizados([]); definirExpressoesBoneco([]); useEditor.setState({ skinPadrao: 'chibi', skins: {} }); });
+afterEach(() => { for (const id of criados.splice(0)) removerAtor(id); definirClipesPersonalizados([]); definirExpressoesBoneco([]); useEditor.setState({ skinPadrao: 'stickman', skins: {} }); });
 
-const projetoMinimo = (extra: Record<string, unknown> = {}) => zipSync({ 'roteiro.txt': strToU8('# X\nProfessor acena.'), 'projeto.json': strToU8(JSON.stringify({ versao: 1, personagens: [], skinPadrao: 'chibi', skins: {}, fonteLousa: 'comic', fonteFala: 'comic', formato: '16:9', ...extra })) });
+const projetoMinimo = (extra: Record<string, unknown> = {}) => zipSync({ 'roteiro.txt': strToU8('# X\nProfessor acena.'), 'projeto.json': strToU8(JSON.stringify({ versao: 1, personagens: [], skinPadrao: 'stickman', skins: {}, fonteLousa: 'comic', fonteFala: 'comic', formato: '16:9', ...extra })) });
 
 describe('projeto: salvar e abrir', () => {
   it('ida e volta preserva roteiro, personagens (com cor de pele), estilos, fontes, clipes e expressões', async () => {
@@ -25,13 +25,13 @@ describe('projeto: salvar e abrir', () => {
     definirClipesPersonalizados([{ ator: 'tia-marta', id: 'abraco', nome: 'abraço', categoria: 'Movimento', loop: true, estilo: 'ambos', passos: [{ tags: ['parado'], dur: 1, mov: 'balancar', amp: 4 }] }]);
     definirExpressoesBoneco([{ ator: 'tia-marta', nome: 'saudade', quadros: [{ olho: 'meia', sobr: 5, boca: 'triste' }] }]);
     const roteiro = '[papéis: professor=Tia Marta, aluno=BetaSon]\n\n# Ação ☃\nProfessor entra pela esquerda andando. Professor diz "Olá, “mundo”! 😀" feliz.\n';
-    useEditor.setState({ roteiro, skinPadrao: 'stickman', skins: { betason: 'chibi', 'tia-marta': 'stickman' }, fonteLousa: 'caveat', fonteFala: 'kalam', formato: '9:16' });
+    useEditor.setState({ roteiro, skinPadrao: 'stickman', skins: {}, fonteLousa: 'caveat', fonteFala: 'kalam', formato: '9:16' });
     const { zip } = await montarProjeto();
 
     // estado limpo, como num computador novo
     removerAtor('tia-marta'); definirClipesPersonalizados([]); definirExpressoesBoneco([]);
     (globalThis as { localStorage?: unknown }).localStorage = new Memoria();
-    useEditor.setState({ roteiro: '', skinPadrao: 'chibi', skins: {}, fonteLousa: 'comic', fonteFala: 'comic' });
+    useEditor.setState({ roteiro: '', skinPadrao: 'stickman', skins: {}, fonteLousa: 'comic', fonteFala: 'comic' });
     const lido = await abrirProjeto(zip);
 
     expect(lido.personagens).toBe(1);
@@ -42,7 +42,6 @@ describe('projeto: salvar e abrir', () => {
     expect(ehExpressao('tia-marta', 'saudade')).toBe(true);
     const s = useEditor.getState();
     expect(s.skinPadrao).toBe('stickman');
-    expect(s.skins).toEqual({ betason: 'chibi', 'tia-marta': 'stickman' });
     expect(s.fonteLousa).toBe('caveat');
     expect(s.fonteFala).toBe('kalam');
   });
@@ -57,11 +56,22 @@ describe('projeto: salvar e abrir', () => {
   });
 
   it('o zip do projeto tem os arquivos esperados e roteiro.txt legível em UTF-8', async () => {
-    useEditor.setState({ roteiro: 'olá ção' });
+    useEditor.setState({ roteiro: 'olá ção', nomeProjeto: 'Minha Aula de Física' });
     const a = unzipSync((await montarProjeto()).zip);
     expect(Object.keys(a)).toEqual(expect.arrayContaining(['roteiro.txt', 'projeto.json']));
     expect(new TextDecoder().decode(a['roteiro.txt'])).toBe('olá ção');
-    expect(JSON.parse(new TextDecoder().decode(a['projeto.json'])).versao).toBe(1);
+    const meta = JSON.parse(new TextDecoder().decode(a['projeto.json']));
+    expect(meta.versao).toBe(2);
+    expect(meta.nome).toBe('Minha Aula de Física');
+    expect(meta.modificadoEm).toBeDefined();
+  });
+
+  it('retrocompatibilidade: abre perfeitamente projetos salvos na versao 1', async () => {
+    const zipV1 = projetoMinimo({ versao: 1 });
+    const lido = await abrirProjeto(zipV1);
+    expect(lido).toBeDefined();
+    expect(useEditor.getState().nomeProjeto).toBe('Projeto');
+    expect(useEditor.getState().modificado).toBe(false);
   });
 
   it('roteiro enorme (1 MB) e roteiro vazio fazem a viagem completa', async () => {
@@ -104,8 +114,8 @@ describe('projeto: arquivos de fora', () => {
     criados.push('ok');
     await abrirProjeto(zip);
     const s = useEditor.getState();
-    expect(s.skinPadrao).toBe('chibi');
-    expect(s.skins).toEqual({ erika: 'stickman' });
+    expect(s.skinPadrao).toBe('stickman');
+    expect(s.skins).toEqual({});
     expect(['string']).toContain(typeof s.fonteLousa);
     expect(ATORES['ok']).toMatchObject({ modeloPalito: 'aluno', altura: 440 });
     expect(ATORES['ok']!.corPele).toBeUndefined();
@@ -120,4 +130,33 @@ describe('projeto: arquivos de fora', () => {
     expect(bomba.length).toBeLessThan(200_000);
     await recusa(bomba, /grande demais/);
   });
+
+  it('fecharProjeto reseta estado do projeto, limpa modificações e histórico de undo/redo', () => {
+    // Configura estado com modificações
+    useEditor.setState({
+      roteiro: '# Cena 1\nProfessor diz "Texto modificado".',
+      nomeProjeto: 'Meu Projeto Importante',
+      modificado: true,
+      t: 12.5,
+      trilhas: { narracao: { volume: 0.8, mudo: false, solo: true } },
+    });
+
+    expect(useEditor.getState().modificado).toBe(true);
+    expect(useEditor.getState().nomeProjeto).toBe('Meu Projeto Importante');
+
+    // Executa fechamento
+    useEditor.getState().fecharProjeto();
+    limparHistorico();
+
+    const estadoFinal = useEditor.getState();
+    expect(estadoFinal.modificado).toBe(false);
+    expect(estadoFinal.nomeProjeto).toBe('Sem título');
+    expect(estadoFinal.caminhoProjeto).toBeNull();
+    expect(estadoFinal.t).toBe(0);
+    expect(estadoFinal.tocando).toBe(false);
+    expect(estadoFinal.trilhas).toEqual({});
+    expect(podeDesfazer()).toBe(false);
+    expect(podeRefazer()).toBe(false);
+  });
 });
+

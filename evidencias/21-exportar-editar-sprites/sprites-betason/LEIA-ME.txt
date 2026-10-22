@@ -1,0 +1,17 @@
+StickBoard — sprites para edição
+=================================
+
+Estrutura:  <personagem>/<tipo>_<nome>[_n].png
+  pose_<nome>.png      corpo inteiro. pose_parado é obrigatório. pose_andar_1, pose_andar_2… formam uma animação (8 quadros/s).
+  rosto_<nome>.png     só a CABEÇA, com a mesma pele, cabelo e óculos do personagem.
+                         expressões: neutra, feliz, triste, brava, surpresa, confusa, sarcastica, assustada, empolgada, entediada
+                         fala (visemas): boca-a, boca-e, boca-o, boca-m   piscada: olhos-fechados
+  prop_<nome>.png      objeto solto (lápis, skate, bola…).
+
+Regras para editar:
+  1. Mantenha o nome do arquivo (minúsculas, sem acento, hífen no lugar de espaço).
+  2. PNG com fundo transparente. Se vier com fundo branco, o app remove o branco ligado às bordas.
+  3. Em rosto_*: mantenha o mesmo tamanho de tela da cabeça original e a MESMA COR DE PELE do personagem
+     (o rosto é desenhado por cima da cabeça do pose_parado). Para uma expressão nova, copie rosto_neutra e mude só olhos/sobrancelhas/boca.
+  4. Não é preciso mexer em meta.json; só se mudar o tamanho do pose_parado (aí o app recalcula o encaixe pela caixa da cabeça).
+  5. Zip de volta: Arquivo ▸ Importar pacote de sprites. Pode mandar só os arquivos que mudaram.

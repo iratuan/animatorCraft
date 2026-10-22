@@ -7,6 +7,7 @@ export type { Layout, OpcoesCena, ResultadoCena } from './services/cena';
 export type { ManifestoPersonagens, ModoCor, Rect, SpriteInfo, TipoSprite } from './services/sprites';
 export { definirEstiloTraco } from './services/ator';
 export type { EstiloTraco } from './services/ator';
+export { obterEstrategiaCenario, type CenarioStrategy } from './services/cenarios/registro';
 
 
 

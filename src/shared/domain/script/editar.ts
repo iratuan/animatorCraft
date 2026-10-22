@@ -124,3 +124,8 @@ export function inserirNoCursor(texto: string, cursor: number, trecho: string): 
   return `${texto.slice(0, alvo.fim)} ${trecho}${texto.slice(alvo.fim)}`;
 }
 
+/** Replace the text of an existing phrase (e.g., speech) */
+export function substituirFala(texto: string, alvo: Origem, novoTexto: string): string {
+  return texto.slice(0, alvo.ini) + novoTexto + texto.slice(alvo.fim);
+}
+

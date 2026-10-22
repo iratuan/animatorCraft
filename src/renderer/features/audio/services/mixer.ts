@@ -5,9 +5,11 @@ import { bufferDoAudio, contextoDeAudio } from './armazenamento';
 let tocando: AudioBufferSourceNode[] = [];
 /** um volume mestre por trilha: mudo, solo e volume mudam ao vivo, com a animação tocando */
 let mestres = new Map<string, GainNode>();
+let sessaoAtual = 0;
 const ganhoAtual = (trilha: string) => ganhoDaTrilha(useEditor.getState().trilhas, trilha);
 
 export function pararAudio(): void {
+  sessaoAtual++;
   for (const s of tocando) { try { s.stop(); } catch { /* já parou */ } }
   tocando = []; mestres = new Map();
 }
@@ -20,12 +22,16 @@ export function atualizarMixagemAoVivo(): void {
 /** Agenda os itens que ainda têm o que tocar a partir do instante `t` da animação. A música de fundo repete até o fim e some em 1,5 s. */
 export async function tocarAgenda(itens: ItemAudio[], t: number): Promise<{ inicioRelogio: number }> {
   pararAudio();
+  const sessao = sessaoAtual;
   const ctx = contextoDeAudio();
   if (ctx.state === 'suspended') await ctx.resume();
+  if (sessao !== sessaoAtual) return { inicioRelogio: 0 };
   const base = ctx.currentTime + 0.05;
   for (const it of itens) {
+    if (sessao !== sessaoAtual) break;
     if (it.fim <= t) continue;
     const buf = await bufferDoAudio(it.arquivo);
+    if (sessao !== sessaoAtual) break;
     if (!buf) continue;
     let mestre = mestres.get(it.trilha);
     if (!mestre) { mestre = ctx.createGain(); mestre.gain.value = ganhoAtual(it.trilha); mestre.connect(ctx.destination); mestres.set(it.trilha, mestre); }

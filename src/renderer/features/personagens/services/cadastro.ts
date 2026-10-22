@@ -1,4 +1,7 @@
-import { registrarAtor, removerAtor, restaurarAtores, type ActorId, type NovoAtor } from '@shared/domain';
+import {
+  registrarAtor, removerAtor, restaurarAtores, type ActorId, type NovoAtor,
+  desserializarPersonagemJSON, aplicarConfigPersonagem, personagemParaJSON,
+} from '@shared/domain';
 import { definirSkins, removerSprites, type Skin } from '@renderer/features/cena';
 import { removerSpritesSalvos } from './spritesSalvos';
 import { gravarJson, lerJson } from '@renderer/features/sistema';
@@ -15,7 +18,7 @@ export interface PreferenciasSkin { padrao: Skin; porPersonagem: Record<string, 
 export function carregarPersonagensSalvos(): PreferenciasSkin {
   restaurarAtores(lerFichas());
   carregarAnimacoesSalvas();
-  const skins = lerJson<PreferenciasSkin>(CHAVE_SKINS, { padrao: 'chibi', porPersonagem: {} });
+  const skins = lerJson<PreferenciasSkin>(CHAVE_SKINS, { padrao: 'stickman', porPersonagem: {} });
   definirSkins(skins.padrao, skins.porPersonagem);
   return skins;
 }
@@ -25,6 +28,15 @@ export function gravarSkins(p: PreferenciasSkin): void { definirSkins(p.padrao, 
 /** Cria (ou atualiza, com `idExistente`) um personagem e guarda a lista. */
 export function salvarPersonagem(n: NovoAtor, idExistente?: ActorId): { id: ActorId } | { erro: string } {
   const r = registrarAtor(n, idExistente);
+  if ('id' in r) gravarFichas();
+  return r;
+}
+
+/** Importa e aplica uma configuração JSON de personagem, persistindo as fichas salvas. */
+export function importarPersonagemConfig(conteudoJson: string): { id: ActorId } | { erro: string } {
+  const parsed = desserializarPersonagemJSON(conteudoJson);
+  if ('erro' in parsed) return { erro: parsed.erro };
+  const r = aplicarConfigPersonagem(personagemParaJSON(parsed.spec, parsed.clipes));
   if ('id' in r) gravarFichas();
   return r;
 }

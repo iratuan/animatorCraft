@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 520" width="100%" height="100%">
+  <!-- Moldura de alumínio externa da lousa -->
+  <rect x="15" y="15" width="890" height="470" rx="8" fill="#ffffff" stroke="#14161a" stroke-width="4.5"/>
+  <rect x="25" y="25" width="870" height="450" rx="4" fill="#ffffff" stroke="#14161a" stroke-width="2"/>
+  
+  <!-- Calha / bandeja porta-apagador e pincéis na parte inferior -->
+  <rect x="80" y="485" width="760" height="18" rx="3" fill="#ffffff" stroke="#14161a" stroke-width="2.5"/>
+  <!-- Apagador de feltro na calha -->
+  <rect x="120" y="475" width="60" height="14" rx="2" fill="#14161a"/>
+  <!-- Marcador azul -->
+  <rect x="210" y="477" width="45" height="10" rx="2" fill="#ffffff" stroke="#14161a" stroke-width="1.5"/>
+  <!-- Marcador vermelho -->
+  <rect x="265" y="477" width="45" height="10" rx="2" fill="#ffffff" stroke="#14161a" stroke-width="1.5"/>
+
+  <!-- Conteúdo didático na lousa: Título, fórmulas e diagramas stickman -->
+  <!-- Título da aula -->
+  <text x="60" y="70" font-family="sans-serif" font-weight="900" font-size="26" fill="#14161a" letter-spacing="2">AULA: FÍSICA &amp; ANIMAÇÃO</text>
+  <line x1="60" y1="80" x2="420" y2="80" stroke="#14161a" stroke-width="2.5"/>
+
+  <!-- Equações clássicas na lousa -->
+  <text x="60" y="130" font-family="monospace, monospace" font-weight="700" font-size="22" fill="#14161a">E = m · c²</text>
+  <text x="60" y="170" font-family="monospace, monospace" font-weight="700" font-size="20" fill="#14161a">F = m · a</text>
+  <text x="60" y="210" font-family="monospace, monospace" font-weight="700" font-size="20" fill="#14161a">v(t) = v₀ + a · t</text>
+  <text x="60" y="250" font-family="monospace, monospace" font-weight="700" font-size="20" fill="#14161a">S = S₀ + v₀t + ½at²</text>
+
+  <!-- Diagrama vetorial de trajetória de projétil à direita -->
+  <g transform="translate(480, 110)">
+    <!-- Eixos cartesianos X e Y -->
+    <line x1="20" y1="200" x2="340" y2="200" stroke="#14161a" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="20" y1="200" x2="20" y2="20" stroke="#14161a" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Setas dos eixos -->
+    <polyline points="15,30 20,15 25,30" fill="none" stroke="#14161a" stroke-width="2"/>
+    <polyline points="330,195 345,200 330,205" fill="none" stroke="#14161a" stroke-width="2"/>
+    <text x="12" y="15" font-family="sans-serif" font-weight="700" font-size="14" fill="#14161a">Y</text>
+    <text x="350" y="205" font-family="sans-serif" font-weight="700" font-size="14" fill="#14161a">X</text>
+
+    <!-- Parábola pontilhada de lançamento oblíquo -->
+    <path d="M 20,200 Q 150,20 280,200" fill="none" stroke="#14161a" stroke-width="3" stroke-dasharray="6 4"/>
+    <!-- Vetores de velocidade -->
+    <line x1="20" y1="200" x2="70" y2="135" stroke="#14161a" stroke-width="2.5"/>
+    <polygon points="65,130 75,135 60,145" fill="#14161a"/>
+    <text x="80" y="135" font-family="sans-serif" font-weight="700" font-size="13" fill="#14161a">v₀</text>
+
+    <!-- Ponto no ápice -->
+    <circle cx="150" cy="110" r="4" fill="#14161a"/>
+    <line x1="150" y1="110" x2="190" y2="110" stroke="#14161a" stroke-width="2"/>
+    <polygon points="185,107 195,110 185,113" fill="#14161a"/>
+    <text x="198" y="114" font-family="sans-serif" font-weight="700" font-size="12" fill="#14161a">v_x</text>
+  </g>
+
+  <!-- Caixa de destaque com dica / nota -->
+  <g transform="translate(60, 310)">
+    <rect x="0" y="0" width="340" height="95" rx="6" fill="#ffffff" stroke="#14161a" stroke-width="2" stroke-dasharray="6 3"/>
+    <text x="20" y="30" font-family="sans-serif" font-weight="800" font-size="16" fill="#14161a">DICA IMPORTANTE:</text>
+    <text x="20" y="55" font-family="sans-serif" font-weight="600" font-size="14" fill="#14161a">A aceleração da gravidade é</text>
+    <text x="20" y="78" font-family="sans-serif" font-weight="600" font-size="14" fill="#14161a">constante e dirigida para baixo (g ≈ 9.8 m/s²)</text>
+  </g>
+</svg>

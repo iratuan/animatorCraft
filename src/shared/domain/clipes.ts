@@ -96,6 +96,55 @@ export const CLIPES_DANCA: Record<string, Clipe> = {
       passo(['gesticular', 'parado-calmo', 'parado'], 0.8, 'inclinar', 6), passo(['parado-calmo', 'parado'], 0.8, 'balancar', 4, true),
     ],
   },
+  danca_gamer: {
+    id: 'danca_gamer', nome: 'Dança gamer', categoria: 'Dança', loop: true,
+    passos: [
+      passo(['comemorar', 'parado'], 0.35, 'quicar', 0.06), passo(['apontar', 'parado'], 0.35, 'balancar', 5, true),
+      passo(['comemorar', 'susto'], 0.4, 'pular', 0.08), passo(['parado-calmo', 'parado'], 0.4, 'balancar', 4),
+    ],
+  },
+  danca_street: {
+    id: 'danca_street', nome: 'Dança street', categoria: 'Dança', loop: true,
+    passos: [
+      passo(['comemorar', 'parado'], 0.35, 'balancar', 7), passo(['andar', 'parado'], 0.35, 'quicar', 0.05, true),
+      passo(['gesticular', 'parado'], 0.35, 'inclinar', 6), passo(['comemorar', 'parado'], 0.4, 'pular', 0.1),
+    ],
+  },
+  danca_valsa: {
+    id: 'danca_valsa', nome: 'Valsa suave', categoria: 'Dança', loop: true,
+    passos: [
+      passo(['apresentar', 'parado-calmo', 'parado'], 0.8, 'balancar', 4), passo(['apresentar', 'parado-calmo', 'parado'], 0.8, 'balancar', 4, true),
+      passo(['parado-calmo', 'parado'], 0.7, 'inclinar', 5),
+    ],
+  },
+  danca_forro: {
+    id: 'danca_forro', nome: 'Forró animado', categoria: 'Dança', loop: true,
+    passos: [
+      passo(['gesticular', 'parado'], 0.3, 'quicar', 0.05), passo(['gesticular', 'parado'], 0.3, 'quicar', 0.05, true),
+      passo(['comemorar', 'parado'], 0.35, 'balancar', 6), passo(['comemorar', 'parado'], 0.35, 'balancar', 6, true),
+    ],
+  },
+  danca_serenata: {
+    id: 'danca_serenata', nome: 'Serenata poética', categoria: 'Dança', loop: true,
+    passos: [
+      passo(['gesticular', 'parado'], 0.9, 'inclinar', 5), passo(['apresentar', 'parado'], 0.9, 'balancar', 4, true),
+      passo(['parado-calmo', 'parado'], 0.8, 'respirar'),
+    ],
+  },
+  danca_canina: {
+    id: 'danca_canina', nome: 'Dança canina', categoria: 'Dança', loop: true,
+    passos: [
+      passo(['comemorar', 'parado'], 0.3, 'pular', 0.12), passo(['andar', 'parado'], 0.25, 'quicar', 0.08),
+      passo(['comemorar', 'parado'], 0.3, 'balancar', 8, true), passo(['parado'], 0.3, 'quicar', 0.05),
+    ],
+  },
+  danca_felina: {
+    id: 'danca_felina', nome: 'Dança felina', categoria: 'Dança', loop: true,
+    passos: [
+      passo(['andar', 'parado'], 0.4, 'andar'), passo(['parado-calmo', 'parado'], 0.35, 'inclinar', 6),
+      passo(['comemorar', 'parado'], 0.3, 'pular', 0.08), passo(['parado'], 0.45, 'respirar'),
+    ],
+  },
 };
 
 /** Pose "simples" do roteiro → um passo único (sprite + movimento). */
@@ -133,8 +182,8 @@ const PASSO_DA_POSE: Partial<Record<PoseId, PassoClipe>> = {
 const cache = new Map<PoseId, Clipe>();
 
 /** Clipe que anima uma pose do roteiro (dança = sequência; as demais = um passo com movimento). Com `ator`, um clipe do personagem que substitui a pose tem prioridade. */
-export function clipeDaPose(pose: PoseId, ator?: string, estilo: 'chibi' | 'stickman' = 'chibi'): Clipe {
-  const proprio = ator ? personalizados.find((c) => c.ator === ator && c.substitui === pose && (c.estilo === 'ambos' || c.estilo === estilo)) : undefined;
+export function clipeDaPose(pose: PoseId, ator?: string, _estilo?: unknown): Clipe {
+  const proprio = ator ? personalizados.find((c) => c.ator === ator && c.substitui === pose) : undefined;
   if (proprio) return proprio;
   const dança = CLIPES_DANCA[pose];
   if (dança) return dança;
@@ -169,17 +218,16 @@ export function avaliarClipe(c: Clipe, t: number): Transformacao {
 
 // ---------------------------------------------------------------- clipes criados pelo usuário
 
-export type EstiloClipe = 'ambos' | 'chibi' | 'stickman';
+export type EstiloClipe = 'stickman' | 'ambos';
 export const MOVIMENTOS: Movimento[] = ['respirar', 'quicar', 'balancar', 'tremer', 'girar', 'pular', 'inclinar', 'andar', 'correr', 'encolher'];
 export const MAX_PASSOS_CLIPE = 24;
 /** Valor padrão da intensidade ("amp") de cada movimento que a aceita; a unidade muda de um para outro (graus, fração da altura…). */
 export const AMP_PADRAO: Partial<Record<Movimento, number>> = { quicar: 0.05, pular: 0.12, balancar: 4, inclinar: 6, tremer: 1, encolher: 3 };
 
-/** Clipe de um personagem: sequência de passos (sprite do chibi, pose do boneco, movimento e duração). */
+/** Clipe de um personagem: sequência de passos (pose do boneco stickman, movimento e duração). */
 export interface ClipePersonalizado extends Clipe {
   ator: string;
-  /** em que estilo vale: só chibi, só stickman ou os dois */
-  estilo: EstiloClipe;
+  estilo?: EstiloClipe;
   /** pose padrão do roteiro que este clipe substitui para o personagem (ex.: danca_atual) */
   substitui?: PoseId;
 }
@@ -196,8 +244,8 @@ export function definirClipesPersonalizados(lista: ClipePersonalizado[], poseVal
   const vistos = new Set<string>();
   personalizados = (Array.isArray(lista) ? lista : []).flatMap((c): ClipePersonalizado[] => {
     const nome = nomeDeClipe(c?.nome ?? '');
-    const estilo: EstiloClipe = c?.estilo === 'chibi' || c?.estilo === 'stickman' ? c.estilo : 'ambos';
-    const chave = `${c?.ator}|${nome}|${estilo}`;
+    const estilo: EstiloClipe = 'stickman';
+    const chave = `${c?.ator}|${nome}`;
     const passos = (Array.isArray(c?.passos) ? c.passos : []).slice(0, MAX_PASSOS_CLIPE).flatMap((p): PassoClipe[] => {
       const tags = (Array.isArray(p?.tags) ? p.tags : []).filter((x): x is string => typeof x === 'string' && x.length > 0).slice(0, 4);
       const mov = MOVIMENTOS.includes(p?.mov) ? p.mov : 'respirar';
@@ -211,13 +259,46 @@ export function definirClipesPersonalizados(lista: ClipePersonalizado[], poseVal
   });
 }
 
+export const CLIPES_PADRAO_PERSONAGEM: ClipePersonalizado[] = [
+  // Artur
+  { id: 'jogar-videogame', nome: 'Jogar videogame', ator: 'artur', categoria: 'Movimento', loop: true, passos: [passo(['sentado', 'parado'], 0.5, 'balancar', 3), passo(['sentado', 'parado'], 0.4, 'quicar', 0.02)] },
+  { id: 'vitoria-gamer', nome: 'Vitória gamer', ator: 'artur', categoria: 'Reação', loop: false, passos: [passo(['comemorar', 'parado'], 0.5, 'pular', 0.1), passo(['comemorar', 'parado'], 0.6, 'balancar', 5)] },
+  // Carol
+  { id: 'pose-atitude', nome: 'Pose de atitude', ator: 'carol', categoria: 'Movimento', loop: false, passos: [passo(['bracos-cruzados', 'parado'], 0.7, 'inclinar', 4), passo(['bracos-cruzados', 'parado'], 0.8, 'respirar')] },
+  { id: 'tchau-descolado', nome: 'Tchau descolado', ator: 'carol', categoria: 'Movimento', loop: false, passos: [passo(['comemorar', 'parado'], 0.5, 'balancar', 6), passo(['parado-calmo', 'parado'], 0.5, 'respirar')] },
+  // Elizendra
+  { id: 'oferecer-bolo', nome: 'Oferecer bolo', ator: 'elizendra', categoria: 'Movimento', loop: false, passos: [passo(['apresentar', 'parado'], 0.7, 'inclinar', 4), passo(['apresentar', 'parado'], 0.8, 'respirar')] },
+  { id: 'ajeitar-oculos', nome: 'Ajeitar os óculos', ator: 'elizendra', categoria: 'Movimento', loop: false, passos: [passo(['olhar-cima', 'parado'], 0.6, 'quicar', 0.02), passo(['parado-calmo', 'parado'], 0.7, 'respirar')] },
+  // Véia
+  { id: 'dar-bronca', nome: 'Dar bronca', ator: 'veia', categoria: 'Reação', loop: true, passos: [passo(['apontar', 'parado'], 0.4, 'tremer', 1.4), passo(['gesticular', 'parado'], 0.4, 'balancar', 5)] },
+  { id: 'reclamar', nome: 'Reclamar', ator: 'veia', categoria: 'Reação', loop: true, passos: [passo(['gesticular', 'parado'], 0.5, 'balancar', 6), passo(['apontar', 'parado'], 0.4, 'inclinar', 5)] },
+  // Véio
+  { id: 'declamar-poema', nome: 'Declamar poema', ator: 'veio', categoria: 'Movimento', loop: true, passos: [passo(['apresentar', 'parado'], 0.8, 'balancar', 4), passo(['bracos-abertos', 'parado'], 0.8, 'inclinar', 5)] },
+  { id: 'reverencia', nome: 'Reverência clássica', ator: 'veio', categoria: 'Movimento', loop: false, passos: [passo(['apresentar', 'parado'], 0.7, 'inclinar', 8), passo(['parado-calmo', 'parado'], 0.8, 'respirar')] },
+  // Paraíba
+  { id: 'abanar-rabo', nome: 'Abanar o rabo', ator: 'paraiba', categoria: 'Movimento', loop: true, passos: [passo(['parado'], 0.25, 'balancar', 7), passo(['parado'], 0.25, 'balancar', 7, true)] },
+  { id: 'dar-patinha', nome: 'Dar a patinha', ator: 'paraiba', categoria: 'Movimento', loop: false, passos: [passo(['parado'], 0.6, 'quicar', 0.04), passo(['parado'], 0.7, 'respirar')] },
+  { id: 'girar-rabo', nome: 'Girar atrás do rabo', ator: 'paraiba', categoria: 'Movimento', loop: true, passos: [passo(['andar', 'parado'], 0.3, 'girar'), passo(['andar', 'parado'], 0.3, 'quicar', 0.06)] },
+  // Mingau
+  { id: 'espreguicar', nome: 'Espreguiçar', ator: 'mingau', categoria: 'Movimento', loop: false, passos: [passo(['parado'], 0.7, 'encolher', 4), passo(['parado'], 0.8, 'respirar')] },
+  { id: 'lavar-rosto', nome: 'Lavar o rosto', ator: 'mingau', categoria: 'Movimento', loop: true, passos: [passo(['parado'], 0.4, 'balancar', 3), passo(['parado'], 0.4, 'quicar', 0.02)] },
+  { id: 'bote-felino', nome: 'Bote felino', ator: 'mingau', categoria: 'Movimento', loop: false, passos: [passo(['parado'], 0.5, 'tremer', 0.8), passo(['comemorar', 'parado'], 0.3, 'pular', 0.12)] },
+];
+
 export const clipesPersonalizados = (ator?: string): ClipePersonalizado[] => (ator ? personalizados.filter((c) => c.ator === ator) : [...personalizados]);
+
+/** Retorna todos os clipes disponíveis para o personagem (inclui personalizados e os nativos da biblioteca). */
+export const clipesDoPersonagem = (ator?: string): ClipePersonalizado[] => {
+  const padrao = ator ? CLIPES_PADRAO_PERSONAGEM.filter((c) => c.ator === ator) : [...CLIPES_PADRAO_PERSONAGEM];
+  const custom = clipesPersonalizados(ator);
+  const chavesCustom = new Set(custom.map((c) => `${c.ator}|${c.id}`));
+  return [...custom, ...padrao.filter((p) => !chavesCustom.has(`${p.ator}|${p.id}`))];
+};
+
 export function esquecerClipesDe(ator: string): void { personalizados = personalizados.filter((c) => c.ator !== ator); }
 
-/** Clipe do personagem pelo nome (do roteiro). Prefere o do estilo pedido; sem estilo, qualquer um. */
-export function acharClipe(ator: string, nome: string, estilo?: 'chibi' | 'stickman'): ClipePersonalizado | undefined {
+/** Clipe do personagem pelo nome (do roteiro). */
+export function acharClipe(ator: string, nome: string, _estilo?: unknown): ClipePersonalizado | undefined {
   const n = nomeDeClipe(nome);
-  const doNome = personalizados.filter((c) => c.ator === ator && c.id === n);
-  if (!estilo) return doNome[0];
-  return doNome.find((c) => c.estilo === estilo) ?? doNome.find((c) => c.estilo === 'ambos');
+  return personalizados.find((c) => c.ator === ator && c.id === n) ?? CLIPES_PADRAO_PERSONAGEM.find((c) => c.ator === ator && c.id === n);
 }

@@ -1,0 +1,20 @@
+{
+  "versao": 1,
+  "id": "cringefather",
+  "nome": "CringeFather",
+  "apelidos": [
+    "cringefather",
+    "cringe"
+  ],
+  "descricao": "Pai e professor de física e matemática. Magro, alto, cabelo grisalho espetado, óculos e jaleco. Sarcástico e excêntrico.",
+  "idade": "40 anos",
+  "altura": 560,
+  "temSprites": true,
+  "modeloPalito": "professor",
+  "expressaoPadrao": "sarcastica",
+  "slotPadrao": 0.13,
+  "visual": {
+    "formato": "stickman",
+    "acessorios": []
+  }
+}

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 100" width="100%" height="100%">
+  <!-- Bloco AO VIVO -->
+  <polygon points="0,20 180,20 200,80 0,80" fill="#14161a"/>
+  <text x="80" y="60" font-family="sans-serif" font-weight="900" font-size="22" fill="#ffffff" letter-spacing="3">AO VIVO</text>
+  <!-- Barra de título principal -->
+  <polygon points="180,20 1280,20 1280,80 200,80" fill="#ffffff" stroke="#14161a" stroke-width="3"/>
+  <text x="230" y="58" font-family="sans-serif" font-weight="800" font-size="20" fill="#14161a">STICKMAN NEWS: PRINCIPAIS DESTAQUES DA SEMANA EM PRIMEIRA MÃO</text>
+  <!-- Barra inferior ticker de cotações / drops -->
+  <rect x="0" y="80" width="1280" height="20" fill="#f1f3f5" stroke="#14161a" stroke-width="1.5"/>
+  <text x="40" y="95" font-family="sans-serif" font-weight="600" font-size="12" fill="#14161a" letter-spacing="1">/// ECONOMIA EM ALTA +2.4% /// CIÊNCIA E TECNOLOGIA ANUNCIAM NOVOS AVANÇOS /// TEMPO: ENSOLARADO</text>
+</svg>

@@ -1,0 +1,16 @@
+{
+  "personagem": "laura",
+  "nome": "Laura",
+  "ancora": {},
+  "encaixe": {},
+  "cabeca": {
+    "x": 0.05,
+    "y": 0,
+    "w": 0.9,
+    "h": 0.32
+  },
+  "base": {
+    "w": 171,
+    "h": 466
+  }
+}

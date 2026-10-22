@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { useEditor } from '@renderer/store/editor-store';
-import { useRoteiroDerivado } from '@renderer/features/roteiro';
+import { useRoteiroEstatico } from '@renderer/features/roteiro';
 
 /** Avança o relógio da animação enquanto estiver tocando (e repete, se pedido). */
 export function useReproducao() {
   const tocando = useEditor((s) => s.tocando);
-  const { timeline } = useRoteiroDerivado();
+  const { timeline } = useRoteiroEstatico();
   const duracao = timeline.duracao;
 
   useEffect(() => {

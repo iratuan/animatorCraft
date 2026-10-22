@@ -1,0 +1,108 @@
+{
+  "versao": 1,
+  "id": "mingau",
+  "nome": "Mingau",
+  "apelidos": [
+    "mingau",
+    "gato",
+    "gatinho",
+    "cat",
+    "miau",
+    "bichano"
+  ],
+  "descricao": "Gatinho manhoso e esperto da família. Orelhas pontudas, focinho delicado com bigodes, rabo ondulante e patinhas macias.",
+  "idade": "2 anos",
+  "altura": 175,
+  "temSprites": false,
+  "modeloPalito": "cacula",
+  "expressaoPadrao": "feliz",
+  "slotPadrao": 0.88,
+  "dancaPadrao": "danca_felina",
+  "visual": {
+    "formato": "stickman",
+    "acessorios": []
+  },
+  "clipesProprios": [
+    {
+      "id": "espreguicar",
+      "nome": "Espreguiçar",
+      "ator": "mingau",
+      "categoria": "Movimento",
+      "loop": false,
+      "passos": [
+        {
+          "tags": [
+            "parado"
+          ],
+          "dur": 0.7,
+          "mov": "encolher",
+          "amp": 4,
+          "espelhar": false
+        },
+        {
+          "tags": [
+            "parado"
+          ],
+          "dur": 0.8,
+          "mov": "respirar",
+          "espelhar": false
+        }
+      ]
+    },
+    {
+      "id": "lavar-rosto",
+      "nome": "Lavar o rosto",
+      "ator": "mingau",
+      "categoria": "Movimento",
+      "loop": true,
+      "passos": [
+        {
+          "tags": [
+            "parado"
+          ],
+          "dur": 0.4,
+          "mov": "balancar",
+          "amp": 3,
+          "espelhar": false
+        },
+        {
+          "tags": [
+            "parado"
+          ],
+          "dur": 0.4,
+          "mov": "quicar",
+          "amp": 0.02,
+          "espelhar": false
+        }
+      ]
+    },
+    {
+      "id": "bote-felino",
+      "nome": "Bote felino",
+      "ator": "mingau",
+      "categoria": "Movimento",
+      "loop": false,
+      "passos": [
+        {
+          "tags": [
+            "parado"
+          ],
+          "dur": 0.5,
+          "mov": "tremer",
+          "amp": 0.8,
+          "espelhar": false
+        },
+        {
+          "tags": [
+            "comemorar",
+            "parado"
+          ],
+          "dur": 0.3,
+          "mov": "pular",
+          "amp": 0.12,
+          "espelhar": false
+        }
+      ]
+    }
+  ]
+}

@@ -58,14 +58,14 @@ describe('clipes por personagem', () => {
   it('normaliza o nome, sanitiza e acha por personagem e estilo', () => {
     expect(nomeDeClipe('Tchau Longo!')).toBe('tchau-longo');
     definirClipesPersonalizados([
-      clipe(), clipe({ id: 'x', nome: 'X', estilo: 'chibi' }), clipe({ ator: 'erika', nome: 'Erika Tchau' }),
+      clipe(), clipe({ id: 'x', nome: 'X', estilo: 'stickman' }), clipe({ ator: 'erika', nome: 'Erika Tchau' }),
       clipe({ nome: 'Tchau', estilo: 'stickman' }),
       { ...clipe({ nome: 'Lixo' }), passos: [{ tags: [], dur: -5, mov: 'voar' as never }] },
       { ...clipe({ nome: 'Vazio' }), passos: [] },
     ]);
-    expect(acharClipe('betason', 'Tchau', 'chibi')!.estilo).toBe('ambos');
+    expect(acharClipe('betason', 'Tchau')!.estilo).toBe('stickman');
     expect(acharClipe('betason', 'tchau', 'stickman')!.estilo).toBe('stickman');
-    expect(acharClipe('betason', 'x', 'stickman')).toBeUndefined(); // x só existe no chibi
+    expect(acharClipe('betason', 'x', 'stickman')!.estilo).toBe('stickman');
     expect(acharClipe('erika', 'tchau')).toBeUndefined();
     const lixo = acharClipe('betason', 'lixo')!;
     expect(lixo.passos[0]).toMatchObject({ tags: ['parado'], dur: 0.1, mov: 'respirar' });
@@ -91,9 +91,7 @@ describe('clipes por personagem', () => {
     expect(clipeDaPose('danca_atual', 'betason').id).toBe('minha-danca');
     expect(clipeDaPose('danca_atual', 'erika').id).toBe('danca_atual');
     expect(clipeDaPose('danca_atual').id).toBe('danca_atual');
-    expect(clipeDaPose('danca_atual', 'betason', 'stickman').id).toBe('minha-danca'); // estilo "ambos"
-    definirClipesPersonalizados([clipe({ nome: 'Só chibi', id: 'so-chibi', estilo: 'chibi', substitui: 'danca_atual' })]);
-    expect(clipeDaPose('danca_atual', 'betason', 'stickman').id).toBe('danca_atual');
+    expect(clipeDaPose('danca_atual', 'betason', 'stickman').id).toBe('minha-danca');
   });
 
   it('o roteiro executa o clipe com a duração do clipe (ou a pedida) e depois volta ao normal', () => {

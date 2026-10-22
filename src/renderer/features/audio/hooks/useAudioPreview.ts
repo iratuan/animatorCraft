@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { agendaDeAudio } from '@shared/domain';
 import { useEditor } from '@renderer/store/editor-store';
-import { useRoteiroDerivado } from '@renderer/features/roteiro';
+import { useRoteiroEstatico } from '@renderer/features/roteiro';
 import { atualizarMixagemAoVivo, pararAudio, tocarAgenda } from '../services/mixer';
 
 /** Toca a trilha de áudio junto com a animação; refaz o agendamento ao pular na linha do tempo ou editar o roteiro. */
@@ -9,7 +9,7 @@ export function useAudioPreview() {
   const tocandoAgora = useEditor((s) => s.tocando);
   const t = useEditor((s) => s.t);
   const versaoAudio = useEditor((s) => s.versaoAudio);
-  const { timeline } = useRoteiroDerivado();
+  const { timeline } = useRoteiroEstatico();
   const trilhas = useEditor((s) => s.trilhas);
   useEffect(() => { atualizarMixagemAoVivo(); }, [trilhas]); // mudo, solo e volume valem na hora, sem reiniciar o áudio
   const esperado = useRef<{ t0: number; relogio: number } | null>(null);

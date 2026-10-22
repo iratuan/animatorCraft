@@ -3,7 +3,7 @@ import { ATORES, PAPEIS_PADRAO, type ActorId, type Papeis } from '../characters'
 import { acharClipe, clipesPersonalizados, duracaoDoClipe, nomeDeClipe } from '../clipes';
 import { ehExpressao, expressoesDe } from '../expressoes';
 import { DANCA_PADRAO, DURACAO_PADRAO_DANCA, FRASE_POSE, POSES_DE_DANCA, type ExpressaoId, type PoseId } from '../poses';
-import type { Acao, Cena, Lado, Roteiro } from '../types';
+import type { Acao, Cena, CenarioTipo, FormatoProducao, Lado, Roteiro } from '../types';
 import { lerGrafico } from '../grafico';
 import { lerEfeito } from '../imagem';
 import { nomeDeTrilha } from '../audio';
@@ -33,6 +33,21 @@ export const ESTADOS: Record<string, { pose?: PoseId; expressao?: ExpressaoId }>
 };
 
 export const VERBOS_FALA = ['diz', 'fala', 'grita', 'pergunta', 'responde', 'sussurra', 'reclama', 'exclama'];
+const REGEX_VERBOS_FALA = new RegExp(`\\b(?:${VERBOS_FALA.join('|')})\\b`);
+
+const REGEX_ESTADOS: [RegExp, { pose?: PoseId; expressao?: ExpressaoId }][] = Object.entries(ESTADOS).map(
+  ([palavra, estado]) => [new RegExp(`\\b${palavra}\\b`), estado]
+);
+
+const cacheRegexAtores = new Map<string, RegExp[]>();
+function regexesDoAtor(id: string, apelidos: string[]): RegExp[] {
+  let list = cacheRegexAtores.get(id);
+  if (!list || list.length !== apelidos.length) {
+    list = apelidos.map((ap) => new RegExp(`\\b${ap}\\b`));
+    cacheRegexAtores.set(id, list);
+  }
+  return list;
+}
 
 interface FraseComPosicao { texto: string; ini: number; fim: number }
 
@@ -74,8 +89,8 @@ function acharLado(norm: string): Lado {
 }
 
 function acharEstado(norm: string) {
-  for (const [palavra, estado] of Object.entries(ESTADOS)) {
-    if (new RegExp(`\\b${palavra}\\b`).test(norm)) return estado;
+  for (const [regex, estado] of REGEX_ESTADOS) {
+    if (regex.test(norm)) return estado;
   }
   return undefined;
 }
@@ -90,8 +105,12 @@ function estadoParaAcoes(ator: ActorId, estado: { pose?: PoseId; expressao?: Exp
 function acharAtores(norm: string): ActorId[] {
   const achados: { id: ActorId; pos: number }[] = [];
   for (const spec of Object.values(ATORES)) {
-    const pos = Math.min(...spec.apelidos.map((ap) => new RegExp(`\\b${ap}\\b`).exec(norm)?.index ?? Infinity));
-    if (pos !== Infinity) achados.push({ id: spec.id, pos });
+    let minPos = Infinity;
+    for (const rx of regexesDoAtor(spec.id, spec.apelidos)) {
+      const idx = rx.exec(norm)?.index;
+      if (idx !== undefined && idx < minPos) minPos = idx;
+    }
+    if (minPos !== Infinity) achados.push({ id: spec.id, pos: minPos });
   }
   return achados.sort((a, b) => a.pos - b.pos).map((a) => a.id);
 }
@@ -128,11 +147,12 @@ function interpretarFrase(frase: string, avisos: string[], presentes: Set<ActorI
   if (nota) return [{ tipo: 'nota', texto: nota[1]! }];
   const camera = interpretarCamera(frase, avisos, papeis);
   if (camera) return camera;
+  if (/^\[\s*(?:cen[aá]rio|formato|sem\s+lousa|sem\s+quadro)\b/i.test(frase)) return [];
 
   const citacao = /"([^"]*)"/.exec(frase)?.[1];
-  const latex = /\$([^$]+)\$/.exec(frase)?.[1];
+  const latex = /\$\$([^$]+)\$\$/.exec(frase)?.[1] ?? /\$([^$]+)\$/.exec(frase)?.[1];
   // Remove trechos literais antes de analisar verbos, para que o conteúdo não seja confundido com comandos.
-  const norm = aplicarPapeis(semAcento(frase.replace(/"[^"]*"/g, ' ').replace(/\$[^$]+\$/g, ' ')), papeis);
+  const norm = aplicarPapeis(semAcento(frase.replace(/"[^"]*"/g, ' ').replace(/\$\$[^$]+\$\$/g, ' ').replace(/\$[^$]+\$/g, ' ')), papeis);
 
   // o nome de um clipe ou de uma pose pode ser uma palavra de comando ("faz o clipe pausa por 3 segundos"): nesse caso a frase não é um comando de pausa/apagar
   const nomeDeRecurso = /\b(faz|executa|toca|usa|roda)\b.*\bclipe\b/.test(norm) || /\b(?:faz|assume|usa) a pose [a-z0-9]+(?:-[a-z0-9]+)*\b/.test(norm);
@@ -211,12 +231,17 @@ function interpretarAtor(frase: string, norm: string, citacao: string | undefine
   }
   const estado = acharEstado(norm);
 
-  if (citacao !== undefined && VERBOS_FALA.some((v) => new RegExp(`\\b${v}\\b`).test(norm))) {
+  if (citacao !== undefined && REGEX_VERBOS_FALA.test(norm)) {
     return [{ tipo: 'fala', ator, texto: citacao }, ...(estado ? estadoParaAcoes(ator, estado) : [])];
   }
   if (/\bescreve\b/.test(norm)) {
     if (latex) return [{ tipo: 'escrever', ator, conteudo: { tipo: 'latex', latex } }];
-    if (citacao !== undefined) return [{ tipo: 'escrever', ator, conteudo: { tipo: 'texto', texto: citacao } }];
+    if (citacao !== undefined) {
+      const temSintaxeLatex = citacao.includes('\\') || /[\^_{}]/.test(citacao) || /^\s*[\$]/.test(citacao);
+      const ehFormula = /\b(f[oó]rmula|formula|latex|equa[cç][aã]o)\b/i.test(frase) || temSintaxeLatex;
+      if (ehFormula) return [{ tipo: 'escrever', ator, conteudo: { tipo: 'latex', latex: citacao } }];
+      return [{ tipo: 'escrever', ator, conteudo: { tipo: 'texto', texto: citacao } }];
+    }
   }
   // "fica na posição 35%" / "anda para a posição 60%" / "entra pela esquerda na posição 20%"
   const pct = /\bposicao\s*(?:de\s*)?(\d+(?:[.,]\d+)?)\s*%?/.exec(norm)?.[1];
@@ -374,17 +399,69 @@ export function parseRoteiro(textoOriginal: string): Roteiro {
     buffer = [];
   };
 
+  let cenarioGlobal: CenarioTipo | undefined;
+  let formatoGlobal: FormatoProducao | undefined;
+  let semLousaGlobal = false;
   let pos = 0;
+
   for (const linha of texto.split(/\r?\n/)) {
     const off = pos;
     pos += linha.length + (texto[pos + linha.length] === '\r' ? 2 : 1);
     const titulo = /^#\s+(.*)$/.exec(linha);
     if (titulo) {
       fecharBuffer();
-      cena = { titulo: titulo[1]!.trim(), acoes: [], origens: [] };
-      cenas.push(cena);
+      if (cena && cena.acoes.length === 0) {
+        cena.titulo = titulo[1]!.trim();
+        if (cenarioGlobal && !cena.cenario) cena.cenario = cenarioGlobal;
+        if (formatoGlobal && !cena.formato) cena.formato = formatoGlobal;
+        if (semLousaGlobal) cena.semLousa = true;
+      } else {
+        cena = {
+          titulo: titulo[1]!.trim(),
+          acoes: [],
+          origens: [],
+          cenario: cenarioGlobal,
+          formato: formatoGlobal,
+          semLousa: semLousaGlobal || undefined,
+        };
+        cenas.push(cena);
+      }
     } else if (linha.trim()) {
-      buffer.push({ txt: linha.trim(), off: off + (linha.length - linha.trimStart().length) });
+      const tagCenario = /^\[\s*cen[aá]rio\s*:\s*(lousa|podcast|telejornal|jornal|not[ií]cias|debate|papo[_\s-]?livre|lounge|neutro)\s*\]$/i.exec(linha.trim());
+      const tagFormato = /^\[\s*formato\s*:\s*(aula|podcast|telejornal|jornal|drops|not[ií]cias|debate|papo[_\s-]?livre|livre)\s*\]$/i.exec(linha.trim());
+      const tagSemLousa = /^\[\s*(sem\s+lousa|sem\s+quadro)\s*\]$/i.exec(linha.trim());
+      if (tagCenario) {
+        const normC = semAcento(tagCenario[1]!.toLowerCase()).replace(/[\s-]/g, '_');
+        const cTipo: CenarioTipo = (normC === 'noticias' || normC === 'jornal') ? 'telejornal'
+          : (normC === 'papo_livre' || normC === 'papolivre' || normC === 'lounge') ? 'papo_livre'
+          : (normC as CenarioTipo);
+        cenarioGlobal = cTipo;
+        if (cena) cena.cenario = cTipo;
+        else {
+          cena = { titulo: 'Cena 1', acoes: [], origens: [], cenario: cTipo, formato: formatoGlobal, semLousa: semLousaGlobal || undefined };
+          cenas.push(cena);
+        }
+      } else if (tagFormato) {
+        const normF = semAcento(tagFormato[1]!.toLowerCase()).replace(/[\s-]/g, '_');
+        const fTipo: FormatoProducao = (normF === 'drops' || normF === 'jornal' || normF === 'noticias') ? 'telejornal'
+          : (normF === 'papo_livre' || normF === 'papolivre') ? 'papo_livre'
+          : (normF as FormatoProducao);
+        formatoGlobal = fTipo;
+        if (cena) cena.formato = fTipo;
+        else {
+          cena = { titulo: 'Cena 1', acoes: [], origens: [], cenario: cenarioGlobal, formato: fTipo, semLousa: semLousaGlobal || undefined };
+          cenas.push(cena);
+        }
+      } else if (tagSemLousa) {
+        semLousaGlobal = true;
+        if (cena) cena.semLousa = true;
+        else {
+          cena = { titulo: 'Cena 1', acoes: [], origens: [], cenario: cenarioGlobal, formato: formatoGlobal, semLousa: true };
+          cenas.push(cena);
+        }
+      } else {
+        buffer.push({ txt: linha.trim(), off: off + (linha.length - linha.trimStart().length) });
+      }
     } else {
       fecharBuffer();
     }

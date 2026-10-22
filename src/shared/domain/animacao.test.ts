@@ -51,10 +51,18 @@ describe('clipes de movimento', () => {
 });
 
 describe('modelos de roteiro', () => {
-  it('todos os modelos entendem-se sem avisos e usam [close na lousa]', () => {
+  it('todos os modelos entendem-se sem avisos', () => {
     for (const m of MODELOS) {
       const r = parseRoteiro(m.roteiro);
       expect(r.avisos, m.id).toEqual([]);
+      expect(r.cenas.length, m.id).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it('modelos didáticos tradicionais usam [close na lousa] e têm ao menos 3 cenas', () => {
+    const didaticos = MODELOS.filter((m) => m.formato === 'aula');
+    for (const m of didaticos) {
+      const r = parseRoteiro(m.roteiro);
       expect(r.cenas.length, m.id).toBeGreaterThanOrEqual(3);
       expect(r.cenas.flatMap((c) => c.acoes).some((a) => a.tipo === 'camera' && a.alvo === 'lousa'), m.id).toBe(true);
     }

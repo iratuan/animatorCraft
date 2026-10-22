@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { ATORES, TRILHA_PADRAO, infoDoAudio, listarAudios, nomeExibidoDaTrilha, ordenarTrilhas, trilhaDoEvento } from '@shared/domain';
-import { useRoteiroDerivado } from '@renderer/features/roteiro';
+import { useRoteiroEstatico } from '@renderer/features/roteiro';
 import { useEditor } from '@renderer/store/editor-store';
 import { excluirAudio, importarAudio } from '../services/armazenamento';
 import { pararAudio, tocarAgenda } from '../services/mixer';
@@ -17,7 +17,7 @@ export function AudioPanel() {
   const [tocando, setTocando] = useState<string | null>(null);
   const lista = listarAudios();
   void versao;
-  const { timeline } = useRoteiroDerivado();
+  const { timeline } = useRoteiroEstatico();
   const estados = useEditor((s) => s.trilhas);
   const definirTrilha = useEditor((s) => s.definirTrilha);
   const trilhas = ordenarTrilhas(timeline.eventos.flatMap((e) => trilhaDoEvento(e.acao) ?? []));

@@ -14,7 +14,7 @@ function frasesDocumentadas(prompt: string): string[] {
   const semExemplo = prompt.split('## 9.')[0]!.replace('(```)', '');
   return [...semExemplo.matchAll(/`([^`\n]+)`/g)].map((m) => m[1]!);
 }
-const PULAR = [/papéis/, /^#\s/, /\$ \.\.\. \$/, /EFEITO/, /TAL COISA/, /NOME-DO-CLIPE/];
+const PULAR = [/papéis/, /^#\s/, /\$ \.\.\. \$/, /EFEITO/, /TAL COISA/, /NOME-DO-CLIPE/, /cenário/, /formato/, /sem lousa/];
 
 describe('prompt mestre', () => {
   it('traz todas as seções e as listas saem do código do app', () => {

@@ -26,7 +26,9 @@ await p.waitForTimeout(500);
 console.log((await p.locator('textarea').first().inputValue()).split('\n').slice(-2).join(' / '));
 await p.screenshot({ path: `${dest}/06-depois-do-arrasto.png` });
 // stickman
-await p.getByRole('button', { name: 'Stickman' }).first().click();
+if (await p.getByRole('button', { name: 'Stickman' }).count() > 0) {
+  await p.getByRole('button', { name: 'Stickman' }).first().click();
+}
 await p.waitForTimeout(500);
 await p.screenshot({ path: `${dest}/07-skin-stickman.png` });
 console.log('erros', erros);

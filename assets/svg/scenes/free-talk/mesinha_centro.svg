@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" width="100%" height="100%">
+  <!-- Tampo elíptico da mesinha de centro -->
+  <ellipse cx="120" cy="50" rx="100" ry="26" fill="#ffffff" stroke="#14161a" stroke-width="3.5"/>
+  <ellipse cx="120" cy="53" rx="96" ry="23" fill="none" stroke="#14161a" stroke-width="1.2" stroke-dasharray="4 2"/>
+  
+  <!-- Vasinho de planta suculenta sobre a mesa -->
+  <g transform="translate(85, 25)">
+    <!-- Vaso -->
+    <polygon points="5,15 25,15 22,28 8,28" fill="#ffffff" stroke="#14161a" stroke-width="1.8"/>
+    <!-- Folhas da suculenta -->
+    <path d="M 15,15 Q 15,4 12,2 Q 10,8 15,15" fill="#14161a"/>
+    <path d="M 15,15 Q 7,7 4,9 Q 9,14 15,15" fill="#14161a"/>
+    <path d="M 15,15 Q 23,7 26,9 Q 21,14 15,15" fill="#14161a"/>
+  </g>
+
+  <!-- Caneca ou copo sobre a mesinha -->
+  <g transform="translate(135, 30)">
+    <rect x="0" y="0" width="12" height="16" rx="2" fill="#ffffff" stroke="#14161a" stroke-width="1.8"/>
+    <path d="M 12,3 C 17,3 17,13 12,13" fill="none" stroke="#14161a" stroke-width="1.5"/>
+  </g>
+
+  <!-- Pés palito da mesinha de centro -->
+  <line x1="50" y1="68" x2="35" y2="145" stroke="#14161a" stroke-width="4.5" stroke-linecap="round"/>
+  <line x1="190" y1="68" x2="205" y2="145" stroke="#14161a" stroke-width="4.5" stroke-linecap="round"/>
+  <line x1="120" y1="74" x2="120" y2="148" stroke="#14161a" stroke-width="3.5" stroke-linecap="round"/>
+</svg>

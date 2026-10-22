@@ -4,21 +4,45 @@ import { useEditor } from '@renderer/store/editor-store';
 import { aplicarPacote, descompactarComLimites, lerAnimacoes, lerEntradasSalvas, lerPacote, gravarFichas, gravarSkins, mesclarAnimacoes } from '@renderer/features/personagens';
 import { bufferBrutoDoAudio, carregarAudiosSalvos, importarAudio } from '@renderer/features/audio';
 import { bytesDaImagem, importarImagem } from '@renderer/features/imagens';
-import { bytesDeUrl } from '@renderer/features/sistema';
+import { bytesDeUrl, plataforma } from '@renderer/features/sistema';
 
 /**
  * Projeto = um .zip com tudo da aula: roteiro, personagens criados, estilos, sprites trocados/importados, áudios e preferências.
  *   roteiro.txt · projeto.json · sprites/<personagem>/<tipo>_<nome>.png · audios/<arquivo>
  */
-const VERSAO = 1;
-interface ProjetoJson { versao: number; personagens: ActorSpec[]; skinPadrao: string; skins: Record<string, string>; fonteLousa: string; fonteFala: string; formato: string; trilhas?: Record<string, EstadoTrilha> }
+const VERSAO = 2;
+interface ProjetoJson {
+  versao: number;
+  nome?: string;
+  criadoEm?: string;
+  modificadoEm?: string;
+  personagens: ActorSpec[];
+  skinPadrao: string;
+  skins: Record<string, string>;
+  fonteLousa: string;
+  fonteFala: string;
+  formato: string;
+  trilhas?: Record<string, EstadoTrilha>;
+}
 
 
-export async function montarProjeto(): Promise<{ zip: Uint8Array; sprites: number; audios: number }> {
+export async function montarProjeto(nomePersonalizado?: string): Promise<{ zip: Uint8Array; sprites: number; audios: number }> {
   const s = useEditor.getState();
+  const agora = new Date().toISOString();
   const arquivos: Record<string, Uint8Array> = {};
   arquivos['roteiro.txt'] = strToU8(s.roteiro);
-  const json: ProjetoJson = { versao: VERSAO, personagens: atoresPersonalizados(), skinPadrao: s.skinPadrao, skins: s.skins, fonteLousa: s.fonteLousa, fonteFala: s.fonteFala, formato: s.formato, trilhas: s.trilhas };
+  const json: ProjetoJson = {
+    versao: VERSAO,
+    nome: nomePersonalizado || s.nomeProjeto,
+    modificadoEm: agora,
+    personagens: atoresPersonalizados(),
+    skinPadrao: s.skinPadrao,
+    skins: s.skins,
+    fonteLousa: s.fonteLousa,
+    fonteFala: s.fonteFala,
+    formato: s.formato,
+    trilhas: s.trilhas,
+  };
   arquivos['projeto.json'] = strToU8(JSON.stringify(json, null, 2));
   const animacoes = lerAnimacoes();
   if (animacoes.clipes.length || animacoes.expressoes.length) arquivos['animacoes.json'] = strToU8(JSON.stringify(animacoes, null, 2));
@@ -34,6 +58,17 @@ export async function montarProjeto(): Promise<{ zip: Uint8Array; sprites: numbe
   return { zip: zipSync(arquivos, { level: 6 }), sprites, audios };
 }
 
+/** Salva o projeto atual em formato .zip empacotado. */
+export async function salvarProjetoZip(nomePersonalizado?: string): Promise<{ resultado: string; sprites: number; audios: number }> {
+  const { nomeProjeto, marcarSalvo } = useEditor.getState();
+  const nomeLimpo = (nomePersonalizado || nomeProjeto || 'Sem título').trim();
+  const { zip, sprites, audios } = await montarProjeto(nomeLimpo);
+  const nomeSugerido = `${nomeLimpo.replace(/[\s/\\?%*:|"<>]+/g, '_')}.zip`;
+  const resultado = await plataforma.salvarPacoteSprites(zip, nomeSugerido);
+  marcarSalvo(null, nomeLimpo);
+  return { resultado, sprites, audios };
+}
+
 /** Abre um projeto: substitui o roteiro, recria personagens/estilos e reimporta sprites e áudios. */
 export async function abrirProjeto(zip: Uint8Array): Promise<{ sprites: number; audios: number; personagens: number }> {
   const todos = descompactarComLimites(zip);
@@ -42,10 +77,8 @@ export async function abrirProjeto(zip: Uint8Array): Promise<{ sprites: number; 
   try { j = JSON.parse(strFromU8(todos['projeto.json'])) as ProjetoJson; } catch { throw new Error('O projeto.json do arquivo está corrompido.'); }
   if (!j || typeof j !== 'object' || Array.isArray(j)) throw new Error('O projeto.json do arquivo está corrompido.');
   if (typeof j.versao === 'number' && j.versao > VERSAO) throw new Error('Este projeto foi criado por uma versão mais nova do StickBoard. Atualize o aplicativo para abri-lo.');
-  const skinValida = (s: unknown): s is 'chibi' | 'stickman' => s === 'chibi' || s === 'stickman';
-  const skins: Record<string, 'chibi' | 'stickman'> = {};
-  for (const [k, v] of Object.entries(j.skins && typeof j.skins === 'object' ? j.skins : {})) if (skinValida(v)) skins[k] = v;
-  const skinPadrao = skinValida(j.skinPadrao) ? j.skinPadrao : 'chibi';
+  const skins: Record<string, 'stickman'> = {};
+  const skinPadrao = 'stickman';
   const personagens = (Array.isArray(j.personagens) ? j.personagens : []).filter((a): a is ActorSpec => !!a && typeof a === 'object');
   for (const a of personagens) registrarAtor({ id: a.id, nome: a.nome, apelidos: a.apelidos, idade: a.idade, descricao: a.descricao, altura: a.altura, modeloPalito: a.modeloPalito, expressaoPadrao: a.expressaoPadrao, dancaPadrao: a.dancaPadrao, corPele: a.corPele });
   gravarFichas();
@@ -71,7 +104,19 @@ export async function abrirProjeto(zip: Uint8Array): Promise<{ sprites: number; 
   await carregarAudiosSalvos();
   const st = useEditor.getState();
   gravarSkins({ padrao: skinPadrao, porPersonagem: skins });
-  st.set({ roteiro: strFromU8(todos['roteiro.txt']), t: 0, skinPadrao, skins, trilhas: sanearTrilhas(j.trilhas), fonteLousa: typeof j.fonteLousa === 'string' ? j.fonteLousa : st.fonteLousa, fonteFala: typeof j.fonteFala === 'string' ? j.fonteFala : st.fonteFala, ...(j.formato === '16:9' || j.formato === '9:16' ? { formato: j.formato } : {}) });
+  const nomeCarregado = typeof j.nome === 'string' && j.nome.trim() ? j.nome.trim() : 'Projeto';
+  st.set({
+    roteiro: strFromU8(todos['roteiro.txt']),
+    t: 0,
+    skinPadrao,
+    skins,
+    trilhas: sanearTrilhas(j.trilhas),
+    fonteLousa: typeof j.fonteLousa === 'string' ? j.fonteLousa : st.fonteLousa,
+    fonteFala: typeof j.fonteFala === 'string' ? j.fonteFala : st.fonteFala,
+    ...(j.formato === '16:9' || j.formato === '9:16' ? { formato: j.formato } : {}),
+    nomeProjeto: nomeCarregado,
+    modificado: false,
+  });
   st.novaVersaoPersonagens(); st.novaVersaoAudio(); st.novaVersaoImagens();
   return { sprites, audios, personagens: personagens.length };
 }

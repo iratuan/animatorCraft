@@ -1,0 +1,385 @@
+.modal-overlay-matematica {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal-matematica {
+  background: #1e1e24;
+  border: 1px solid #33333f;
+  border-radius: 12px;
+  width: 960px;
+  max-width: 96vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+  color: #e2e8f0;
+  font-family: system-ui, -apple-system, sans-serif;
+  overflow: hidden;
+}
+
+.modal-matematica header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: #252530;
+  border-bottom: 1px solid #333342;
+}
+
+.modal-matematica header h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #f8fafc;
+}
+
+.badge-offline {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #064e3b;
+  color: #6ee7b7;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.modal-matematica header .btn-fechar {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+
+.modal-matematica header .btn-fechar:hover {
+  background: #333345;
+  color: #f8fafc;
+}
+
+.abas-matematica {
+  display: flex;
+  background: #1b1b22;
+  border-bottom: 1px solid #2d2d3a;
+  padding: 0 16px;
+  gap: 8px;
+}
+
+.aba-btn {
+  padding: 10px 18px;
+  border: none;
+  background: none;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.aba-btn:hover {
+  color: #e2e8f0;
+}
+
+.aba-btn.ativa {
+  color: #38bdf8;
+  border-bottom-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.05);
+}
+
+.corpo-matematica {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.secao-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 800px) {
+  .secao-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.painel-coluna {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.painel-coluna label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #cbd5e1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.editor-textarea-latex {
+  width: 100%;
+  min-height: 110px;
+  background: #121217;
+  color: #f1f5f9;
+  border: 1px solid #333345;
+  border-radius: 8px;
+  padding: 12px;
+  font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+  font-size: 13.5px;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+}
+
+.editor-textarea-latex:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+}
+
+.paleta-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 130px;
+  overflow-y: auto;
+  padding: 6px;
+  background: #15151c;
+  border: 1px solid #2a2a38;
+  border-radius: 8px;
+}
+
+.chip-simbolo {
+  padding: 4px 8px;
+  background: #232330;
+  border: 1px solid #353548;
+  border-radius: 6px;
+  color: #cbd5e1;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.12s;
+  white-space: nowrap;
+}
+
+.chip-simbolo:hover {
+  background: #38bdf8;
+  color: #0f172a;
+  border-color: #38bdf8;
+  transform: translateY(-1px);
+}
+
+.grade-modelos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 8px;
+  max-height: 150px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.card-modelo {
+  padding: 8px 10px;
+  background: #20202c;
+  border: 1px solid #2f2f42;
+  border-radius: 6px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.card-modelo:hover {
+  border-color: #38bdf8;
+  background: #272738;
+}
+
+.card-modelo-titulo {
+  font-size: 12px;
+  font-weight: 600;
+  color: #93c5fd;
+  margin-bottom: 2px;
+}
+
+.card-modelo-desc {
+  font-size: 11px;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Área de preview da lousa */
+.preview-lousa-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.moldura-lousa-preview {
+  background: #ffffff;
+  border: 8px solid #27272a;
+  border-radius: 10px;
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: #111111;
+  position: relative;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.lousa-escura {
+  background: #1a2e22;
+  border-color: #523e2b;
+  color: #f1f5f9;
+}
+
+.preview-katex-conteudo {
+  font-size: 20px;
+  max-width: 100%;
+  overflow-x: auto;
+  text-align: center;
+}
+
+.erro-katex {
+  color: #ef4444;
+  font-size: 12px;
+  padding: 8px 12px;
+  background: #fef2f2;
+  border-radius: 6px;
+  border: 1px solid #fecaca;
+}
+
+/* Estilos de gráficos */
+.campo-input-matematica {
+  padding: 8px 12px;
+  background: #121217;
+  color: #f1f5f9;
+  border: 1px solid #333345;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+}
+
+.campo-input-matematica:focus {
+  border-color: #38bdf8;
+}
+
+.linha-dupla {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.grupo-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #e2e8f0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.grupo-checkbox input {
+  cursor: pointer;
+  accent-color: #38bdf8;
+}
+
+.canvas-grafico-preview {
+  width: 100%;
+  height: 230px;
+  background: #ffffff;
+  border: 6px solid #27272a;
+  border-radius: 8px;
+  display: block;
+}
+
+.info-matematica-card {
+  padding: 10px 14px;
+  background: #172554;
+  border: 1px solid #1e40af;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #bfdbfe;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Rodapé do modal */
+.modal-matematica footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: #252530;
+  border-top: 1px solid #333342;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.grupo-acoes-footer {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-mat-secundario {
+  padding: 8px 14px;
+  background: #333342;
+  border: 1px solid #47475a;
+  border-radius: 6px;
+  color: #e2e8f0;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-mat-secundario:hover {
+  background: #404054;
+  color: #ffffff;
+}
+
+.btn-mat-primario {
+  padding: 8px 18px;
+  background: #0284c7;
+  border: 1px solid #0369a1;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-mat-primario:hover {
+  background: #0ea5e9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}

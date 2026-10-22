@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-54 -62 108 116" width="100%" height="100%" style="overflow: visible;">
+  
+  <g id="laura-cabeca">
+    <ellipse cx="0" cy="0" rx="30" ry="30" fill="#fff" stroke="#14161a" stroke-width="3.12" />
+    <ellipse cx="-11" cy="-2" rx="10.5" ry="10.5" fill="#fff" stroke="#14161a" stroke-width="2.16" />
+    <ellipse cx="11" cy="-2" rx="10.5" ry="10.5" fill="#fff" stroke="#14161a" stroke-width="2.16" />
+    <ellipse cx="-11" cy="-2" rx="3.99" ry="3.99" fill="#14161a" />
+    <ellipse cx="11" cy="-2" rx="3.99" ry="3.99" fill="#14161a" />
+    <line x1="-21.5" y1="-7.25" x2="-25.5" y2="-10.4" stroke="#14161a" stroke-width="1.68" />
+    <line x1="21.5" y1="-7.25" x2="25.5" y2="-10.4" stroke="#14161a" stroke-width="1.68" />
+    <path d="M -19,-25 Q -10,-29 -1,-23" fill="none" stroke="#14161a" stroke-width="2.64" stroke-linecap="round" />
+    <path d="M 1,-23 Q 10,-29 19,-25" fill="none" stroke="#14161a" stroke-width="2.64" stroke-linecap="round" />
+    <path d="M -14,14 Q -7,8 0,14 Q 7,20 14,14" fill="none" stroke="#14161a" stroke-width="2.52" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -24,-10 C -26,-28 -12,-36 0,-36 C 12,-36 26,-28 24,-10 C 18,-18 8,-22 0,-22 C -8,-22 -18,-18 -24,-10 Z" fill="#fff" stroke="#14161a" stroke-width="2.88" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+</svg>

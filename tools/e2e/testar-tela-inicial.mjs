@@ -52,7 +52,7 @@ ok(prompt0.includes('<<ESCREVA AQUI O ASSUNTO'), 'sem assunto, o prompt traz o m
 for (const n of ['CringeFather', 'BetaSon', 'Erika', 'Dario', 'Laura']) ok(prompt0.includes(n), `elenco inclui ${n}`);
 ok(/Poses de sprite: [a-z]/.test(prompt0), 'poses de sprite da biblioteca aparecem (sprites carregados a partir da tela inicial)');
 await p.getByPlaceholder(/produtos notáveis/).fill('Frações com pizza');
-await p.getByPlaceholder(/gráfico e uma piada/).fill('inclua uma piada da vovó');
+await p.getByPlaceholder(/gráfico e uma piada|reações cômicas/).fill('inclua uma piada da vovó');
 const prompt1 = await p.getByLabel('Prompt mestre gerado').inputValue();
 ok(prompt1.includes('Frações com pizza') && prompt1.includes('piada da vovó') && !prompt1.includes('<<ESCREVA'), 'campos entram no pedido');
 await p.screenshot({ path: `${dest}/02-prompt-mestre-copiar.png` });

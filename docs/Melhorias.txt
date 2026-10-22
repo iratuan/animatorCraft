@@ -1,0 +1,31 @@
+- Os painéis devem ser redimensionáveis
+- Os painéis devem possuir scrooling
+- Ações de atores podem ser simultâneas, arrastando a ação através da timeline
+- Organize melhor os menus com suas respectivas ações agrupadas nos grupos abaixo
+ - Arquivo
+ - Editar 
+ - Exportar
+ - Ajuda
+- O palco central deve ter um botão para exibir em tela cheia, para testar.
+- Gere o roteiro de gravação do áudio com base na animação gerada. Esse roteiro deve ser um texto com as falas, atores e tempo de cada fala.
+- Ao posicionar mouse em cima da ferramenta, devo ser capaz de saber o que a ferramenta faz.
+- Ao exportar sprites, deve-se exportar os estilo chibi e stickman
+- Ao salvar o projeto ou exportar o projeto, deve-se perguntar com qual nome o arquivo deve ser salvo.
+- No menu de ajuda, se possível, coloque as imagens da tela, guiando o usuário
+- Ao dar o close no rosto dos personagens, o balão de fala deve aparecer, pois o conteúdo precisa ser lido.
+- Trabalhe melhor as barras de ferramentas principais, secundarias e barra de status de forma mais profissional o possível.
+- Trabalhe a UX do programa
+- Alem dos personagens atuais, crie stickmans para outros personagens a mais e para um gatinho
+- Insira o máximo de reações comuns para todos os personagens
+- Insira o máximo de clipes comuns para todos os personanges
+- O estilo chibi deixará de existir, trabalharemos APENAS com stickman para manter o programa mais fácil de manter e evoluir, porém, posso ser capaz de editar os sprites e clipes
+- Redesenhe todos os personagens novamente, com estilo onde o corpo é feito de palitos, assim, conseguiremos animar melhor.
+
+Cringefather, o pai, 40 anos, centista, magro, altura média, cabelos para cima, pretos, usa óculos , sabe muito sobre muita coisa, mas é incapaz de falar inglês. Humor ácido, mas gosta muito dos seus dois filhos (Ian - BetaSon e Darinho) e da sua sobrinha linda, Laurinha
+Betason, Ian, 10 anos é muito engraçado, tem cabelos pretos, encaracolados e assanhados, usa óculos, tem dentes da frente separados, é bem humorado, tem 10 anos, é magrelo e muito desajeitado, mas é inteligentíssimo, mas meio bobo as vezes. É completamente fluente em ingles
+Dario, 7 anos, autista, calado mas muito engracado, cabelo liso, na altura do olho, cabelos e olhos pretos. É muito hiperativo e tem vocabulario limitado, falando em terceria pessoa na maioria das vezes.
+Laura, 4 anos, cabelos castanhos, olhos castanhos, usa maria xiquinha nos cabelos e vestido. Ama dançar e aprender coisas novas. Ama seus dois primos.
+Erika, 30 anos, mais alta que o chingefather, psicologa, calma, linda, muito amorosa e trará inumeras licoes de amor e historinhas.
+Véia, 70 anos, personagem que irá juntar características de idosa geniosa, engracada, sogra do cringefather, sempre procurando uma treta com ele, mas ama demais a familia toda.
+Veio, 80 anos, olhos bem grandes, é poeta e detesta que mandem nele.
+Paraiba, cachorro que foi acolhido pela familia. Sempre está com fome

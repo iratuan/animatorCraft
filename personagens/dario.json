@@ -1,0 +1,20 @@
+{
+  "versao": 1,
+  "id": "dario",
+  "nome": "Dario",
+  "apelidos": [
+    "dario",
+    "cacula"
+  ],
+  "descricao": "Caçula. Autista, muito esperto, focado em padrões e montagens. Moletom de dinossauro.",
+  "idade": "7 anos",
+  "altura": 340,
+  "temSprites": true,
+  "modeloPalito": "cacula",
+  "expressaoPadrao": "neutra",
+  "slotPadrao": 0.74,
+  "visual": {
+    "formato": "stickman",
+    "acessorios": []
+  }
+}

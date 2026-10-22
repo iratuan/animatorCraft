@@ -1,6 +1,6 @@
 import {
   acharClipe, ATORES, avaliarClipe, EFEITO_POSE, misturar, poseDef, rostoBonecoDe, suave, TRANSICAO_POSE,
-  type AtorEstado, type ExpressaoId, type ModeloPalito, type PoseDef, type PoseId,
+  type ActorId, type AtorEstado, type ExpressaoId, type ModeloPalito, type PoseDef, type PoseId,
 } from '@shared/domain';
 
 /** Aparência do boneco de reserva (usado por personagens que ainda não têm ficha de sprites). */
@@ -16,7 +16,7 @@ const PALITO: Record<ModeloPalito, VisualPalito> = {
 const rad = (g: number) => (g * Math.PI) / 180;
 const COR = '#14161a';
 
-import { desenharCorpo, flor, tubo } from './corpo';
+import { desenharCorpo, flor } from './corpo';
 import { circuloTremido, tracoTremido, tremerPt, type Pt } from './tremor';
 export interface Esqueleto {
   quadril: Pt; ombro: Pt; cabeca: Pt; raio: number;
@@ -136,7 +136,112 @@ const ROSTOS: Record<ExpressaoId, Rosto> = {
   entediada: { olho: 'meia', sobr: 0, boca: 'reta' },
 };
 
-function desenharRosto(ctx: CanvasRenderingContext2D, e: Esqueleto, rosto: Rosto, falando: number, t: number, grosso: boolean, v: VisualPalito) {
+function desenharRosto(ctx: CanvasRenderingContext2D, e: Esqueleto, rosto: Rosto, falando: number, t: number, grosso: boolean, v: VisualPalito, atorId?: ActorId) {
+  if (atorId === 'mingau') {
+    // Rosto felino expressivo com olhos amendoados e bigodes
+    const r = e.raio, f = e.facing, { x, y } = e.cabeca;
+    const piscar = (t * 1000) % 3600 < 130;
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = COR;
+    ctx.fillStyle = COR;
+    const ey = y - 0.06 * r;
+    const e1x = x + (f * 0.18 - 0.28) * r, e2x = x + (f * 0.18 + 0.28) * r;
+    for (const ox of [e1x, e2x]) {
+      if (piscar) {
+        linha(ctx, { x: ox - r * 0.14, y: ey }, { x: ox + r * 0.14, y: ey });
+      } else {
+        ctx.fillStyle = COR;
+        ctx.beginPath(); ctx.ellipse(ox, ey, r * 0.14, r * 0.16, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(ox - r * 0.04, ey - r * 0.04, r * 0.05, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    const fx = x + f * 0.18 * r, fy = y + 0.22 * r;
+    ctx.fillStyle = COR;
+    ctx.beginPath();
+    ctx.moveTo(fx - r * 0.08, fy - r * 0.06);
+    ctx.lineTo(fx + r * 0.08, fy - r * 0.06);
+    ctx.lineTo(fx, fy + r * 0.02);
+    ctx.closePath();
+    ctx.fill();
+    ctx.lineWidth = r * 0.06;
+    ctx.beginPath(); ctx.arc(fx - r * 0.08, fy + r * 0.08, r * 0.09, 0, Math.PI * 0.85); ctx.stroke();
+    ctx.beginPath(); ctx.arc(fx + r * 0.08, fy + r * 0.08, r * 0.09, Math.PI * 0.15, Math.PI); ctx.stroke();
+    ctx.lineWidth = r * 0.04;
+    for (const side of [-1, 1]) {
+      linha(ctx, { x: fx + side * r * 0.15, y: fy }, { x: fx + side * r * 0.55, y: fy - r * 0.1 });
+      linha(ctx, { x: fx + side * r * 0.15, y: fy + r * 0.06 }, { x: fx + side * r * 0.58, y: fy + r * 0.06 });
+      linha(ctx, { x: fx + side * r * 0.15, y: fy + r * 0.12 }, { x: fx + side * r * 0.52, y: fy + r * 0.2 });
+    }
+    ctx.restore();
+    return;
+  }
+  if (atorId === 'paraiba') {
+    // Rosto de vira-lata caramelo leal e simpático
+    const r = e.raio, f = e.facing, { x, y } = e.cabeca;
+    const piscar = (t * 1000) % 3400 < 130;
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = COR;
+    ctx.fillStyle = COR;
+    const ey = y - 0.08 * r;
+    const e1x = x + (f * 0.2 - 0.26) * r, e2x = x + (f * 0.2 + 0.26) * r;
+    for (const ox of [e1x, e2x]) {
+      if (piscar) {
+        linha(ctx, { x: ox - r * 0.12, y: ey }, { x: ox + r * 0.12, y: ey });
+      } else {
+        ctx.fillStyle = COR;
+        ctx.beginPath(); ctx.arc(ox, ey, r * 0.13, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(ox - r * 0.04, ey - r * 0.04, r * 0.04, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    // Sobrancelhas caninas expressivas
+    ctx.lineWidth = r * 0.06;
+    ctx.beginPath(); ctx.arc(e1x, ey - r * 0.2, r * 0.12, -Math.PI * 0.8, -Math.PI * 0.2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(e2x, ey - r * 0.2, r * 0.12, -Math.PI * 0.8, -Math.PI * 0.2); ctx.stroke();
+    // Focinho volumoso
+    const fx = x + f * 0.22 * r, fy = y + 0.26 * r;
+    ctx.fillStyle = '#fff';
+    ctx.lineWidth = r * 0.06;
+    ctx.beginPath();
+    ctx.ellipse(fx, fy, r * 0.36, r * 0.26, 0, 0, Math.PI * 2);
+    ctx.fill(); ctx.stroke();
+    // Trufa / Nariz preto de cachorro
+    const nx = fx, ny = fy - r * 0.12;
+    ctx.fillStyle = COR;
+    ctx.beginPath();
+    ctx.ellipse(nx, ny, r * 0.14, r * 0.09, 0, 0, Math.PI * 2);
+    ctx.fill();
+    linha(ctx, { x: nx, y: ny + r * 0.08 }, { x: nx, y: fy + r * 0.08 });
+    // Sorriso canino em 'w'
+    const bw = r * 0.14;
+    ctx.beginPath(); ctx.arc(nx - bw * 0.75, fy + r * 0.08, bw, 0, Math.PI * 0.75); ctx.stroke();
+    ctx.beginPath(); ctx.arc(nx + bw * 0.75, fy + r * 0.08, bw, Math.PI * 0.25, Math.PI); ctx.stroke();
+    // Língua canina para fora quando falando/alegre
+    if (falando || rosto.boca === 'sorriso' || rosto.boca === 'aberta') {
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.ellipse(nx, fy + r * 0.2, r * 0.09, r * 0.13, 0, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+      linha(ctx, { x: nx, y: fy + r * 0.12 }, { x: nx, y: fy + r * 0.25 });
+    }
+    // Pontinhos de bigode
+    ctx.fillStyle = COR;
+    for (const side of [-1, 1]) {
+      for (const [pdx, pdy] of [[0.18, 0], [0.24, -0.06], [0.24, 0.06]]) {
+        ctx.beginPath();
+        ctx.arc(fx + side * pdx * r, fy + pdy * r, r * 0.02, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    ctx.restore();
+    return;
+  }
+
   const r = e.raio, f = e.facing, { x, y } = e.cabeca;
   const ex = x + f * 0.22 * r, ey = y - 0.08 * r;
   const olhos: Pt[] = [{ x: ex - 0.31 * r, y: ey }, { x: ex + 0.31 * r, y: ey }];
@@ -218,11 +323,147 @@ function desenharRosto(ctx: CanvasRenderingContext2D, e: Esqueleto, rosto: Rosto
 
 // ---------------------------------------------------------------- acessórios por ator
 
-function desenharCabelo(ctx: CanvasRenderingContext2D, e: Esqueleto, id: ModeloPalito) {
+function desenharCabelo(ctx: CanvasRenderingContext2D, e: Esqueleto, id: ModeloPalito, atorId?: ActorId) {
   const { x, y } = e.cabeca, r = e.raio, f = e.facing;
   const ponto = (a: number, k: number): Pt => ({ x: x + Math.cos(a) * r * k, y: y + Math.sin(a) * r * k });
   ctx.save();
   ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = COR; ctx.fillStyle = COR; ctx.lineWidth = r * 0.07;
+
+  // Elizendra: cabelo grisalho ondulado com mechinhas presas com grampos em 'X'
+  if (atorId === 'elizendra') {
+    // Ondas grisalhas volumosas contornando a cabeça
+    for (let i = 0; i <= 6; i++) {
+      const a = -Math.PI * 0.95 + (Math.PI * 0.9 * i) / 6;
+      const c = ponto(a, 1.06);
+      const cr = r * 0.22;
+      ctx.beginPath(); ctx.arc(c.x, c.y, cr, 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.beginPath(); ctx.arc(x, y, r * 1.03, -Math.PI * 0.96, -Math.PI * 0.04); ctx.stroke();
+    // Grampos em 'X' nas mechinhas
+    const g1x = x + f * r * 0.48, g1y = y - r * 0.48;
+    const g2x = x - f * r * 0.42, g2y = y - r * 0.58;
+    const dG = r * 0.09;
+    linha(ctx, { x: g1x - dG, y: g1y - dG }, { x: g1x + dG, y: g1y + dG });
+    linha(ctx, { x: g1x - dG, y: g1y + dG }, { x: g1x + dG, y: g1y - dG });
+    linha(ctx, { x: g2x - dG, y: g2y - dG }, { x: g2x + dG, y: g2y + dG });
+    linha(ctx, { x: g2x - dG, y: g2y + dG }, { x: g2x + dG, y: g2y - dG });
+    ctx.restore();
+    return;
+  }
+
+  // Artur: cabelo liso curto com franjinha reta bem certinha na testa
+  if (atorId === 'artur') {
+    const a0 = Math.asin(0.35);
+    ctx.beginPath(); ctx.arc(x, y, r * 1.02, Math.PI + a0, -a0); ctx.closePath(); ctx.fill();
+    const fx1 = x - r * 0.76, fx2 = x + r * 0.76, fy = y - r * 0.28;
+    ctx.lineWidth = r * 0.08;
+    linha(ctx, { x: fx1, y: fy }, { x: fx2, y: fy });
+    for (let k = -2; k <= 2; k++) {
+      linha(ctx, { x: x + k * r * 0.24, y: fy }, { x: x + k * r * 0.24, y: fy - r * 0.12 });
+    }
+    ctx.restore();
+    return;
+  }
+
+  // Carol: ondulada com rabo de cavalo, blusa de adolescente e saia, muito vaidosa
+  if (atorId === 'carol') {
+    // Wavy hair strands
+    ctx.lineWidth = r * 0.08;
+    for (let i = 0; i <= 5; i++) {
+      const a = -Math.PI * 0.9 + (Math.PI * 0.8 * i) / 5;
+      const c = ponto(a, 1.05);
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, r * 0.12, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    // Ponytail at back
+    const ptX = x - f * 0.3 * r;
+    const ptY = y - r * 0.6;
+    ctx.beginPath();
+    ctx.moveTo(ptX, ptY);
+    ctx.quadraticCurveTo(ptX - f * 0.2 * r, ptY - r * 0.4, ptX - f * 0.5 * r, ptY - r * 1.0);
+    ctx.stroke();
+    // Scrunchie (pink)
+    ctx.fillStyle = '#ff69b4';
+    ctx.beginPath();
+    ctx.arc(ptX - f * 0.5 * r, ptY - r * 1.0, r * 0.12, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    return;
+  }
+
+  // Mingau: orelhas triangulares felinas pontudas com detalhe interno
+  if (atorId === 'mingau') {
+    ctx.save();
+    ctx.strokeStyle = COR; ctx.lineWidth = r * 0.08; ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.moveTo(x - 0.65 * r, y - 0.45 * r);
+    ctx.lineTo(x - 0.7 * r, y - 1.35 * r);
+    ctx.lineTo(x - 0.15 * r, y - 0.8 * r);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.lineWidth = r * 0.04;
+    linha(ctx, { x: x - 0.6 * r, y: y - 0.6 * r }, { x: x - 0.6 * r, y: y - 1.15 * r }, { x: x - 0.25 * r, y: y - 0.8 * r });
+    ctx.lineWidth = r * 0.08;
+    ctx.beginPath();
+    ctx.moveTo(x + 0.15 * r, y - 0.8 * r);
+    ctx.lineTo(x + 0.7 * r, y - 1.35 * r);
+    ctx.lineTo(x + 0.65 * r, y - 0.45 * r);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.lineWidth = r * 0.04;
+    linha(ctx, { x: x + 0.25 * r, y: y - 0.8 * r }, { x: x + 0.6 * r, y: y - 1.15 * r }, { x: x + 0.6 * r, y: y - 0.6 * r });
+    ctx.restore();
+    return;
+  }
+
+  // Paraíba: orelhas caídas expressivas caninas dos dois lados com dobra suave
+  if (atorId === 'paraiba') {
+    for (const s of [-1, 1]) {
+      const ox = x + s * r * 0.75, oy = y - r * 0.2;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.moveTo(ox, oy);
+      ctx.quadraticCurveTo(ox + s * r * 0.45, oy + r * 0.7, ox + s * r * 0.2, oy + r * 1.25);
+      ctx.quadraticCurveTo(ox - s * r * 0.1, oy + r * 0.7, ox, oy);
+      ctx.fill(); ctx.stroke();
+      linha(ctx, { x: ox, y: oy + r * 0.2 }, { x: ox + s * r * 0.15, y: oy + r * 0.8 });
+    }
+    ctx.restore();
+    return;
+  }
+
+  // Véia: coque clássico volumoso com mechas
+  if (atorId === 'veia') {
+    // Coque no topo/trás da cabeça
+    const cx = x - f * r * 0.7, cy = y - r * 0.85;
+    ctx.beginPath(); ctx.arc(cx, cy, r * 0.42, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.lineWidth = r * 0.05; ctx.strokeStyle = '#fff';
+    ctx.beginPath(); ctx.arc(cx, cy, r * 0.22, 0, Math.PI * 1.5); ctx.stroke();
+    // Cabelo ondulado grisalho preso
+    ctx.strokeStyle = COR; ctx.lineWidth = r * 0.08;
+    ctx.beginPath(); ctx.arc(x, y, r * 1.02, -Math.PI * 0.9, -Math.PI * 0.1); ctx.stroke();
+    ctx.restore();
+    return;
+  }
+
+  // Véio: mechas de cabelo ralo lateral de poeta e sobrancelhas proeminentes
+  if (atorId === 'veio') {
+    for (const lado of [-1, 1]) {
+      const p = ponto(lado > 0 ? -0.1 : Math.PI + 0.1, 1.0);
+      linha(ctx, p, { x: p.x + lado * r * 0.35, y: p.y + r * 0.25 }, { x: p.x + lado * r * 0.2, y: p.y + r * 0.5 });
+    }
+    // Bigode farto de poeta
+    const bx = x + f * 0.22 * r, by = y + 0.3 * r;
+    ctx.lineWidth = r * 0.09;
+    ctx.beginPath();
+    ctx.moveTo(bx - r * 0.3, by + r * 0.08);
+    ctx.quadraticCurveTo(bx, by - r * 0.04, bx + r * 0.35, by + r * 0.08);
+    ctx.stroke();
+    ctx.restore();
+    return;
+  }
+
   switch (id) {
     case 'professor': { // corte social espetado para cima: fileira de espetos curtos e retos
       const n = 9;
@@ -279,16 +520,55 @@ function desenharCabelo(ctx: CanvasRenderingContext2D, e: Esqueleto, id: ModeloP
   }
   ctx.restore();
 }
-function desenharNariz(ctx: CanvasRenderingContext2D, e: Esqueleto) {
+function desenharNariz(ctx: CanvasRenderingContext2D, e: Esqueleto, atorId?: ActorId) {
+  if (atorId === 'paraiba' || atorId === 'mingau') return; // Paraíba e Mingau têm focinho e trufa próprios no rosto
   const { x, y } = e.cabeca, r = e.raio, f = e.facing, nx = x + f * 0.22 * r;
   ctx.save(); ctx.strokeStyle = COR; ctx.lineCap = 'round'; ctx.lineWidth = r * 0.06;
   ctx.beginPath(); ctx.moveTo(nx, y - 0.02 * r); ctx.quadraticCurveTo(nx - f * 0.03 * r, y + 0.24 * r, nx + f * 0.16 * r, y + 0.28 * r); ctx.stroke();
   ctx.restore();
 }
-function desenharOculos(ctx: CanvasRenderingContext2D, e: Esqueleto) {
+function desenharOculos(ctx: CanvasRenderingContext2D, e: Esqueleto, atorId?: ActorId) {
   const r = e.raio, f = e.facing, ex = e.cabeca.x + f * 0.22 * r, ey = e.cabeca.y - 0.08 * r;
   ctx.save();
   ctx.lineWidth = r * 0.07; ctx.strokeStyle = COR;
+
+  if (atorId === 'elizendra') {
+    // Óculos de grau ovais com correntinha delicada caindo sobre os ombros
+    for (const k of [-1, 1]) {
+      ctx.beginPath();
+      ctx.ellipse(ex + k * 0.31 * r, ey, r * 0.26, r * 0.18, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    // Ponte entre as lentes
+    linha(ctx, { x: ex - 0.05 * r, y: ey }, { x: ex + 0.05 * r, y: ey });
+    // Haste lateral
+    linha(ctx, { x: ex - 0.57 * r, y: ey }, { x: ex - 0.95 * r * (f > 0 ? 1 : 0.6), y: ey - 0.04 * r });
+    // Correntinha delicada
+    ctx.lineWidth = r * 0.035;
+    const c1x = ex - 0.57 * r, c1y = ey;
+    linha(ctx, { x: c1x, y: c1y }, { x: c1x - 0.06 * r, y: c1y + 0.3 * r }, { x: e.ombro.x - 0.1 * r, y: e.ombro.y });
+    const c2x = ex + 0.57 * r, c2y = ey;
+    linha(ctx, { x: c2x, y: c2y }, { x: c2x + 0.06 * r, y: c2y + 0.3 * r }, { x: e.ombro.x + 0.15 * r, y: e.ombro.y });
+    ctx.restore();
+    return;
+  }
+
+  if (atorId === 'artur') {
+    // Óculos de armação quadrada / retangular de gamer
+    const ow = r * 0.27, oh = r * 0.2;
+    for (const k of [-1, 1]) {
+      const ox = ex + k * 0.31 * r;
+      ctx.beginPath();
+      ctx.rect(ox - ow, ey - oh, ow * 2, oh * 2);
+      ctx.stroke();
+    }
+    linha(ctx, { x: ex - 0.04 * r, y: ey - oh * 0.2 }, { x: ex + 0.04 * r, y: ey - oh * 0.2 });
+    linha(ctx, { x: ex - 0.58 * r, y: ey - oh * 0.2 }, { x: ex - 0.98 * r * (f > 0 ? 1 : 0.6), y: ey - oh * 0.3 });
+    ctx.restore();
+    return;
+  }
+
+  // Padrão redondo
   for (const k of [-1, 1]) { ctx.beginPath(); ctx.arc(ex + k * 0.31 * r, ey, r * 0.25, 0, 7); ctx.stroke(); }
   linha(ctx, { x: ex - 0.06 * r, y: ey }, { x: ex + 0.06 * r, y: ey });
   linha(ctx, { x: ex - 0.56 * r, y: ey }, { x: ex - 0.98 * r * (f > 0 ? 1 : 0.6), y: ey - 0.05 * r });
@@ -296,6 +576,29 @@ function desenharOculos(ctx: CanvasRenderingContext2D, e: Esqueleto) {
 }
 
 // ---------------------------------------------------------------- efeitos sobre a cabeça
+
+function desenharFonesOuvido(ctx: CanvasRenderingContext2D, e: Esqueleto) {
+  const { x, y } = e.cabeca, r = e.raio;
+  ctx.save();
+  ctx.strokeStyle = COR;
+  ctx.fillStyle = '#fff';
+  ctx.lineWidth = r * 0.11;
+  ctx.lineCap = 'round';
+  // Arco do fone sobre o topo da cabeça
+  ctx.beginPath();
+  ctx.arc(x, y - r * 0.1, r * 1.14, -Math.PI * 0.88, -Math.PI * 0.12);
+  ctx.stroke();
+  // Concha esquerda
+  ctx.lineWidth = r * 0.08;
+  ctx.beginPath();
+  ctx.roundRect(x - r * 1.18, y - r * 0.22, r * 0.26, r * 0.52, r * 0.1);
+  ctx.fill(); ctx.stroke();
+  // Concha direita
+  ctx.beginPath();
+  ctx.roundRect(x + r * 0.92, y - r * 0.22, r * 0.26, r * 0.52, r * 0.1);
+  ctx.fill(); ctx.stroke();
+  ctx.restore();
+}
 
 function desenharEfeito(ctx: CanvasRenderingContext2D, e: Esqueleto, efeito: 'ideia' | 'duvida' | 'exclamacao' | 'raiva', idade: number, t: number) {
   const pop = suave(idade / 0.25);
@@ -329,7 +632,12 @@ function desenharEfeito(ctx: CanvasRenderingContext2D, e: Esqueleto, efeito: 'id
 
 // ---------------------------------------------------------------- ator completo
 
-export interface OpcoesAtor { selecionado?: boolean; t: number; idadePose: number }
+export interface OpcoesAtor {
+  selecionado?: boolean;
+  t: number;
+  idadePose: number;
+  cenario?: 'lousa' | 'podcast' | 'telejornal' | 'debate' | 'papo_livre' | 'neutro';
+}
 
 export function poseAtual(a: AtorEstado, t: number): PoseDef {
   const k = suave((t - a.poseDesde) / TRANSICAO_POSE);
@@ -341,12 +649,42 @@ export function poseAtual(a: AtorEstado, t: number): PoseDef {
 export function desenharAtor(ctx: CanvasRenderingContext2D, a: AtorEstado, x: number, chao: number, escala: number, o: OpcoesAtor) {
   const real = ATORES[a.id]!;
   const modelo = real.modeloPalito;
-  const spec = { visual: PALITO[modelo] };
+  const spec = { visual: { ...PALITO[modelo] } };
+  if (a.id === 'elizendra') {
+    spec.visual.oculos = true;
+    spec.visual.cilios = true;
+    spec.visual.dentesSeparados = false;
+  } else if (a.id === 'artur') {
+    spec.visual.oculos = true;
+    spec.visual.cilios = false;
+    spec.visual.dentesSeparados = true;
+  } else if (a.id === 'carol') {
+    spec.visual.oculos = false;
+    spec.visual.cilios = true;
+    spec.visual.dentesSeparados = false;
+  } else if (a.id === 'paraiba' || a.id === 'mingau') {
+    spec.visual.oculos = false;
+    spec.visual.cilios = false;
+    spec.visual.dentesSeparados = false;
+    spec.visual.postura = { torso: 84, cabeca: -72 };
+  }
   const s = (escala * real.altura) / 440;
   // clipe do personagem (estilo Stickman): pose do boneco do passo atual + o movimento do passo
   const clipe = a.clipe ? acharClipe(a.id, a.clipe, 'stickman') : undefined;
   const tc = clipe ? avaliarClipe(clipe, Math.max(0, o.t - a.poseDesde)) : undefined;
   const pose = tc ? poseDef(tc.poseBoneco ?? 'parado', a.fase, o.t) : poseAtual(a, o.t);
+  if ((o.cenario === 'podcast' || o.cenario === 'telejornal' || o.cenario === 'debate') && a.id !== 'paraiba' && a.id !== 'mingau' && !tc && a.pose === 'parado') {
+    pose.pernaF = [82, -84];
+    pose.pernaT = [78, -78];
+    pose.torso = 2;
+    if (a.fala?.boca) {
+      pose.bracoF = [42 + 10 * Math.sin(o.t * 5), 45];
+      pose.bracoT = [-28, 58];
+    } else {
+      pose.bracoF = [32 + 2 * Math.sin(o.t * 2), 52];
+      pose.bracoT = [-30 - 2 * Math.sin(o.t * 2), 52];
+    }
+  }
   if (spec.visual.postura) { pose.torso += spec.visual.postura.torso; pose.cabeca += spec.visual.postura.cabeca; }
   const e = resolver(pose, x, chao, s, spec.visual.cabeca, a.facing);
   const lw = Math.max(1.2, 5.4 * Math.pow(s, 0.6));
@@ -372,17 +710,22 @@ export function desenharAtor(ctx: CanvasRenderingContext2D, a: AtorEstado, x: nu
   }
 
   // corpo com volume (tubos com contorno duplo, mãos, sapatos, roupa) + pescoço, orelha de trás e cabeça
-  desenharCorpo(ctx, e, modelo, lw);
+  desenharCorpo(ctx, e, modelo, lw, a.id);
   ctx.strokeStyle = COR;
-  tubo(ctx, [e.ombro, { x: e.ombro.x + (e.cabeca.x - e.ombro.x) * 0.75, y: e.ombro.y + (e.cabeca.y - e.ombro.y) * 0.75 }], 9 * s, lw);
-  ctx.lineWidth = lw * 0.85; ctx.fillStyle = '#fff';
-  ctx.beginPath(); ctx.ellipse(e.cabeca.x - a.facing * e.raio * 0.98, e.cabeca.y + e.raio * 0.08, e.raio * 0.13, e.raio * 0.2, 0, 0, 7); ctx.fill(); ctx.stroke();
+  if (a.id !== 'paraiba' && a.id !== 'mingau') {
+    linha(ctx, e.ombro, { x: e.ombro.x + (e.cabeca.x - e.ombro.x) * 0.75, y: e.ombro.y + (e.cabeca.y - e.ombro.y) * 0.75 });
+    ctx.lineWidth = lw * 0.85; ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.ellipse(e.cabeca.x - a.facing * e.raio * 0.98, e.cabeca.y + e.raio * 0.08, e.raio * 0.13, e.raio * 0.2, 0, 0, 7); ctx.fill(); ctx.stroke();
+  }
   ctx.lineWidth = lw;  ctx.fillStyle = '#fff';
   desenharCabeca(ctx, e);
-  desenharCabelo(ctx, e, modelo);
-  desenharNariz(ctx, e);
-  desenharRosto(ctx, e, ROSTOS[expr as ExpressaoId] ?? rostoBonecoDe(a.id, expr, o.t) ?? ROSTOS.neutra, a.fala?.boca ? 1 : 0, o.t, modelo === 'professor', spec.visual);
-  if (spec.visual.oculos) desenharOculos(ctx, e);
+  desenharCabelo(ctx, e, modelo, a.id);
+  desenharNariz(ctx, e, a.id);
+  desenharRosto(ctx, e, ROSTOS[expr as ExpressaoId] ?? rostoBonecoDe(a.id, expr, o.t) ?? ROSTOS.neutra, a.fala?.boca ? 1 : 0, o.t, modelo === 'professor', spec.visual, a.id);
+  if (spec.visual.oculos) desenharOculos(ctx, e, a.id);
+  if (o.cenario === 'podcast' && a.id !== 'paraiba' && a.id !== 'mingau') {
+    desenharFonesOuvido(ctx, e);
+  }
   ctx.restore();
 
   const efeito = EFEITO_POSE[a.pose];

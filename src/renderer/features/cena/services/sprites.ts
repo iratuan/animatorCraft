@@ -96,14 +96,12 @@ export const spritesProntos = () => pronto;
 /** O personagem tem ficha de sprites (poses), seja qual for a skin escolhida. */
 export const possuiSprites = (id: ActorId) => pronto && !!manifesto[id] && manifesto[id]!.sprites.some((s) => (s.tipo ?? 'pose') === 'pose');
 
-export type Skin = 'chibi' | 'stickman';
-let skinPadrao: Skin = 'chibi';
-let skins: Record<string, Skin> = {};
-/** Skin de cada personagem; padrao vale para quem não tem escolha própria. */
-export function definirSkins(padrao: Skin, porPersonagem: Record<string, Skin>): void { skinPadrao = padrao; skins = { ...porPersonagem }; }
-export const skinDe = (id: ActorId): Skin => skins[id] ?? skinPadrao;
-/** Desenha com os sprites chibi: tem ficha e a skin escolhida é chibi (senão entra o boneco de palito). */
-export const temSprites = (id: ActorId) => skinDe(id) === 'chibi' && possuiSprites(id);
+export type Skin = 'stickman';
+/** No StickBoard unificado, o estilo é sempre stickman. */
+export function definirSkins(_padrao?: unknown, _porPersonagem?: unknown): void {}
+export const skinDe = (_id: ActorId): Skin => 'stickman';
+/** O StickBoard agora renderiza exclusivamente via stickman (boneco de palito procedural). */
+export const temSprites = (_id: ActorId) => false;
 
 // ---------------------------------------------------------------- consulta
 

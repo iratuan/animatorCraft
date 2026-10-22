@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-110 -65 220 250" width="100%" height="100%" style="overflow: visible;">
+  
+  <g id="betason-corpo-inteiro">
+    <path d="M -2.0,14.8 L -7.0,50.5 L 26.7,45.8" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -2.0,14.8 L -7.0,50.5 L 26.7,45.8" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -2.0,14.8 L -6.3,45.1" fill="none" stroke="#14161a" stroke-width="18.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -2.0,14.8 L -6.3,45.1" fill="none" stroke="#ffffff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="29.1" cy="50.1" r="3" fill="#ffffff" stroke="#14161a" stroke-width="2.6" />
+    <circle cx="26.7" cy="45.8" r="6" fill="#ffffff" stroke="#14161a" stroke-width="2.6" />
+    <path d="M 0.0,72.0 L -10.8,117.7 L -15.6,163.5" fill="none" stroke="#14161a" stroke-width="18.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,72.0 L -10.8,117.7 L -15.6,163.5" fill="none" stroke="#ffffff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -21.616618620624116,155.49601437388114 L -9.616618620624116,154.49601437388114 L 2.3833813793758836,161.49601437388114 L 2.3833813793758836,165.49601437388114 L -21.616618620624116,165.49601437388114 Z" fill="#ffffff" stroke="#14161a" stroke-width="2.6" stroke-linejoin="round" />
+    <line x1="-21.616618620624116" y1="163.49601437388114" x2="2.3833813793758836" y2="163.49601437388114" stroke="#14161a" stroke-width="1.8199999999999998" />
+    <line x1="-11.616618620624116" y1="156.49601437388114" x2="-7.616618620624116" y2="161.49601437388114" stroke="#14161a" stroke-width="1.56" />
+    <path d="M 0.0,72.0 L 10.8,117.7 L 15.6,163.5" fill="none" stroke="#14161a" stroke-width="18.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,72.0 L 10.8,117.7 L 15.6,163.5" fill="none" stroke="#ffffff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 9.616618620624116,155.49601437388114 L 21.616618620624116,154.49601437388114 L 33.616618620624116,161.49601437388114 L 33.616618620624116,165.49601437388114 L 9.616618620624116,165.49601437388114 Z" fill="#ffffff" stroke="#14161a" stroke-width="2.6" stroke-linejoin="round" />
+    <line x1="9.616618620624116" y1="163.49601437388114" x2="33.616618620624116" y2="163.49601437388114" stroke="#14161a" stroke-width="1.8199999999999998" />
+    <line x1="19.616618620624116" y1="156.49601437388114" x2="23.616618620624116" y2="161.49601437388114" stroke="#14161a" stroke-width="1.56" />
+    <g transform="translate(-1.0, 43.4)">
+    <path d="M -17,-12 L 17,-12 L 15,65 L -15,65 Z" fill="#fff" stroke="#14161a" stroke-width="3.3800000000000003" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -9,12 C -15,5 -12,-3 0,-3 C 12,-3 15,5 9,12 C 5,16 -5,16 -9,12 Z" fill="none" stroke="#14161a" stroke-width="2.8600000000000003" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -6,4 Q -4,2 -2,5 Q -3,8 -6,6 Z" fill="#14161a" stroke="#14161a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 6,4 Q 4,2 2,5 Q 3,8 6,6 Z" fill="#14161a" stroke="#14161a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <path d="M -2.0,14.8 L 11.5,48.2 L 35.9,24.6" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -2.0,14.8 L 11.5,48.2 L 35.9,24.6" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -2.0,14.8 L 9.5,43.2" fill="none" stroke="#14161a" stroke-width="18.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -2.0,14.8 L 9.5,43.2" fill="none" stroke="#ffffff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="40.5" cy="26.7" r="3" fill="#ffffff" stroke="#14161a" stroke-width="2.6" />
+    <circle cx="35.9" cy="24.6" r="6" fill="#ffffff" stroke="#14161a" stroke-width="2.6" />
+    <path d="M -2.0,14.8 L -3.8,-11.1" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -2.0,14.8 L -3.8,-11.1" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <g id="betason-cabeca" transform="translate(-3.8, -31.5)">
+    <ellipse cx="0" cy="0" rx="34" ry="34" fill="#fff" stroke="#14161a" stroke-width="3.36" />
+    <ellipse cx="-13" cy="-2" rx="7.225" ry="7.225" fill="#fff" stroke="#14161a" stroke-width="2.16" />
+    <ellipse cx="13" cy="-2" rx="7.225" ry="7.225" fill="#fff" stroke="#14161a" stroke-width="2.16" />
+    <ellipse cx="-13" cy="-2" rx="2.7455" ry="2.7455" fill="#14161a" />
+    <ellipse cx="13" cy="-2" rx="2.7455" ry="2.7455" fill="#14161a" />
+    <polygon points="-20.225,-9.225 -5.775,-3.4450000000000003 -5.775,-9.225 -20.225,-9.225" fill="#fff" />
+    <line x1="-20.225" y1="-8.5025" x2="-5.775" y2="-3.4450000000000003" stroke="#14161a" stroke-width="2.16" />
+    <polygon points="5.775,-3.4450000000000003 20.225,-9.225 20.225,-9.225 5.775,-9.225" fill="#fff" />
+    <line x1="5.775" y1="-3.4450000000000003" x2="20.225" y2="-8.5025" stroke="#14161a" stroke-width="2.16" />
+    <path d="M -18,-21 Q -10,-18 -2,-13" fill="none" stroke="#14161a" stroke-width="2.64" stroke-linecap="round" />
+    <path d="M 2,-13 Q 10,-18 18,-21" fill="none" stroke="#14161a" stroke-width="2.64" stroke-linecap="round" />
+    <path d="M -14,-7 A 9,9 0 1,1 -14,11 A 9,9 0 1,1 -14,-7 Z" fill="none" stroke="#14161a" stroke-width="3.12" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 14,-7 A 9,9 0 1,1 14,11 A 9,9 0 1,1 14,-7 Z" fill="none" stroke="#14161a" stroke-width="3.12" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -5,2 L 5,2" fill="none" stroke="#14161a" stroke-width="2.88" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -23,2 L -30,2 M 23,2 L 30,2" fill="none" stroke="#14161a" stroke-width="2.16" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -11,15 L 11,13" fill="none" stroke="#14161a" stroke-width="2.52" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -32,-14 C -38,-28 -28,-44 -16,-46 C -12,-54 -2,-56 8,-50 C 18,-56 30,-50 34,-40 C 40,-30 38,-16 32,-10 C 26,-20 12,-24 -2,-22 C -16,-24 -26,-18 -32,-14 Z" fill="#fff" stroke="#14161a" stroke-width="2.88" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -22,-30 Q -16,-36 -12,-28 Q -8,-36 -2,-30 Q 6,-38 12,-30 Q 18,-36 24,-26" fill="#ffffff" stroke="#14161a" stroke-width="2.16" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+  </g>
+</svg>

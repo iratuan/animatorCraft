@@ -1,0 +1,82 @@
+{
+  "versao": 1,
+  "id": "elizendra",
+  "nome": "Elizendra",
+  "apelidos": [
+    "elizendra",
+    "vovo",
+    "vo",
+    "avo",
+    "dona elizendra"
+  ],
+  "descricao": "Avó amorosa, alegre e atrapalhada. Cabelo grisalho ondulado preso com grampos, óculos ovais com correntinha e avental florido de cozinheira.",
+  "idade": "50 anos",
+  "altura": 500,
+  "temSprites": false,
+  "modeloPalito": "mae",
+  "expressaoPadrao": "feliz",
+  "slotPadrao": 0.4,
+  "dancaPadrao": "danca_valsa",
+  "visual": {
+    "formato": "stickman",
+    "acessorios": []
+  },
+  "clipesProprios": [
+    {
+      "id": "oferecer-bolo",
+      "nome": "Oferecer bolo",
+      "ator": "elizendra",
+      "categoria": "Movimento",
+      "loop": false,
+      "passos": [
+        {
+          "tags": [
+            "apresentar",
+            "parado"
+          ],
+          "dur": 0.7,
+          "mov": "inclinar",
+          "amp": 4,
+          "espelhar": false
+        },
+        {
+          "tags": [
+            "apresentar",
+            "parado"
+          ],
+          "dur": 0.8,
+          "mov": "respirar",
+          "espelhar": false
+        }
+      ]
+    },
+    {
+      "id": "ajeitar-oculos",
+      "nome": "Ajeitar os óculos",
+      "ator": "elizendra",
+      "categoria": "Movimento",
+      "loop": false,
+      "passos": [
+        {
+          "tags": [
+            "olhar-cima",
+            "parado"
+          ],
+          "dur": 0.6,
+          "mov": "quicar",
+          "amp": 0.02,
+          "espelhar": false
+        },
+        {
+          "tags": [
+            "parado-calmo",
+            "parado"
+          ],
+          "dur": 0.7,
+          "mov": "respirar",
+          "espelhar": false
+        }
+      ]
+    }
+  ]
+}

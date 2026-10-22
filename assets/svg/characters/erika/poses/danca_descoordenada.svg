@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-110 -65 220 250" width="100%" height="100%" style="overflow: visible;">
+  
+  <g id="erika-corpo-inteiro">
+    <path d="M 0.0,1.8 L -9.8,36.4 L -19.0,69.2" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,1.8 L -9.8,36.4 L -19.0,69.2" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,1.8 L -9.8,36.4 L -17.2,62.6" fill="none" stroke="#14161a" stroke-width="17.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,1.8 L -9.8,36.4 L -17.2,62.6" fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="-24.0" cy="69.6" r="3" fill="#ffffff" stroke="#14161a" stroke-width="2.6" />
+    <circle cx="-19.0" cy="69.2" r="6" fill="#ffffff" stroke="#14161a" stroke-width="2.6" />
+    <path d="M 0.0,72.0 L -6.0,118.0 L -6.0,164.0" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,72.0 L -6.0,118.0 L -6.0,164.0" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -11,160 L 9,162 L 9,166 L -11,166 Z" fill="#ffffff" stroke="#14161a" stroke-width="2.6" stroke-linejoin="round" />
+    <line x1="-6" y1="160" x2="0" y2="156" stroke="#14161a" stroke-width="1.8199999999999998" />
+    <path d="M 0.0,72.0 L 6.0,118.0 L 6.0,164.0" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,72.0 L 6.0,118.0 L 6.0,164.0" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 1,160 L 21,162 L 21,166 L 1,166 Z" fill="#ffffff" stroke="#14161a" stroke-width="2.6" stroke-linejoin="round" />
+    <line x1="6" y1="160" x2="12" y2="156" stroke="#14161a" stroke-width="1.8199999999999998" />
+    <path d="M -16,68 L 16,68 L 30,154 L -30,154 Z" fill="#ffffff" stroke="#14161a" stroke-width="3.3800000000000003" stroke-linejoin="round" />
+    <g transform="translate(0.0, 36.9)">
+    <path d="M -15,-12 L 15,-12 L 13,60 L -13,60 Z" fill="#fff" stroke="#14161a" stroke-width="3.12" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <path d="M 0.0,1.8 L 35.9,-1.3 L 69.7,-4.3" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,1.8 L 35.9,-1.3 L 69.7,-4.3" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,1.8 L 35.9,-1.3 L 63.0,-3.7" fill="none" stroke="#14161a" stroke-width="17.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,1.8 L 35.9,-1.3 L 63.0,-3.7" fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="71.9" cy="0.2" r="3" fill="#ffffff" stroke="#14161a" stroke-width="2.6" />
+    <circle cx="69.7" cy="-4.3" r="6" fill="#ffffff" stroke="#14161a" stroke-width="2.6" />
+    <path d="M 0.0,1.8 L 0.0,-24.2" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,1.8 L 0.0,-24.2" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <g id="erika-cabeca" transform="translate(0.0, -44.0)">
+    <path d="M -30,-10 C -36,15 -34,45 -28,80 C -22,86 -14,84 -18,65 C -20,40 -20,10 -15,-6 Z" fill="#14161a" stroke="#14161a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 30,-10 C 36,15 34,45 28,80 C 22,86 14,84 18,65 C 20,40 20,10 15,-6 Z" fill="#14161a" stroke="#14161a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+    <ellipse cx="0" cy="0" rx="33" ry="33" fill="#fff" stroke="#14161a" stroke-width="3.12" />
+    <ellipse cx="-13" cy="-4" rx="8" ry="8" fill="#fff" stroke="#14161a" stroke-width="2.16" />
+    <ellipse cx="13" cy="-4" rx="8" ry="8" fill="#fff" stroke="#14161a" stroke-width="2.16" />
+    <ellipse cx="-13" cy="-4" rx="3.04" ry="3.04" fill="#14161a" />
+    <ellipse cx="13" cy="-4" rx="3.04" ry="3.04" fill="#14161a" />
+    <line x1="-21" y1="-8" x2="-25" y2="-10.4" stroke="#14161a" stroke-width="1.68" />
+    <line x1="21" y1="-8" x2="25" y2="-10.4" stroke="#14161a" stroke-width="1.68" />
+    <path d="M -18,-16 Q -10,-17 -2,-16" fill="none" stroke="#14161a" stroke-width="2.64" stroke-linecap="round" />
+    <path d="M 2,-16 Q 10,-17 18,-16" fill="none" stroke="#14161a" stroke-width="2.64" stroke-linecap="round" />
+    <path d="M -22,-10 Q -13,-12 -4,-10 Q -4,2 -13,4 Q -22,2 -22,-10 Z" fill="none" stroke="#14161a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 4,-10 Q 13,-12 22,-10 Q 22,2 13,4 Q 4,2 4,-10 Z" fill="none" stroke="#14161a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -4,-5 L 4,-5" fill="none" stroke="#14161a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -10,12 L 10,12" fill="none" stroke="#14161a" stroke-width="2.52" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -32,-12 C -28,-36 -8,-44 0,-44 C 8,-44 28,-36 32,-12 C 22,-28 10,-32 0,-30 C -10,-32 -22,-28 -32,-12 Z" fill="#14161a" stroke="#14161a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0,-44 L 0,-30" fill="#ffffff" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+  </g>
+</svg>

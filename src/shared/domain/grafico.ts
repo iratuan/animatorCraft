@@ -1,21 +1,40 @@
 import { semAcento } from '../util/texto';
 /**
- * Gráficos simples para a lousa: funções y = f(x), barras e pizza. Tudo puro (sem canvas): o motor de desenho recebe pontos prontos.
- *   "Professor desenha o gráfico de y = x^2 no quadro."   ·   "... de y = sen(x) de -6 a 6"
  *   "Professor desenha um gráfico de barras: Maçã=5, Banana=8, Uva=3."   ·   "... gráfico de pizza: Sim=70, Não=30."
  */
 export type GraficoDef =
-  | { tipo: 'funcao'; expr: string; xmin: number; xmax: number }
+  | {
+      tipo: 'funcao';
+      expr: string;
+      xmin: number;
+      xmax: number;
+      raizes?: boolean;
+      areaIntegral?: { a: number; b: number };
+      grade?: boolean;
+      rotulo?: string;
+    }
   | { tipo: 'barras' | 'pizza'; dados: { rotulo: string; valor: number }[] };
 
-export const rotuloDoGrafico = (g: GraficoDef): string =>
-  g.tipo === 'funcao' ? `gráfico de y = ${g.expr}` : `gráfico de ${g.tipo === 'barras' ? 'barras' : 'pizza'}: ${g.dados.map((d) => `${d.rotulo}=${d.valor}`).join(', ')}`;
+export const rotuloDoGrafico = (g: GraficoDef): string => {
+  if (g.tipo !== 'funcao') {
+    return `gráfico de ${g.tipo === 'barras' ? 'barras' : 'pizza'}: ${g.dados.map((d) => `${d.rotulo}=${d.valor}`).join(', ')}`;
+  }
+  let s = `gráfico de y = ${g.expr}`;
+  if (g.raizes) s += ' (com raízes)';
+  if (g.areaIntegral) s += ` (integral de ${g.areaIntegral.a} a ${g.areaIntegral.b})`;
+  if (g.grade) s += ' (com grade)';
+  return s;
+};
 
 // ---------------------------------------------------------------- avaliador de expressões (sem eval)
 
 type Tok = { t: 'n'; v: number } | { t: 'x' } | { t: 'op'; v: string } | { t: 'f'; v: string } | { t: '(' } | { t: ')' };
 const FUNCOES: Record<string, (v: number) => number> = {
-  sen: Math.sin, sin: Math.sin, cos: Math.cos, tan: Math.tan, tg: Math.tan, raiz: Math.sqrt, sqrt: Math.sqrt, abs: Math.abs, ln: Math.log, log: Math.log10, exp: Math.exp,
+  sen: Math.sin, sin: Math.sin, cos: Math.cos, tan: Math.tan, tg: Math.tan,
+  asin: Math.asin, arcsin: Math.asin, acos: Math.acos, arccos: Math.acos, atan: Math.atan, arctan: Math.atan,
+  sinh: Math.sinh, cosh: Math.cosh, tanh: Math.tanh,
+  raiz: Math.sqrt, sqrt: Math.sqrt, abs: Math.abs, ln: Math.log, log: Math.log10, exp: Math.exp,
+  sign: Math.sign, sinal: Math.sign, floor: Math.floor, piso: Math.floor, ceil: Math.ceil, teto: Math.ceil,
 };
 
 function tokenizar(expr: string): Tok[] {
@@ -31,7 +50,7 @@ function tokenizar(expr: string): Tok[] {
       const nome = id[0];
       if (nome === 'x') { implicita(); toks.push({ t: 'x' }); i++; continue; }
       if (nome === 'pi') { implicita(); toks.push({ t: 'n', v: Math.PI }); i += 2; continue; }
-      if (nome === 'e') { implicita(); toks.push({ t: 'n', v: Math.E }); i++; continue; }
+      if (nome === 'e') { implicita(); toks.push({ t: 'n', v: Math.E }); i += 1; continue; }
       if (FUNCOES[nome]) { implicita(); toks.push({ t: 'f', v: nome }); i += nome.length; continue; }
       // "2x3"-tipo de colagem de letras (ex.: "xx"): separa em x
       if (/^x+$/.test(nome)) { for (let k = 0; k < nome.length; k++) { implicita(); toks.push({ t: 'x' }); } i += nome.length; continue; }
@@ -113,6 +132,69 @@ export function amostrarFuncao(g: Extract<GraficoDef, { tipo: 'funcao' }>, n = 2
   return { pontos, ymin, ymax };
 }
 
+/** Encontra numericamente as raízes de f(x) = 0 no intervalo dado via amostragem e bissecção. */
+export function encontrarRaizes(expr: string, xmin: number, xmax: number, maxRaizes = 8): number[] {
+  try {
+    const f = compilarFuncao(expr);
+    const raizes: number[] = [];
+    const n = 300;
+    const dx = (xmax - xmin) / n;
+    let prevX = xmin;
+    let prevY = f(prevX);
+
+    for (let i = 1; i <= n && raizes.length < maxRaizes; i++) {
+      const curX = xmin + i * dx;
+      const curY = f(curX);
+
+      if (Number.isFinite(prevY) && Number.isFinite(curY)) {
+        if (Math.abs(curY) < 1e-7) {
+          raizes.push(Number(curX.toFixed(4)));
+        } else if (prevY * curY < 0) {
+          // Bissecção para refinar a raiz
+          let a = prevX, b = curX;
+          for (let k = 0; k < 28; k++) {
+            const m = (a + b) / 2;
+            const ym = f(m);
+            if (Math.abs(ym) < 1e-7 || (b - a) < 1e-5) {
+              a = m;
+              break;
+            }
+            if (f(a) * ym < 0) b = m;
+            else a = m;
+          }
+          const r = Number(((a + b) / 2).toFixed(4));
+          if (!raizes.some((existente) => Math.abs(existente - r) < 1e-3)) {
+            raizes.push(r);
+          }
+        }
+      }
+      prevX = curX;
+      prevY = curY;
+    }
+    return raizes.sort((a, b) => a - b);
+  } catch {
+    return [];
+  }
+}
+
+/** Calcula a integral numérica de f(x)dx de a até b usando a regra de Simpson composta. */
+export function calcularIntegral(expr: string, a: number, b: number, passos = 120): number {
+  try {
+    const f = compilarFuncao(expr);
+    if (a === b) return 0;
+    const n = passos % 2 === 0 ? passos : passos + 1;
+    const h = (b - a) / n;
+    let soma = f(a) + f(b);
+    for (let i = 1; i < n; i++) {
+      const x = a + i * h;
+      soma += (i % 2 === 0 ? 2 : 4) * f(x);
+    }
+    return Number(((h / 3) * soma).toFixed(4));
+  } catch {
+    return 0;
+  }
+}
+
 // ---------------------------------------------------------------- leitura da frase
 
 const num = (s: string) => parseFloat(s.replace(',', '.'));
@@ -128,12 +210,38 @@ export function lerGrafico(frase: string): { grafico: GraficoDef } | { erro: str
     if (dados.length < 2) return { erro: 'Gráfico de barras/pizza precisa de pelo menos dois valores, assim: Maçã=5, Banana=8.' };
     return { grafico: { tipo: /^barra/i.test(tipo[1]!) ? 'barras' : 'pizza', dados } };
   }
+
+  // Detecta opções adicionais avançadas de matemática
+  const raizes = /\bcom\s+ra[ií]zes?\b/i.test(resto) || /\bdestacando\s+ra[ií]zes?\b/i.test(resto);
+  if (raizes) resto = resto.replace(/\b(?:com|destacando)\s+ra[ií]zes?\b/i, '').trim();
+
+  const grade = /\bcom\s+grade\b/i.test(resto) || /\bgrade\b/i.test(resto);
+  if (grade) resto = resto.replace(/\b(?:com\s+)?grade\b/i, '').trim();
+
+  let areaIntegral: { a: number; b: number } | undefined;
+  const mArea = /\b(?:[aá]rea|integral)\s+(?:de|entre)\s+(-?\d+(?:[.,]\d+)?)\s+(?:a|e|at[eé])\s+(-?\d+(?:[.,]\d+)?)\b/i.exec(resto);
+  if (mArea) {
+    areaIntegral = { a: num(mArea[1]!), b: num(mArea[2]!) };
+    resto = resto.replace(mArea[0], '').trim();
+  }
+
   let xmin = -5, xmax = 5;
   const faixa = /\s+(?:de|entre)\s+(-?\d+(?:[.,]\d+)?)\s+(?:a|e|ate)\s+(-?\d+(?:[.,]\d+)?)\s*$/i.exec(resto);
   if (faixa) { xmin = num(faixa[1]!); xmax = num(faixa[2]!); resto = resto.slice(0, faixa.index).trim(); }
   if (xmin >= xmax) return { erro: 'No gráfico, o início do intervalo precisa ser menor que o fim.' };
   try { compilarFuncao(resto); } catch (e) { return { erro: `Não entendi a função "${resto}": ${(e as Error).message}.` }; }
-  return { grafico: { tipo: 'funcao', expr: resto.replace(/^\s*y\s*=\s*/i, ''), xmin, xmax } };
+
+  return {
+    grafico: {
+      tipo: 'funcao',
+      expr: resto.replace(/^\s*y\s*=\s*/i, '').replace(/^\s*f\s*\(\s*x\s*\)\s*=\s*/i, ''),
+      xmin,
+      xmax,
+      ...(raizes ? { raizes: true } : {}),
+      ...(areaIntegral ? { areaIntegral } : {}),
+      ...(grade ? { grade: true } : {}),
+    },
+  };
 }
 
 

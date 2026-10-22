@@ -1,0 +1,21 @@
+{
+  "versao": 1,
+  "id": "erika",
+  "nome": "Erika",
+  "apelidos": [
+    "erika",
+    "mae",
+    "mamae"
+  ],
+  "descricao": "Mãe, psicóloga. Mais alta que Cringefather. Cabelo preto liso e longo, óculos finos, saia boho. Serena e acolhedora.",
+  "idade": "30 anos",
+  "altura": 580,
+  "temSprites": true,
+  "modeloPalito": "mae",
+  "expressaoPadrao": "feliz",
+  "slotPadrao": 0.3,
+  "visual": {
+    "formato": "stickman",
+    "acessorios": []
+  }
+}

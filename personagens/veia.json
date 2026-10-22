@@ -1,0 +1,81 @@
+{
+  "versao": 1,
+  "id": "veia",
+  "nome": "Véia",
+  "apelidos": [
+    "veia",
+    "sogra"
+  ],
+  "descricao": "Sogra de Cringefather. Geniosa, engraçada, provocadora, vive implicando com Cringe mas ama a família.",
+  "idade": "70 anos",
+  "altura": 480,
+  "temSprites": false,
+  "modeloPalito": "mae",
+  "expressaoPadrao": "brava",
+  "slotPadrao": 0.22,
+  "dancaPadrao": "danca_forro",
+  "visual": {
+    "formato": "stickman",
+    "acessorios": []
+  },
+  "clipesProprios": [
+    {
+      "id": "dar-bronca",
+      "nome": "Dar bronca",
+      "ator": "veia",
+      "categoria": "Reação",
+      "loop": true,
+      "passos": [
+        {
+          "tags": [
+            "apontar",
+            "parado"
+          ],
+          "dur": 0.4,
+          "mov": "tremer",
+          "amp": 1.4,
+          "espelhar": false
+        },
+        {
+          "tags": [
+            "gesticular",
+            "parado"
+          ],
+          "dur": 0.4,
+          "mov": "balancar",
+          "amp": 5,
+          "espelhar": false
+        }
+      ]
+    },
+    {
+      "id": "reclamar",
+      "nome": "Reclamar",
+      "ator": "veia",
+      "categoria": "Reação",
+      "loop": true,
+      "passos": [
+        {
+          "tags": [
+            "gesticular",
+            "parado"
+          ],
+          "dur": 0.5,
+          "mov": "balancar",
+          "amp": 6,
+          "espelhar": false
+        },
+        {
+          "tags": [
+            "apontar",
+            "parado"
+          ],
+          "dur": 0.4,
+          "mov": "inclinar",
+          "amp": 5,
+          "espelhar": false
+        }
+      ]
+    }
+  ]
+}

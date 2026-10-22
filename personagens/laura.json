@@ -1,0 +1,21 @@
+{
+  "versao": 1,
+  "id": "laura",
+  "nome": "Laura",
+  "apelidos": [
+    "laura",
+    "priminha",
+    "irmazinha"
+  ],
+  "descricao": "Caçulinha linda, inteligente e muito sapeca. Maria-chiquinha com laços rosa.",
+  "idade": "5 anos",
+  "altura": 285,
+  "temSprites": true,
+  "modeloPalito": "priminha",
+  "expressaoPadrao": "sarcastica",
+  "slotPadrao": 0.62,
+  "visual": {
+    "formato": "stickman",
+    "acessorios": []
+  }
+}

@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-110 -65 220 250" width="100%" height="100%" style="overflow: visible;">
+  
+  <g id="dario-corpo-inteiro">
+    <path d="M 0.0,27.8 L 0.0,63.8 L 10.5,96.1" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,27.8 L 0.0,63.8 L 10.5,96.1" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,27.8 L 0.0,58.4" fill="none" stroke="#14161a" stroke-width="18.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,27.8 L 0.0,58.4" fill="none" stroke="#ffffff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="6.6" cy="99.3" r="3" fill="#ffffff" stroke="#14161a" stroke-width="2.6" />
+    <circle cx="10.5" cy="96.1" r="6" fill="#ffffff" stroke="#14161a" stroke-width="2.6" />
+    <path d="M 0.0,72.0 L -14.0,117.3" fill="none" stroke="#14161a" stroke-width="20.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,72.0 L -14.0,117.3" fill="none" stroke="#ffffff" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -14.0,117.3 L -28.2,161.0" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -14.0,117.3 L -28.2,161.0" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -34.202597913926375,153.04975638813863 L -22.202597913926375,152.04975638813863 L -10.202597913926375,159.04975638813863 L -10.202597913926375,163.04975638813863 L -34.202597913926375,163.04975638813863 Z" fill="#ffffff" stroke="#14161a" stroke-width="2.6" stroke-linejoin="round" />
+    <line x1="-34.202597913926375" y1="161.04975638813863" x2="-10.202597913926375" y2="161.04975638813863" stroke="#14161a" stroke-width="1.8199999999999998" />
+    <line x1="-24.202597913926375" y1="154.04975638813863" x2="-20.202597913926375" y2="159.04975638813863" stroke="#14161a" stroke-width="1.56" />
+    <path d="M 0.0,72.0 L 14.0,117.3" fill="none" stroke="#14161a" stroke-width="20.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,72.0 L 14.0,117.3" fill="none" stroke="#ffffff" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 14.0,117.3 L 15.6,163.3" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 14.0,117.3 L 15.6,163.3" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 9.593193020993839,155.27313468143996 L 21.593193020993837,154.27313468143996 L 33.59319302099384,161.27313468143996 L 33.59319302099384,165.27313468143996 L 9.593193020993839,165.27313468143996 Z" fill="#ffffff" stroke="#14161a" stroke-width="2.6" stroke-linejoin="round" />
+    <line x1="9.593193020993839" y1="163.27313468143996" x2="33.59319302099384" y2="163.27313468143996" stroke="#14161a" stroke-width="1.8199999999999998" />
+    <line x1="19.593193020993837" y1="156.27313468143996" x2="23.593193020993837" y2="161.27313468143996" stroke="#14161a" stroke-width="1.56" />
+    <g transform="translate(0.0, 49.9)">
+    <path d="M -14,-10 L 14,-10 L 13,50 L -13,50 Z" fill="#fff" stroke="#14161a" stroke-width="3.3800000000000003" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -12,-6 L -18,-2 L -12,2 M -12,8 L -18,12 L -12,16 M -12,22 L -18,26 L -12,30" fill="none" stroke="#14161a" stroke-width="3.3800000000000003" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <path d="M 0.0,27.8 L 0.0,63.8 L 10.5,96.1" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,27.8 L 0.0,63.8 L 10.5,96.1" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,27.8 L 0.0,58.4" fill="none" stroke="#14161a" stroke-width="18.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,27.8 L 0.0,58.4" fill="none" stroke="#ffffff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="6.6" cy="99.3" r="3" fill="#ffffff" stroke="#14161a" stroke-width="2.6" />
+    <circle cx="10.5" cy="96.1" r="6" fill="#ffffff" stroke="#14161a" stroke-width="2.6" />
+    <path d="M 0.0,27.8 L 0.0,1.8" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,27.8 L 0.0,1.8" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <g id="dario-cabeca" transform="translate(0.0, -17.4)">
+    <ellipse cx="0" cy="0" rx="32" ry="32" fill="#fff" stroke="#14161a" stroke-width="3.12" />
+    <ellipse cx="-12" cy="-2" rx="7.5" ry="7.5" fill="#fff" stroke="#14161a" stroke-width="2.16" />
+    <ellipse cx="12" cy="-2" rx="7.5" ry="7.5" fill="#fff" stroke="#14161a" stroke-width="2.16" />
+    <ellipse cx="-12" cy="-2" rx="2.85" ry="2.85" fill="#14161a" />
+    <ellipse cx="12" cy="-2" rx="2.85" ry="2.85" fill="#14161a" />
+    <path d="M -18,-16 Q -10,-17 -2,-16" fill="none" stroke="#14161a" stroke-width="2.64" stroke-linecap="round" />
+    <path d="M 2,-16 Q 10,-17 18,-16" fill="none" stroke="#14161a" stroke-width="2.64" stroke-linecap="round" />
+    <path d="M -10,12 L 10,12" fill="none" stroke="#14161a" stroke-width="2.52" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -28,-8 C -30,-28 -18,-38 0,-38 C 18,-38 30,-28 28,-8 C 24,-16 12,-20 0,-20 C -12,-20 -24,-16 -28,-8 Z" fill="#fff" stroke="#14161a" stroke-width="2.88" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -24,-14 L 24,-14" fill="#ffffff" stroke="#14161a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+  </g>
+</svg>

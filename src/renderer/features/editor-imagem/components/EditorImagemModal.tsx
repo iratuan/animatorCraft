@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ATORES, type ActorId } from '@shared/domain';
 import { hexDeCor, paletaDoSprite, type Pixels } from '@shared/editor-imagem';
 import { useEditor } from '@renderer/store/editor-store';
+import { Icones } from '@renderer/components/Icones';
 import { obterSprite } from '@renderer/features/personagens';
 import { MotorEditor, type Ferramenta } from '../services/motor';
 import { salvarSpriteEditado } from '../services/salvar';
@@ -160,7 +161,13 @@ function Editor({ alvo }: { alvo: { personagem: ActorId; tipo: 'pose' | 'rosto' 
   };
   const abrirComoCamada = async (f: File | undefined) => {
     if (!f || !motor) return;
-    try { const b = await createImageBitmap(f); motor.adicionarImagemComoCamada(dePixels(b, b.width, b.height), f.name.replace(/\.[^.]+$/, '')); setMsg(`“${f.name}” entrou como camada nova.`); }
+    try {
+      const b = await createImageBitmap(f);
+      const px = dePixels(b, b.width, b.height);
+      b.close();
+      motor.adicionarImagemComoCamada(px, f.name.replace(/\.[^.]+$/, ''));
+      setMsg(`“${f.name}” entrou como camada nova.`);
+    }
     catch { setMsg('Não consegui ler essa imagem (use PNG, JPG ou WebP).'); }
   };
 
@@ -205,7 +212,12 @@ function Editor({ alvo }: { alvo: { personagem: ActorId; tipo: 'pose' | 'rosto' 
       const arq = [...(e.clipboardData?.files ?? [])].find((f) => f.type.startsWith('image/'));
       e.preventDefault();
       if (!arq) { motor.colar(); return; }
-      void createImageBitmap(arq).then((b) => { motor.colarPixels(dePixels(b, b.width, b.height)); setMsg('Imagem colada: mova, escale ou gire; Enter confirma.'); });
+      void createImageBitmap(arq).then((b) => {
+        const px = dePixels(b, b.width, b.height);
+        b.close();
+        motor.colarPixels(px);
+        setMsg('Imagem colada: mova, escale ou gire; Enter confirma.');
+      });
     };
     window.addEventListener('keydown', kd); window.addEventListener('keyup', ku); window.addEventListener('paste', colar);
     return () => { window.removeEventListener('keydown', kd); window.removeEventListener('keyup', ku); window.removeEventListener('paste', colar); };
@@ -328,7 +340,7 @@ function Editor({ alvo }: { alvo: { personagem: ActorId; tipo: 'pose' | 'rosto' 
               <ul className="ei-camadas" aria-label="Camadas">
                 {ui?.camadas.map((c, i) => (
                   <li key={c.id} className={i === camadaAtiva ? 'on' : ''} onClick={() => motor?.escolherCamada(i)}>
-                    <button className="olho" aria-label={c.visivel ? 'Ocultar camada' : 'Mostrar camada'} title={c.visivel ? 'Ocultar' : 'Mostrar'} onClick={(e) => { e.stopPropagation(); motor?.alternarVisivel(i); }}>{c.visivel ? '●' : '○'}</button>
+                    <button className="olho" aria-label={c.visivel ? 'Ocultar camada' : 'Mostrar camada'} title={c.visivel ? 'Ocultar' : 'Mostrar'} onClick={(e) => { e.stopPropagation(); motor?.alternarVisivel(i); }}>{c.visivel ? Icones.olhoAberto : Icones.olhoFechado}</button>
                     {renomeando === i
                       ? <input autoFocus defaultValue={c.nome} onClick={(e) => e.stopPropagation()} onBlur={(e) => { motor?.renomear(i, e.target.value); setRenomeando(null); }} onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }} />
                       : <span className="nome" onDoubleClick={() => setRenomeando(i)} title="Duplo clique para renomear">{c.nome}</span>}
@@ -344,14 +356,14 @@ function Editor({ alvo }: { alvo: { personagem: ActorId; tipo: 'pose' | 'rosto' 
                 </Campo>
               )}
               <div className="ei-linha">
-                <button onClick={() => motor?.novaCamada()} title="Nova camada">＋ Nova</button>
-                <button onClick={() => motor?.duplicar()} title="Duplicar (Ctrl+J)">Duplicar</button>
-                <button onClick={() => motor?.excluirCamada()}>Excluir</button>
+                <button onClick={() => motor?.novaCamada()} title="Nova camada">{Icones.mais} <span>Nova</span></button>
+                <button onClick={() => motor?.duplicar()} title="Duplicar (Ctrl+J)">{Icones.duplicar} <span>Duplicar</span></button>
+                <button onClick={() => motor?.excluirCamada()}>{Icones.lixo} <span>Excluir</span></button>
               </div>
               <div className="ei-linha">
-                <button onClick={() => motor?.moverCamadaAtiva(1)} title="Subir camada">↑ Subir</button>
-                <button onClick={() => motor?.moverCamadaAtiva(-1)} title="Descer camada">↓ Descer</button>
-                <button onClick={() => motor?.mesclar()}>Mesclar ↓</button>
+                <button onClick={() => motor?.moverCamadaAtiva(1)} title="Subir camada">{Icones.setaCima} <span>Subir</span></button>
+                <button onClick={() => motor?.moverCamadaAtiva(-1)} title="Descer camada">{Icones.setaBaixo} <span>Descer</span></button>
+                <button onClick={() => motor?.mesclar()} title="Mesclar com camada abaixo">{Icones.mesclarCamadas} <span>Mesclar</span></button>
               </div>
               <input ref={arquivoRef} type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={(e) => { void abrirComoCamada(e.target.files?.[0]); e.target.value = ''; }} />
               <button className="ei-largo" onClick={() => arquivoRef.current?.click()}>Abrir imagem como camada…</button>
@@ -360,13 +372,13 @@ function Editor({ alvo }: { alvo: { personagem: ActorId; tipo: 'pose' | 'rosto' 
             <section>
               <h5>Imagem</h5>
               <div className="ei-linha">
-                <button onClick={() => motor?.espelhar(true)}>Espelhar ↔</button>
-                <button onClick={() => motor?.espelhar(false)}>Espelhar ↕</button>
+                <button onClick={() => motor?.espelhar(true)} title="Espelhar horizontalmente">{Icones.espelharH} <span>Espelhar H</span></button>
+                <button onClick={() => motor?.espelhar(false)} title="Espelhar verticalmente">{Icones.espelharV} <span>Espelhar V</span></button>
               </div>
               <div className="ei-linha">
-                <button onClick={() => motor?.girar(false)}>↺ 90°</button>
-                <button onClick={() => motor?.girar(true)}>↻ 90°</button>
-                <button onClick={() => motor?.cortarAoConteudo()} title="Remove as bordas transparentes">Cortar</button>
+                <button onClick={() => motor?.girar(false)} title="Girar anti-horário">{Icones.girarAntiHorario} <span>90°</span></button>
+                <button onClick={() => motor?.girar(true)} title="Girar horário">{Icones.girarHorario} <span>90°</span></button>
+                <button onClick={() => motor?.cortarAoConteudo()} title="Remove as bordas transparentes">{Icones.cortarConteudo} <span>Cortar</span></button>
               </div>
               <small>Tela: {ui?.w}×{ui?.h}px</small>
               <div className="ei-linha">

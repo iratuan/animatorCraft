@@ -1,7 +1,7 @@
 import type { ExpressaoId } from './poses';
 
 /** Id do personagem. Os 8 do elenco original têm ids fixos; os criados pelo usuário recebem um id derivado do nome. */
-export type ActorId = 'cringefather' | 'betason' | 'erika' | 'dario' | 'laura' | 'elizendra' | 'artur' | 'carol' | (string & {});
+export type ActorId = 'cringefather' | 'betason' | 'erika' | 'dario' | 'laura' | 'elizendra' | 'artur' | 'carol' | 'veia' | 'veio' | 'paraiba' | 'mingau' | (string & {});
 
 /** Modelo de boneco de palito usado como "reserva" enquanto um personagem não tem ficha de sprites. */
 export type ModeloPalito = 'professor' | 'aluno' | 'mae' | 'cacula' | 'priminha';
@@ -36,13 +36,13 @@ export const ATORES: Record<ActorId, ActorSpec> = {
   },
   betason: {
     id: 'betason', nome: 'BetaSon', apelidos: ['betason', 'beta', 'betinha'], idade: '11 anos',
-    descricao: 'Filho do meio. Cabelo castanho-escuro cacheado, óculos redondos, moletom de alien. Divertido, desastre em exatas, fluente em inglês.',
+    descricao: 'Filho do mais velho. Cabelo castanho-escuro cacheado, óculos redondos, moletom de alien. Divertido, desastre em exatas, fluente em inglês.',
     altura: 440, temSprites: true, modeloPalito: 'aluno', expressaoPadrao: 'feliz', slotPadrao: 0.87,
   },
   erika: {
     id: 'erika', nome: 'Erika', apelidos: ['erika', 'mae', 'mamae'], idade: '30 anos',
-    descricao: 'Mãe, psicóloga. Cabelo preto liso e longo, óculos finos, saia boho. Serena e acolhedora.',
-    altura: 520, temSprites: true, modeloPalito: 'mae', expressaoPadrao: 'feliz', slotPadrao: 0.3,
+    descricao: 'Mãe, psicóloga. Mais alta que Cringefather. Cabelo preto liso e longo, óculos finos, saia boho. Serena e acolhedora.',
+    altura: 580, temSprites: true, modeloPalito: 'mae', expressaoPadrao: 'feliz', slotPadrao: 0.3,
   },
   dario: {
     id: 'dario', nome: 'Dario', apelidos: ['dario', 'cacula'], idade: '7 anos',
@@ -55,23 +55,43 @@ export const ATORES: Record<ActorId, ActorSpec> = {
     altura: 285, temSprites: true, modeloPalito: 'priminha', expressaoPadrao: 'sarcastica', slotPadrao: 0.62,
   },
   elizendra: {
-    id: 'elizendra', nome: 'Elizendra', apelidos: ['elizendra', 'vovo', 'vo', 'avo'], idade: '50 anos',
-    descricao: 'Avó. Óculos, cabelo longo, engraçada e atrapalhada. (ficha de sprites pendente)',
-    altura: 500, temSprites: false, modeloPalito: 'mae', expressaoPadrao: 'feliz', slotPadrao: 0.4,
+    id: 'elizendra', nome: 'Elizendra', apelidos: ['elizendra', 'vovo', 'vo', 'avo', 'dona elizendra'], idade: '50 anos',
+    descricao: 'Avó amorosa, alegre e atrapalhada. Cabelo grisalho ondulado preso com grampos, óculos ovais com correntinha e avental florido de cozinheira.',
+    altura: 500, temSprites: false, modeloPalito: 'mae', expressaoPadrao: 'feliz', slotPadrao: 0.4, dancaPadrao: 'danca_valsa',
   },
   artur: {
-    id: 'artur', nome: 'Artur', apelidos: ['artur'], idade: '11 anos',
-    descricao: 'Melhor amigo do BetaSon. Moreninho, gordinho, cabelo liso e curto, óculos. (ficha de sprites pendente)',
-    altura: 430, temSprites: false, modeloPalito: 'aluno', expressaoPadrao: 'feliz', slotPadrao: 0.68,
+    id: 'artur', nome: 'Artur', apelidos: ['artur', 'tutu'], idade: '11 anos',
+    descricao: 'Melhor amigo do BetaSon. Mais cheinho e robusto, cabelo liso curto com franjinha, óculos quadrados, bermuda cargo e camiseta gamer com estampa de controle.',
+    altura: 430, temSprites: false, modeloPalito: 'aluno', expressaoPadrao: 'feliz', slotPadrao: 0.68, dancaPadrao: 'danca_gamer',
   },
   carol: {
-    id: 'carol', nome: 'Carol', apelidos: ['carol'], idade: '11 anos',
-    descricao: 'Amiga do BetaSon. Magrela, alta, cabelo preto. (ficha de sprites pendente)',
-    altura: 470, temSprites: false, modeloPalito: 'mae', expressaoPadrao: 'feliz', slotPadrao: 0.55,
+    id: 'carol', nome: 'Carol', apelidos: ['carol', 'carolzinha'], idade: '11 anos',
+    descricao: 'Amiga do BetaSon. Alta e magricela, rabo de cavalo longo com elástico, calça jeans e camiseta moderna com estampa de raio. Esperta e cheia de atitude.',
+    altura: 475, temSprites: false, modeloPalito: 'aluno', expressaoPadrao: 'feliz', slotPadrao: 0.55, dancaPadrao: 'danca_street',
+  },
+  veia: {
+    id: 'veia', nome: 'Véia', apelidos: ['veia', 'sogra'], idade: '70 anos',
+    descricao: 'Sogra de Cringefather. Geniosa, engraçada, provocadora, vive implicando com Cringe mas ama a família.',
+    altura: 480, temSprites: false, modeloPalito: 'mae', expressaoPadrao: 'brava', slotPadrao: 0.22, dancaPadrao: 'danca_forro',
+  },
+  veio: {
+    id: 'veio', nome: 'Véio', apelidos: ['veio', 'poeta', 'sogro'], idade: '80 anos',
+    descricao: 'Poeta, olhos grandes e expressivos, detesta receber ordens. Declama e gesticula teatralmente.',
+    altura: 510, temSprites: false, modeloPalito: 'professor', expressaoPadrao: 'neutra', slotPadrao: 0.38, dancaPadrao: 'danca_serenata',
+  },
+  paraiba: {
+    id: 'paraiba', nome: 'Paraíba', apelidos: ['paraiba', 'cachorro', 'cao', 'dog', 'viralata'], idade: '3 anos',
+    descricao: 'Vira-lata caramelo leal e comilão. Orelhas caídas expressivas, rabo abanando, patinhas ágeis e coleira com medalhinha.',
+    altura: 210, temSprites: false, modeloPalito: 'cacula', expressaoPadrao: 'feliz', slotPadrao: 0.82, dancaPadrao: 'danca_canina',
+  },
+  mingau: {
+    id: 'mingau', nome: 'Mingau', apelidos: ['mingau', 'gato', 'gatinho', 'cat', 'miau', 'bichano'], idade: '2 anos',
+    descricao: 'Gatinho manhoso e esperto da família. Orelhas pontudas, focinho delicado com bigodes, rabo ondulante e patinhas macias.',
+    altura: 175, temSprites: false, modeloPalito: 'cacula', expressaoPadrao: 'feliz', slotPadrao: 0.88, dancaPadrao: 'danca_felina',
   },
 };
 
-export const ORDEM_ATORES: ActorId[] = ['cringefather', 'betason', 'erika', 'dario', 'laura', 'elizendra', 'artur', 'carol'];
+export const ORDEM_ATORES: ActorId[] = ['cringefather', 'betason', 'erika', 'dario', 'laura', 'elizendra', 'artur', 'carol', 'veia', 'veio', 'paraiba', 'mingau'];
 export const IDS_ORIGINAIS: readonly ActorId[] = [...ORDEM_ATORES];
 
 /** "Ana Júlia" -> "ana-julia" (sem acento, só letras/números e hífen). */
@@ -85,7 +105,10 @@ export interface NovoAtor { /** só na criação: id escolhido (a pasta do pacot
 
 // cópias de EXPRESSOES e POSES_DE_DANCA (poses.ts): este arquivo não importa nada em tempo de execução porque tools/sprites/importar-sprites.mjs o carrega direto no Node; personagens.test.ts confere que as listas não se afastam
 export const EXPRESSOES_ACEITAS: readonly string[] = ['neutra', 'feliz', 'triste', 'brava', 'surpresa', 'confusa', 'sarcastica', 'assustada', 'empolgada', 'entediada'];
-export const DANCAS_ACEITAS: readonly string[] = ['danca_funky', 'danca_atual', 'danca_ballet', 'danca_descoordenada', 'danca_hippie'];
+export const DANCAS_ACEITAS: readonly string[] = [
+  'danca_funky', 'danca_atual', 'danca_ballet', 'danca_descoordenada', 'danca_hippie',
+  'danca_gamer', 'danca_street', 'danca_valsa', 'danca_forro', 'danca_serenata', 'danca_canina', 'danca_felina',
+];
 const MODELOS_PALITO: readonly ModeloPalito[] = ['professor', 'aluno', 'mae', 'cacula', 'priminha'];
 const COR_VALIDA = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
 const texto = (v: unknown, max: number): string => (typeof v === 'string' ? v.trim().slice(0, max) : '');

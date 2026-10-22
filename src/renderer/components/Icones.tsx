@@ -49,6 +49,23 @@ export const Icones = {
   exemplo: <svg {...base}><path d="M5 3h14v18l-7-4-7 4zM9 8h6" /></svg>,
   modelo: <svg {...base}><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M8 8h8M8 12h8M8 16h5" /></svg>,
   editarFicha: <svg {...base}><path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4" /></svg>,
+  // ---- ícones flat utilitários para camadas, editor e barras
+  olhoAberto: <svg {...base}><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>,
+  olhoFechado: <svg {...base}><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24M1 1l22 22" /></svg>,
+  mais: <svg {...base}><path d="M12 5v14M5 12h14" /></svg>,
+  menos: <svg {...base}><path d="M5 12h14" /></svg>,
+  setaCima: <svg {...base}><path d="M12 19V5M5 12l7-7 7 7" /></svg>,
+  setaBaixo: <svg {...base}><path d="M12 5v14M19 12l-7 7-7-7" /></svg>,
+  girarHorario: <svg {...base}><path d="M21 12a9 9 0 11-2.64-6.36L21 8M21 3v5h-5" /></svg>,
+  girarAntiHorario: <svg {...base}><path d="M3 12a9 9 0 102.64-6.36L3 8M3 3v5h5" /></svg>,
+  espelharH: <svg {...base}><path d="M12 2v20M8 7l-5 5 5 5V7zM16 7l5 5-5 5V7z" /></svg>,
+  espelharV: <svg {...base}><path d="M2 12h20M7 8l5-5 5 5H7zM7 16l5 5 5-5H7z" /></svg>,
+  mesclarCamadas: <svg {...base}><path d="M4 14l8 4 8-4M4 18l8 4 8-4M12 2L2 7l10 5 10-5-10-5z" /></svg>,
+  duplicar: <svg {...base}><rect x="8" y="8" width="13" height="13" rx="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg>,
+  cortarConteudo: <svg {...base}><path d="M6 2v14a2 2 0 002 2h14M18 22V8a2 2 0 00-2-2H2" /></svg>,
+  paleta: <svg {...base}><circle cx="12" cy="12" r="9" /><path d="M12 3a9 9 0 000 18c1.5 0 2.5-1 2.5-2.5 0-.7-.3-1.3-.8-1.7-.5-.5-.7-1.1-.7-1.8 0-1.4 1.1-2.5 2.5-2.5h1.5A4 4 0 0021 8.5C21 5.5 17 3 12 3z" /></svg>,
+  animacao: <svg {...base}><polygon points="5 3 19 12 5 21 5 3" /><line x1="19" y1="5" x2="19" y2="19" /></svg>,
+  fechar: <svg {...base}><path d="M18 6L6 18M6 6l12 12" /></svg>,
 };
 
 export type NomeIcone = keyof typeof Icones;

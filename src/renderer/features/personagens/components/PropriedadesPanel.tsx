@@ -5,7 +5,6 @@ import {
 import { listarSprites, possuiSprites } from '@renderer/features/cena';
 import { Miniatura } from '@renderer/components/Miniatura';
 import { useEditor } from '@renderer/store/editor-store';
-import { SeletorSkin, useSkins } from '../hooks/useSkins';
 import { useRoteiroDerivado } from '@renderer/features/roteiro';
 
 /** Propriedades do personagem selecionado: danças, poses, poses e expressões vindas de pacotes importados. */
@@ -15,7 +14,6 @@ export function PropriedadesPanel() {
   const set = useEditor((s) => s.set);
   const versaoBib = useEditor((s) => s.versaoBib);
   const { estado, roteiro } = useRoteiroDerivado();
-  const skins = useSkins();
 
   if (!selecionado) {
     return <div className="propriedades"><p className="dica">Clique em um personagem no palco ou na biblioteca para ver suas poses e danças. A aba “Aula” escolhe os papéis, os modelos e mostra a sintaxe da câmera.</p></div>;
@@ -39,8 +37,11 @@ export function PropriedadesPanel() {
       </div>
 
       <div className="acoes-ficha">
-        <SeletorSkin valor={skins.de(selecionado)} aoEscolher={(s) => skins.definir(selecionado, s)} />
-        {espec.personalizado && <button onClick={() => set({ fichaPersonagem: { id: selecionado } })}>Editar ficha</button>}
+        {espec.personalizado ? (
+          <button onClick={() => set({ fichaPersonagem: { id: selecionado } })}>Editar ficha</button>
+        ) : (
+          <button onClick={() => set({ fichaPersonagem: { id: selecionado } })}>🎨 Ficha & Vetores SVG</button>
+        )}
         <button onClick={() => set({ fichaPersonagem: { duplicarDe: selecionado } })}>Duplicar como novo</button>
       </div>
 

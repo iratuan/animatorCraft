@@ -1,0 +1,81 @@
+{
+  "versao": 1,
+  "id": "artur",
+  "nome": "Artur",
+  "apelidos": [
+    "artur",
+    "tutu"
+  ],
+  "descricao": "Melhor amigo do BetaSon. Mais cheinho e robusto, cabelo liso curto com franjinha, óculos quadrados, bermuda cargo e camiseta gamer com estampa de controle.",
+  "idade": "11 anos",
+  "altura": 430,
+  "temSprites": false,
+  "modeloPalito": "aluno",
+  "expressaoPadrao": "feliz",
+  "slotPadrao": 0.68,
+  "dancaPadrao": "danca_gamer",
+  "visual": {
+    "formato": "stickman",
+    "acessorios": []
+  },
+  "clipesProprios": [
+    {
+      "id": "jogar-videogame",
+      "nome": "Jogar videogame",
+      "ator": "artur",
+      "categoria": "Movimento",
+      "loop": true,
+      "passos": [
+        {
+          "tags": [
+            "sentado",
+            "parado"
+          ],
+          "dur": 0.5,
+          "mov": "balancar",
+          "amp": 3,
+          "espelhar": false
+        },
+        {
+          "tags": [
+            "sentado",
+            "parado"
+          ],
+          "dur": 0.4,
+          "mov": "quicar",
+          "amp": 0.02,
+          "espelhar": false
+        }
+      ]
+    },
+    {
+      "id": "vitoria-gamer",
+      "nome": "Vitória gamer",
+      "ator": "artur",
+      "categoria": "Reação",
+      "loop": false,
+      "passos": [
+        {
+          "tags": [
+            "comemorar",
+            "parado"
+          ],
+          "dur": 0.5,
+          "mov": "pular",
+          "amp": 0.1,
+          "espelhar": false
+        },
+        {
+          "tags": [
+            "comemorar",
+            "parado"
+          ],
+          "dur": 0.6,
+          "mov": "balancar",
+          "amp": 5,
+          "espelhar": false
+        }
+      ]
+    }
+  ]
+}

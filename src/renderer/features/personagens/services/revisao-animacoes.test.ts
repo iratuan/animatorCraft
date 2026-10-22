@@ -34,9 +34,9 @@ describe('clipes: validação de dados de fora', () => {
   it('descarta o que não tem como funcionar: sem ator, sem nome, sem passos, duplicados, tipos errados', () => {
     definirClipesPersonalizados([
       clipe({ ator: '' }), clipe({ nome: '!!!', id: '' }), clipe({ passos: [] }), clipe({ passos: 'x' as never }),
-      null as never, 7 as never, 'texto' as never, clipe({ nome: 'Dança do Foguete!' }), clipe({ nome: 'dança do foguete' }), clipe({ nome: 'dança do foguete', estilo: 'chibi' }),
+      null as never, 7 as never, 'texto' as never, clipe({ nome: 'Dança do Foguete!' }), clipe({ nome: 'dança do foguete' }), clipe({ nome: 'dança do foguete', estilo: 'stickman' }),
     ]);
-    expect(clipesPersonalizados().map((c) => `${c.id}|${c.estilo}`)).toEqual(['danca-do-foguete|ambos', 'danca-do-foguete|chibi']);
+    expect(clipesPersonalizados().map((c) => `${c.id}|${c.estilo}`)).toEqual(['danca-do-foguete|stickman']);
     expect(() => definirClipesPersonalizados('lixo' as never)).not.toThrow();
     expect(clipesPersonalizados()).toEqual([]);
   });
@@ -72,10 +72,10 @@ describe('clipes: validação de dados de fora', () => {
     expect(duracaoDoClipe(acharClipe('betason', 'l')!)).toBe(2);
   });
 
-  it('acharClipe prefere o estilo pedido e cai no "ambos"', () => {
-    definirClipesPersonalizados([clipe({ id: 'x', nome: 'x', estilo: 'chibi' }), clipe({ id: 'x', nome: 'x', estilo: 'ambos' })]);
-    expect(acharClipe('betason', 'x', 'chibi')!.estilo).toBe('chibi');
-    expect(acharClipe('betason', 'x', 'stickman')!.estilo).toBe('ambos');
+  it('acharClipe encontra o clipe do personagem pelo id', () => {
+    definirClipesPersonalizados([clipe({ id: 'x', nome: 'x', estilo: 'stickman' })]);
+    expect(acharClipe('betason', 'x')!.estilo).toBe('stickman');
+    expect(acharClipe('betason', 'x', 'stickman')!.estilo).toBe('stickman');
     expect(acharClipe('erika', 'x')).toBeUndefined();
   });
 });
@@ -169,7 +169,7 @@ describe('persistência e mesclagem de animações', () => {
     const chegando = { clipes: [clipe({ passos: [{ tags: ['andar'], dur: 2, mov: 'andar' }] }), clipe({ id: 'novo', nome: 'novo', estilo: 'stickman' })], expressoes: [] };
     mesclarAnimacoes(chegando);
     const ids = () => lerAnimacoes().clipes.map((c) => `${c.ator}:${c.id}:${c.estilo}`).sort();
-    expect(ids()).toEqual(['betason:novo:stickman', 'betason:outro:ambos', 'betason:tchau:ambos', 'erika:tchau:ambos']);
+    expect(ids()).toEqual(['betason:novo:stickman', 'betason:outro:stickman', 'betason:tchau:stickman', 'erika:tchau:stickman']);
     expect(acharClipe('betason', 'tchau')!.passos[0]!.tags[0]).toBe('andar');
     mesclarAnimacoes(chegando); mesclarAnimacoes(chegando);
     expect(ids().length).toBe(4);

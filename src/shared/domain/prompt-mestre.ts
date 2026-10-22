@@ -6,6 +6,7 @@ import { DANCA_PADRAO, DURACAO_PADRAO_DANCA, EXPRESSOES, FRASE_POSE, NOME_POSE, 
 import { ESTADOS, VERBOS_FALA } from './script/parser';
 import { SEQUENCIAS } from './sequencias';
 import type { InfoAudio } from './audio';
+import type { FormatoProducao } from './types';
 
 /**
  * PROMPT MESTRE: o texto que se entrega a qualquer IA (Claude, ChatGPT, Gemini, Llama...) para ela escrever um roteiro que o StickBoard
@@ -69,6 +70,7 @@ export const DURACAO_AULA: Record<DuracaoAula, { rotulo: string; texto: string; 
 export interface OpcoesPromptMestre {
   /** 'novo' pede um roteiro do zero; 'melhorar' reescreve o `roteiroAtual` */
   modo?: 'novo' | 'melhorar';
+  formato?: FormatoProducao;
   tema?: string;
   materia?: string;
   serie?: string;
@@ -149,6 +151,7 @@ export function gerarPromptMestre(b: BibliotecaMestre, o: OpcoesPromptMestre = {
   const dancas = POSES_DE_DANCA.map((d) => `"${FRASE_POSE[d]}"`);
   const efeitos = EFEITOS_IMAGEM.filter((e) => e !== 'nenhum').map((e) => e.replace('deslizar-', 'deslizar da ')).concat('sem efeito');
   const bibliotecaPronta = secaoBiblioteca({ ...b, atores: elenco });
+  const formato = o.formato ?? 'aula';
 
   const pedido = o.modo === 'melhorar'
     ? `PEDIDO
@@ -158,15 +161,16 @@ Devolva o roteiro COMPLETO, no mesmo formato, já corrigido.
 ROTEIRO ATUAL
 ${o.roteiroAtual?.trim() || '<<COLE AQUI O ROTEIRO ATUAL>>'}`
     : `PEDIDO
-- Assunto da aula: ${o.tema?.trim() || '<<ESCREVA AQUI O ASSUNTO, ex.: produtos notáveis (quadrado da soma)>>'}
-- Matéria: ${o.materia?.trim() || 'Matemática'}. Público: ${o.serie?.trim() || '8º ano'}.
+- Formato de mídia: ${formato.toUpperCase()} (${formato === 'podcast' ? 'Podcast / Mesa redonda com bancada e fones' : formato === 'telejornal' ? 'Telejornal com bancada e videowall' : formato === 'livre' ? 'Esquete / Animação livre sem lousa' : 'Aula tradicional com lousa'})
+- Assunto / Tema: ${o.tema?.trim() || '<<ESCREVA AQUI O ASSUNTO>>'}
+- Área / Matéria: ${o.materia?.trim() || 'Ciências'}. Público / Estilo: ${o.serie?.trim() || 'Geral'}.
 - Duração: ${DURACAO_AULA[o.duracao ?? 'curta'].texto}.
-- Professor desta aula: ${p}. Aluno: ${a}.
+- Papel principal / Apresentador: ${p}. Papel secundário / Convidado: ${a}.
 - Personagens que podem aparecer: ${o.personagens?.length ? listar(o.personagens.map(nomeDoId)) : 'todos os da lista de PERSONAGENS, usando só os que fizerem sentido'}.${o.extras?.trim() ? `\n- Pedidos extras: ${o.extras.trim()}` : ''}`;
 
   return `# PROMPT MESTRE DO STICKBOARD
 
-Você é roteirista do **StickBoard**, um programa que transforma texto em vídeo de quadro branco com personagens desenhados em linhas pretas sobre fundo branco (estilo caderno/“lineart”), para ensinar ciências, matemática e inglês a crianças e adolescentes, em português do Brasil, com humor leve e relaxado.
+Você é roteirista do **StickBoard**, um programa que transforma texto em vídeo de animação stickman em linhas pretas sobre fundo branco (estilo caderno/“lineart”), para produzir aulas, podcasts, telejornais e esquetes, em português do Brasil, com humor leve e dinâmico.
 
 O programa NÃO entende texto livre: ele lê frases em um formato fixo, descrito abaixo, e transforma cada frase em uma animação. Frase fora do formato é ignorada e vira um aviso para o usuário. Por isso: **use somente as frases deste documento, exatamente como estão escritas**, trocando apenas os nomes, textos e números.
 
@@ -175,10 +179,16 @@ O programa NÃO entende texto livre: ele lê frases em um formato fixo, descrito
 - O roteiro é texto puro (não é JSON, não é markdown, não tem negrito nem listas).
 - Escreva em português do Brasil, com acentos.
 
-## 2. ESTRUTURA DO ARQUIVO
-1. Primeira linha: \`[papéis: professor=NOME, aluno=NOME]\` — diz quem faz o Professor e quem faz o Aluno. Depois disso você pode escrever "Professor" e "Aluno" no lugar dos nomes.
+## 2. ESTRUTURA DO ARQUIVO E FORMATOS DE MÍDIA
+1. Linhas iniciais de configuração (cabeçalho):
+   - \`[papéis: professor=NOME, aluno=NOME]\` — diz quem faz o Professor e quem faz o Aluno. Depois disso você pode escrever "Professor" e "Aluno" no lugar dos nomes.
+   - Formatos e cenários opcionais suportados pelo StickBoard:
+     - Aula com Lousa (padrão): usa a lousa para explicações didáticas, fórmulas ($...$) e gráficos, com \`[close na lousa]\` e \`[plano aberto]\`.
+     - Podcast / Mesa redonda: inicie com \`[cenário: podcast]\` e \`[formato: podcast]\`. Os personagens sentam em cadeiras gamer atrás de uma bancada profissional com microfones Shure com pop filter, fones de ouvido e letreiro "● NO AR". Não usa lousa.
+     - Telejornal / Notícias: inicie com \`[cenário: telejornal]\`, \`[formato: telejornal]\` e \`[sem lousa]\`. Os apresentadores sentam atrás da bancada moderna de TV com videowall mundial e tarja ao vivo.
+     - Esquete teatral livre: inicie com \`[sem lousa]\` e \`[cenário: neutro]\`. Palco aberto sem lousa para atuação física cômica, corridas, pulos, tropeços, danças e interações com mascotes (Paraíba e Mingau).
 2. Uma linha em branco.
-3. Cada cena começa com uma linha \`# Título da cena\` (o quadro é apagado automaticamente entre cenas).
+3. Cada cena começa com uma linha \`# Título da cena\` (o quadro/palco é limpo automaticamente entre cenas).
 4. Em cada cena, um ou dois parágrafos de frases curtas. **Toda frase termina em ponto final** (ou ! ou ?). Parágrafos são separados por linha em branco.
 5. Comandos de câmera, nota e áudio ficam entre colchetes, **cada um na sua própria linha** (ou logo após uma frase).
 6. O texto entre aspas duplas ("...") NUNCA contém aspas dentro. Fórmulas ficam entre cifrões: \`$ ... $\`.
@@ -196,15 +206,16 @@ Troque NOME por um personagem da lista (ou por "Professor"/"Aluno"). **Uma açã
 
 **Falar** (verbos: ${listar(VERBOS_DE_FALA())})
 - \`NOME diz "texto falado" irritado.\` — o texto da fala vai entre aspas; um estado opcional vem DEPOIS do fecha-aspas.
+- Destaque colorido e variáveis na fala: use [azul:x], [vermelho:erro], [verde:resultado], [laranja:termo], [amarelo:y], [roxo:função], [marca:marca-texto] ou [#2563eb:hex]. Exemplo: \`Professor diz "Isolamos o [azul:x] e achamos [verde:42]!" feliz.\`
 - Cada fala fica em UMA frase, com o ponto depois do estado ou do fecha-aspas. Fala curta é melhor: 4 a 14 palavras (dura ~0,4 s por palavra, mínimo 1,4 s). Para falas longas, divida em várias frases.
 
 **Estados e emoções** — sozinhos ("NOME fica confuso.") ou depois de uma fala (muda a cara e o corpo): ${listar(ESTADOS_ACEITOS())}.
 
-**Expressões do rosto** — \`NOME faz cara de brava.\`  Expressões padrão de todos: ${listar(EXPRESSOES as unknown as string[])}. Algumas pessoas da lista têm expressões extras (veja PERSONAGENS). Use "cara de" + o nome exato da expressão.
+**Expressões do rosto** — \`NOME faz cara de brava.\` Expressões padrão de todos: ${listar(EXPRESSOES as unknown as string[])}. Algumas pessoas da lista têm expressões extras (veja PERSONAGENS). Use "cara de" + o nome exato da expressão.
 
 **Gestos e poses** (cada uma dura ~0,9 s, depois o personagem volta a ficar parado)
 - ${poses.join(' · ')}
-- Formato: \`NOME pula.\` · \`NOME põe as mãos na cabeça.\` · \`NOME aponta.\`  (use a frase entre aspas acima, sem as aspas; "aponta" também funciona)
+- Formato: \`NOME pula.\` · \`NOME põe as mãos na cabeça.\` · \`NOME aponta.\`
 - \`NOME faz a pose NOME-DO-SPRITE por 3 segundos.\` — usa um sprite que o personagem tem (lista em PERSONAGENS). Sem "por N segundos" dura ~0,9 s.
 - \`NOME faz o clipe NOME-DO-CLIPE por 5 segundos.\` — usa um clipe criado para o personagem (lista em PERSONAGENS). Sem "por", toca uma vez.
 
@@ -283,7 +294,7 @@ ${exemploDeRoteiro(p, a, outro).trimEnd()}
 \`\`\`
 
 ## 11. CONFIRA ANTES DE RESPONDER
-- [ ] A primeira linha é \`[papéis: professor=..., aluno=...]\` com nomes da lista?
+- [ ] O cabeçalho inicial usa as tags corretas para o formato solicitado?
 - [ ] Todo personagem entra antes de agir? Toda frase termina com ponto?
 - [ ] Cada frase usa um modelo da seção 3 (ou 4), com um só personagem?
 - [ ] A lousa tem no máximo 4 linhas curtas por cena? Fórmulas entre $...$?

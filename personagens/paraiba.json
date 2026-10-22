@@ -1,0 +1,107 @@
+{
+  "versao": 1,
+  "id": "paraiba",
+  "nome": "Paraíba",
+  "apelidos": [
+    "paraiba",
+    "cachorro",
+    "cao",
+    "dog",
+    "viralata"
+  ],
+  "descricao": "Vira-lata caramelo leal e comilão. Orelhas caídas expressivas, rabo abanando, patinhas ágeis e coleira com medalhinha.",
+  "idade": "3 anos",
+  "altura": 210,
+  "temSprites": false,
+  "modeloPalito": "cacula",
+  "expressaoPadrao": "feliz",
+  "slotPadrao": 0.82,
+  "dancaPadrao": "danca_canina",
+  "visual": {
+    "formato": "stickman",
+    "acessorios": []
+  },
+  "clipesProprios": [
+    {
+      "id": "abanar-rabo",
+      "nome": "Abanar o rabo",
+      "ator": "paraiba",
+      "categoria": "Movimento",
+      "loop": true,
+      "passos": [
+        {
+          "tags": [
+            "parado"
+          ],
+          "dur": 0.25,
+          "mov": "balancar",
+          "amp": 7,
+          "espelhar": false
+        },
+        {
+          "tags": [
+            "parado"
+          ],
+          "dur": 0.25,
+          "mov": "balancar",
+          "amp": 7,
+          "espelhar": true
+        }
+      ]
+    },
+    {
+      "id": "dar-patinha",
+      "nome": "Dar a patinha",
+      "ator": "paraiba",
+      "categoria": "Movimento",
+      "loop": false,
+      "passos": [
+        {
+          "tags": [
+            "parado"
+          ],
+          "dur": 0.6,
+          "mov": "quicar",
+          "amp": 0.04,
+          "espelhar": false
+        },
+        {
+          "tags": [
+            "parado"
+          ],
+          "dur": 0.7,
+          "mov": "respirar",
+          "espelhar": false
+        }
+      ]
+    },
+    {
+      "id": "girar-rabo",
+      "nome": "Girar atrás do rabo",
+      "ator": "paraiba",
+      "categoria": "Movimento",
+      "loop": true,
+      "passos": [
+        {
+          "tags": [
+            "andar",
+            "parado"
+          ],
+          "dur": 0.3,
+          "mov": "girar",
+          "espelhar": false
+        },
+        {
+          "tags": [
+            "andar",
+            "parado"
+          ],
+          "dur": 0.3,
+          "mov": "quicar",
+          "amp": 0.06,
+          "espelhar": false
+        }
+      ]
+    }
+  ]
+}

@@ -43,9 +43,26 @@ type AcaoBase =
   | { tipo: 'esperar'; segundos: number }
   | { tipo: 'nota'; texto: string };
 
+/** Formato da produção/cena: define proposta e convenções de layout */
+export type FormatoProducao = 'aula' | 'podcast' | 'telejornal' | 'debate' | 'papo_livre' | 'livre';
+
+/** Tipo do cenário visual da cena */
+export type CenarioTipo = 'lousa' | 'podcast' | 'telejornal' | 'debate' | 'papo_livre' | 'neutro';
+
 /** Onde a frase de uma ação está no texto do roteiro (a linha do tempo usa para reescrevê-lo). */
 export interface Origem { ini: number; fim: number }
-export interface Cena { titulo: string; acoes: Acao[]; /** uma origem por ação, na mesma ordem */ origens: Origem[]; }
+export interface Cena {
+  titulo: string;
+  acoes: Acao[];
+  /** uma origem por ação, na mesma ordem */
+  origens: Origem[];
+  /** Cenário visual da cena (padrão: 'lousa') */
+  cenario?: CenarioTipo;
+  /** Formato de produção da cena */
+  formato?: FormatoProducao;
+  /** Se a cena oculta a lousa escolar (ex.: [sem lousa]) */
+  semLousa?: boolean;
+}
 export interface Roteiro { cenas: Cena[]; avisos: string[]; papeis: Papeis; }
 
 

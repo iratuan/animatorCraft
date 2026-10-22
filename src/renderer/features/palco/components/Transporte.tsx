@@ -1,5 +1,5 @@
 import { useEditor } from '@renderer/store/editor-store';
-import { useRoteiroDerivado } from '@renderer/features/roteiro';
+import { useRoteiroEstatico } from '@renderer/features/roteiro';
 import { useExportar } from '@renderer/features/exportacao';
 import { Icones } from '@renderer/components/Icones';
 import { fmtTempo } from '../services/tempo';
@@ -11,7 +11,7 @@ export function Transporte() {
   const zoom = useEditor((s) => s.zoom);
   const set = useEditor((s) => s.set);
   const alternar = useEditor((s) => s.alternarReproducao);
-  const { timeline } = useRoteiroDerivado();
+  const { timeline } = useRoteiroEstatico();
   const { exportando, exportar, podeExportar } = useExportar();
 
   return (
@@ -21,9 +21,9 @@ export function Transporte() {
       <button title="Parar" onClick={() => set({ tocando: false, t: 0 })}>{Icones.stop}</button>
       <button className={repetir ? 'on' : ''} title="Repetir" onClick={() => set({ repetir: !repetir })}>{Icones.loop}</button>
       <span className="tempo">{fmtTempo(t)} / {fmtTempo(timeline.duracao)}</span>
-      <div className="espaco" />
+      <div style={{ flex: 1 }} />
       <label className="zoom">Zoom <input type="range" min={25} max={200} value={zoom} onChange={(e) => set({ zoom: Number(e.target.value) })} /></label>
-      <button className="exportar" onClick={() => void exportar()} disabled={exportando !== null || !podeExportar}>
+      <button className="exportar" title="Exportar animação em vídeo MP4 (WebCodecs H.264/AAC)" onClick={() => void exportar()} disabled={exportando !== null || !podeExportar}>
         {exportando === null ? 'Exportar MP4' : `Exportando ${Math.round(exportando * 100)}%`}
       </button>
     </div>

@@ -1,8 +1,44 @@
 import { useState } from 'react';
-import { ATORES, ORDEM_ATORES, gerarRoteiro, promptGerar, promptMelhorar, promptSistema, type PedidoRoteiro } from '@shared/domain';
+import { ATORES, MODELOS, ORDEM_ATORES, gerarRoteiro, promptGerar, promptMelhorar, promptSistema, type FormatoProducao, type PedidoRoteiro } from '@shared/domain';
 import { bibliotecaAtual } from '@renderer/features/prompt-mestre';
 import { useEditor } from '@renderer/store/editor-store';
 import { criarPedidoIA, gravarConfigIA, lerConfigIA, PREDEFINICOES, type ConfigIA } from '../services/cliente';
+
+const FORMATOS: { id: FormatoProducao; rotulo: string; icone: string; desc: string }[] = [
+  { id: 'aula', rotulo: 'Aula com Lousa', icone: '📚', desc: 'Explicações didáticas passo a passo na lousa com fórmulas e gráficos' },
+  { id: 'podcast', rotulo: 'Podcast / Mesa', icone: '🎙️', desc: 'Bancada com microfones Shure, fones de ouvido e debate entre participantes' },
+  { id: 'telejornal', rotulo: 'Telejornal / Drops', icone: '📺', desc: 'Bancada de estúdio de TV, videowall global e tarja de notícias ao vivo' },
+  { id: 'debate', rotulo: 'Grande Debate', icone: '⚖️', desc: 'Mesa de debate oficial com microfones gooseneck, mediação e cronômetro de tempo' },
+  { id: 'papo_livre', rotulo: 'Papo Livre / Lounge', icone: '🛋️', desc: 'Sala confortável descontraída com poltronas, mesa de centro e conversa espontânea' },
+  { id: 'livre', rotulo: 'Esquete Livre', icone: '🎭', desc: 'Palco aberto sem lousa com atuação física cômica e mascotes' },
+];
+
+const OPCOES_MATERIA: Record<FormatoProducao, { rotulo: string; opcoes: string[] }> = {
+  aula: { rotulo: 'Matéria', opcoes: ['Matemática', 'Ciências', 'Inglês', 'Física', 'Química', 'Biologia', 'História', 'Geografia'] },
+  podcast: { rotulo: 'Categoria', opcoes: ['Tecnologia', 'Ciências', 'Educação', 'Cultura Pop', 'Filosofia', 'Humor'] },
+  telejornal: { rotulo: 'Editoria', opcoes: ['Ciência & Tecnologia', 'Geral / Drops', 'Mundo & Sociedade', 'Inovação & Saúde', 'Educação'] },
+  debate: { rotulo: 'Tema Central', opcoes: ['Sociedade & Futuro', 'Ética & Inteligência Artificial', 'Economia & Sustentabilidade', 'Educação & Gerações', 'Ciência vs Tradição'] },
+  papo_livre: { rotulo: 'Assunto', opcoes: ['Conversa Espontânea', 'Histórias de Vida', 'Curiosidades & Fatos', 'Comédia & Bastidores', 'Reflexões Criativas'] },
+  livre: { rotulo: 'Gênero', opcoes: ['Comédia', 'Aventura', 'Dia a Dia em Família', 'Desafio & Dança', 'Mistério Engraçado'] },
+};
+
+const OPCOES_SERIE: Record<FormatoProducao, { rotulo: string; padrao: string; placeholder: string }> = {
+  aula: { rotulo: 'Série / público', padrao: '8º ano', placeholder: 'ex.: 8º ano ou Ensino Médio' },
+  podcast: { rotulo: 'Estilo / Ritmo', padrao: 'Descontraído e curioso', placeholder: 'ex.: Descontraído, Debate Crítico' },
+  telejornal: { rotulo: 'Edição', padrao: 'Drops da Semana', placeholder: 'ex.: Drops da Semana, Plantão Urgente' },
+  debate: { rotulo: 'Regras / Tempo', padrao: 'Turnos de 1 min e réplica', placeholder: 'ex.: Turnos de 1 min, Mediação ativa' },
+  papo_livre: { rotulo: 'Ambiente', padrao: 'Lounge aconchegante', placeholder: 'ex.: Lounge informal, Sala de estar' },
+  livre: { rotulo: 'Clima', padrao: 'Muito cômico e ágil', placeholder: 'ex.: Muito cômico, Caótico, Em família' },
+};
+
+const OPCOES_PAPEIS: Record<FormatoProducao, { principal: string; secundario: string }> = {
+  aula: { principal: 'Professor', secundario: 'Aluno' },
+  podcast: { principal: 'Host / Apresentador', secundario: 'Convidado / Co-host' },
+  telejornal: { principal: 'Âncora principal', secundario: 'Comentarista / Repórter' },
+  debate: { principal: 'Debatedor A / Propositor', secundario: 'Debatedor B / Opositor' },
+  papo_livre: { principal: 'Interlocutor A', secundario: 'Interlocutor B' },
+  livre: { principal: 'Protagonista', secundario: 'Co-protagonista / Parceiro' },
+};
 
 /** Gera ou melhora o roteiro com a IA que você configurar (Claude, OpenAI e compatíveis, Ollama local). O resultado é conferido pelo próprio interpretador do app. */
 export function IaModal() {
@@ -13,11 +49,23 @@ export function IaModal() {
   useEditor((s) => s.versaoPersonagens);
   const [cfg, setCfg] = useState<ConfigIA>(lerConfigIA);
   const [modo, setModo] = useState<'novo' | 'melhorar'>('novo');
-  const [pedido, setPedido] = useState<PedidoRoteiro>({ tema: '', materia: 'Matemática', serie: '8º ano', duracao: 'curta', personagens: [], professor: 'cringefather', aluno: 'betason', extras: '' });
+  const [formato, setFormato] = useState<FormatoProducao>('aula');
+  const [pedido, setPedido] = useState<PedidoRoteiro>({
+    tema: '',
+    materia: 'Matemática',
+    serie: '8º ano',
+    duracao: 'curta',
+    personagens: [],
+    professor: 'cringefather',
+    aluno: 'betason',
+    extras: '',
+    formato: 'aula',
+  });
   const [instrucao, setInstrucao] = useState('');
   const [ocupado, setOcupado] = useState(false);
   const [erro, setErro] = useState('');
   const [resultado, setResultado] = useState<{ roteiro: string; avisos: string[]; rodadas: number } | null>(null);
+
   if (!aberto) return null;
 
   const fechar = () => set({ iaAberta: false });
@@ -25,10 +73,32 @@ export function IaModal() {
   const campo = <K extends keyof PedidoRoteiro>(k: K, v: PedidoRoteiro[K]) => setPedido((p) => ({ ...p, [k]: v }));
   const precisaChave = cfg.baseUrl.includes('localhost') ? false : !cfg.chave.trim();
 
+  const trocarFormato = (novoFormato: FormatoProducao) => {
+    setFormato(novoFormato);
+    const mat = OPCOES_MATERIA[novoFormato];
+    const ser = OPCOES_SERIE[novoFormato];
+    setPedido((p) => ({
+      ...p,
+      formato: novoFormato,
+      materia: mat.opcoes[0] ?? p.materia,
+      serie: ser.padrao,
+    }));
+  };
+
+  const aplicarModeloPrompt = (tema: string, extras?: string) => {
+    setPedido((p) => ({
+      ...p,
+      tema,
+      ...(extras ? { extras } : {}),
+    }));
+  };
+
+  const modelosDoFormato = MODELOS.filter((m) => m.formato === formato);
+
   const gerar = async () => {
     setErro(''); setResultado(null); setOcupado(true);
     try {
-      const msg = modo === 'novo' ? promptGerar(pedido) : promptMelhorar(roteiroAtual, instrucao);
+      const msg = modo === 'novo' ? promptGerar({ ...pedido, formato }) : promptMelhorar(roteiroAtual, instrucao);
       const r = await gerarRoteiro(criarPedidoIA(cfg), msg, 2, promptSistema(bibliotecaAtual(modo === 'novo' ? pedido.personagens : [])));
       setResultado({ roteiro: r.roteiro, avisos: r.avisosFinais, rodadas: r.rodadas });
     } catch (e) {
@@ -36,11 +106,16 @@ export function IaModal() {
       setErro(/Failed to fetch|NetworkError/i.test(m) ? 'Não consegui falar com o serviço. Confira o endereço, a internet e (no Ollama) a opção OLLAMA_ORIGINS=*.' : m);
     } finally { setOcupado(false); }
   };
+
   const usar = (acrescentar: boolean) => {
     if (!resultado) return;
     setRoteiro(acrescentar ? `${roteiroAtual.trimEnd()}\n\n${resultado.roteiro.replace(/^\[pap[eé]is[^\n]*\n+/i, '')}` : resultado.roteiro);
     set({ iaAberta: false, t: 0, mensagem: 'Roteiro da IA aplicado. Ctrl+Z desfaz.' });
   };
+
+  const papeis = OPCOES_PAPEIS[formato];
+  const materiaCfg = OPCOES_MATERIA[formato];
+  const serieCfg = OPCOES_SERIE[formato];
 
   return (
     <div className="modal-fundo" onClick={fechar}>
@@ -53,25 +128,125 @@ export function IaModal() {
 
         {modo === 'novo' ? (
           <>
-            <label className="campo">Assunto da aula<input value={pedido.tema} autoFocus onChange={(e) => campo('tema', e.target.value)} placeholder="ex.: produtos notáveis (quadrado da soma)" /></label>
-            <div className="duas-colunas">
-              <label className="campo">Matéria<select value={pedido.materia} onChange={(e) => campo('materia', e.target.value)}>{['Matemática', 'Ciências', 'Inglês', 'Física', 'Química', 'Biologia'].map((m) => <option key={m}>{m}</option>)}</select></label>
-              <label className="campo">Série / público<input value={pedido.serie} onChange={(e) => campo('serie', e.target.value)} /></label>
+            <div style={{ marginTop: 8, marginBottom: 12 }}>
+              <small style={{ fontWeight: 600, display: 'block', marginBottom: 6, color: 'var(--cor-texto-suave)' }}>Formato de produção de mídia:</small>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 6 }}>
+                {FORMATOS.map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    className={`botao-formato ${formato === f.id ? 'on primario' : ''}`}
+                    style={{
+                      padding: '8px 10px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      borderRadius: 8,
+                      border: formato === f.id ? '2px solid var(--cor-destaque)' : '1px solid var(--cor-borda)',
+                      background: formato === f.id ? 'var(--cor-fundo-ativo, #e0f2fe)' : 'var(--cor-fundo-card, #f8fafc)',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                    }}
+                    onClick={() => trocarFormato(f.id)}
+                  >
+                    <span style={{ fontSize: '1.2rem', marginBottom: 2 }}>{f.icone}</span>
+                    <strong style={{ fontSize: '0.85rem' }}>{f.rotulo}</strong>
+                  </button>
+                ))}
+              </div>
             </div>
+
+            {modelosDoFormato.length > 0 && (
+              <div style={{ marginBottom: 12 }}>
+                <small style={{ color: 'var(--cor-texto-suave)', display: 'block', marginBottom: 4 }}>💡 Sugestões de pautas para este formato (clique para preencher):</small>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {modelosDoFormato.map((m) => (
+                    <button
+                      key={m.id}
+                      type="button"
+                      style={{ fontSize: '0.78rem', padding: '3px 8px', borderRadius: 12, border: '1px solid var(--cor-borda)', background: 'var(--cor-fundo-suave)' }}
+                      onClick={() => aplicarModeloPrompt(m.sugestaoPrompt ?? m.nome, `Seguir estrutura do modelo “${m.nome}”`)}
+                    >
+                      {m.nome}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <label className="campo">
+              {formato === 'podcast' ? 'Tema do podcast' : formato === 'telejornal' ? 'Manchete / Notícia principal' : formato === 'livre' ? 'História / Situação da esquete' : 'Assunto da aula'}
+              <input
+                value={pedido.tema}
+                autoFocus
+                onChange={(e) => campo('tema', e.target.value)}
+                placeholder={formato === 'podcast' ? 'ex.: como a IA vai transformar o trabalho e as escolas' : formato === 'telejornal' ? 'ex.: telescópio descobre atmosfera com oxigênio em exoplaneta' : formato === 'livre' ? 'ex.: Mingau e Paraíba criam uma confusão na hora do café' : 'ex.: produtos notáveis (quadrado da soma)'}
+              />
+            </label>
+
             <div className="duas-colunas">
-              <label className="campo">Duração<select value={pedido.duracao} onChange={(e) => campo('duracao', e.target.value as PedidoRoteiro['duracao'])}><option value="curta">Curta (~1 min)</option><option value="media">Média (~3 min)</option><option value="longa">Longa (~6 min)</option></select></label>
-              <label className="campo">Professor<select value={pedido.professor} onChange={(e) => campo('professor', e.target.value)}>{ORDEM_ATORES.map((id) => <option key={id} value={id}>{ATORES[id]!.nome}</option>)}</select></label>
+              <label className="campo">
+                {materiaCfg.rotulo}
+                <select value={pedido.materia} onChange={(e) => campo('materia', e.target.value)}>
+                  {materiaCfg.opcoes.map((m) => <option key={m}>{m}</option>)}
+                </select>
+              </label>
+              <label className="campo">
+                {serieCfg.rotulo}
+                <input value={pedido.serie} onChange={(e) => campo('serie', e.target.value)} placeholder={serieCfg.placeholder} />
+              </label>
             </div>
+
             <div className="duas-colunas">
-              <label className="campo">Aluno<select value={pedido.aluno} onChange={(e) => campo('aluno', e.target.value)}>{ORDEM_ATORES.map((id) => <option key={id} value={id}>{ATORES[id]!.nome}</option>)}</select></label>
-              <label className="campo">Pedidos extras (opcional)<input value={pedido.extras} onChange={(e) => campo('extras', e.target.value)} placeholder="ex.: inclua um gráfico e uma piada da vovó" /></label>
+              <label className="campo">
+                Duração
+                <select value={pedido.duracao} onChange={(e) => campo('duracao', e.target.value as PedidoRoteiro['duracao'])}>
+                  <option value="curta">Curta (~1 min)</option>
+                  <option value="media">Média (~3 min)</option>
+                  <option value="longa">Longa (~6 min)</option>
+                </select>
+              </label>
+              <label className="campo">
+                {papeis.principal}
+                <select value={pedido.professor} onChange={(e) => campo('professor', e.target.value)}>
+                  {ORDEM_ATORES.map((id) => <option key={id} value={id}>{ATORES[id]!.nome}</option>)}
+                </select>
+              </label>
             </div>
-            <div className="campo">Quem pode aparecer <small>(nenhum marcado = todos)</small>
-              <div className="seletor-personagem">{ORDEM_ATORES.map((id) => <button key={id} className={pedido.personagens.includes(id) ? 'on' : ''} onClick={() => campo('personagens', pedido.personagens.includes(id) ? pedido.personagens.filter((x) => x !== id) : [...pedido.personagens, id])}>{ATORES[id]!.nome}</button>)}</div>
+
+            <div className="duas-colunas">
+              <label className="campo">
+                {papeis.secundario}
+                <select value={pedido.aluno} onChange={(e) => campo('aluno', e.target.value)}>
+                  {ORDEM_ATORES.map((id) => <option key={id} value={id}>{ATORES[id]!.nome}</option>)}
+                </select>
+              </label>
+              <label className="campo">
+                Pedidos extras (opcional)
+                <input value={pedido.extras} onChange={(e) => campo('extras', e.target.value)} placeholder="ex.: inclua uma piada, reações engraçadas e efeito sonoro" />
+              </label>
+            </div>
+
+            <div className="campo">
+              Quem pode aparecer <small>(nenhum marcado = todos)</small>
+              <div className="seletor-personagem">
+                {ORDEM_ATORES.map((id) => (
+                  <button
+                    key={id}
+                    className={pedido.personagens.includes(id) ? 'on' : ''}
+                    onClick={() => campo('personagens', pedido.personagens.includes(id) ? pedido.personagens.filter((x) => x !== id) : [...pedido.personagens, id])}
+                  >
+                    {ATORES[id]!.nome}
+                  </button>
+                ))}
+              </div>
             </div>
           </>
         ) : (
-          <label className="campo">O que melhorar<textarea rows={3} value={instrucao} onChange={(e) => setInstrucao(e.target.value)} placeholder="Em branco = acrescentar reações e gestos enquanto os outros falam, sem mudar a aula" /></label>
+          <label className="campo">
+            O que melhorar
+            <textarea rows={3} value={instrucao} onChange={(e) => setInstrucao(e.target.value)} placeholder="Em branco = acrescentar reações e gestos enquanto os outros falam, sem mudar a aula" />
+          </label>
         )}
 
         <details className="config-ia">

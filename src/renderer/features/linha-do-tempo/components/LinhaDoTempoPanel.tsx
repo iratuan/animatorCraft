@@ -2,7 +2,10 @@ import { useRef, useState } from 'react';
 import { TRILHA_PADRAO, ATORES, EFEITOS_IMAGEM, NOME_EFEITO, ORDEM_ATORES, nomeExibidoDaTrilha, ordenarTrilhas, trilhaDoEvento, excluirFrase, reescreverDuracao, reescreverImagem, tornarSequencial, tornarSimultanea, type Acao, type Conteudo, type EfeitoImagem, type Evento, type PosicaoImagem, type TamanhoImagem, type Timeline } from '@shared/domain';
 import { Painel } from '@renderer/components/Painel';
 import { useEditor } from '@renderer/store/editor-store';
-import { useRoteiroDerivado } from '@renderer/features/roteiro';
+import { importarAudio } from '@renderer/features/audio';
+import EditSpeechDialog from './EditSpeechDialog';
+import RecordAudioDialog from './RecordAudioDialog';
+import { useRoteiroEstatico } from '@renderer/features/roteiro';
 
 const COR: Record<Acao['tipo'], string> = {
   entrar: '#3b82f6', sair: '#3b82f6', posicionar: '#0ea5e9', remover: '#22c55e', audio: '#f472b6', fala: '#f59e0b', escrever: '#22c55e', pose: '#a855f7', expressao: '#ec4899',
@@ -70,9 +73,12 @@ function Trilhos() {
   const roteiro = useEditor((s) => s.roteiro);
   const setRoteiro = useEditor((s) => s.setRoteiro);
   const set = useEditor((s) => s.set);
-  const { timeline: tl } = useRoteiroDerivado();
+  const { timeline: tl } = useRoteiroEstatico();
   const [sel, setSel] = useState<number | null>(null);
   const [arrasto, setArrasto] = useState<{ indice: number; t: number; modo: 'mover' | 'duracao' } | null>(null);
+  const [contextMenu, setContextMenu] = useState<{x:number,y:number,evento:Evento|null}|null>(null);
+  const [editingEvento, setEditingEvento] = useState<Evento|null>(null);
+  const [recordingEvento, setRecordingEvento] = useState<Evento|null>(null);
   const lista = faixas(tl);
   const largura = Math.max(900, (tl.duracao + 2) * zoom);
   const marcas = Array.from({ length: Math.ceil(largura / zoom) + 1 }, (_, i) => i);
@@ -107,6 +113,7 @@ function Trilhos() {
   };
 
   const iniciarArrasto = (e: React.PointerEvent, ev: Evento, modo: 'mover' | 'duracao') => {
+    if (e.button !== 0) return;
     e.stopPropagation();
     setSel(ev.indice);
     if (!ev.origem) return;
@@ -212,15 +219,44 @@ function Trilhos() {
                   const dur = (e.fim - e.inicio);
                   const movendo = arrasto?.indice === e.indice;
                   const durNova = movendo && arrasto!.modo === 'duracao' ? Math.max(0.4, arrasto!.t - e.inicio) : dur;
+                  const isFala = e.acao.tipo === 'fala';
+                  const audioNome = e.acao.tipo === 'fala' ? e.acao.audio : undefined;
+                  const temAudio = Boolean(audioNome);
+                  const badge = isFala ? (temAudio ? '🔊' : '🎙️+') : '';
+                  const tooltip = isFala
+                    ? `${e.rotulo} · ${audioNome ? `Áudio: “${audioNome}”` : 'Sem áudio (clique para gravar ou editar)'}`
+                    : `${e.rotulo}${e.acao.junto ? ' (junto com a ação anterior)' : ''}`;
+
                   return (
                     <div
                       key={`${f.chave}-${e.indice}`}
-                      className={`bloco ${e.inicio <= t && t < e.fim ? 'ativo' : ''} ${sel === e.indice ? 'sel' : ''} ${movendo ? 'arrastando' : ''} ${e.acao.junto ? 'junto' : ''}`}
+                      className={`bloco ${e.inicio <= t && t < e.fim ? 'ativo' : ''} ${sel === e.indice ? 'sel' : ''} ${movendo ? 'arrastando' : ''} ${e.acao.junto ? 'junto' : ''} ${isFala ? 'fala' : ''}`}
                       style={{ left: e.inicio * zoom, top: 3 + (f.linhaDe.get(e.indice) ?? 0) * ALTURA_LINHA, width: Math.max(4, durNova * zoom - 2), background: COR[e.acao.tipo], cursor: e.origem ? 'grab' : 'default' }}
-                      title={`${e.rotulo}${e.acao.junto ? ' (junto com a ação anterior)' : ''}`}
+                      title={tooltip}
                       onPointerDown={(ev) => iniciarArrasto(ev, e, 'mover')}
+                      onContextMenu={(ev) => { ev.preventDefault(); ev.stopPropagation(); if (isFala) { setContextMenu({ x: ev.clientX, y: ev.clientY, evento: e }); } }}
+                      onClick={(ev) => { if (isFala) { setContextMenu({ x: ev.clientX, y: ev.clientY, evento: e }); } }}
+                      onDoubleClick={(ev) => { if (isFala) { ev.stopPropagation(); setEditingEvento(e); setContextMenu(null); } }}
                     >
-                      {durNova * zoom > 40 && `${e.acao.junto ? '⇉ ' : ''}${e.rotulo}`}
+                      {durNova * zoom > 36 && (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {e.acao.junto && '⇉ '}
+                          {e.rotulo}
+                          {isFala && (
+                            <span
+                              style={{
+                                fontSize: '0.85em',
+                                opacity: 0.95,
+                                padding: '1px 3px',
+                                borderRadius: 3,
+                                background: temAudio ? 'rgba(34,197,94,0.35)' : 'rgba(0,0,0,0.25)',
+                              }}
+                            >
+                              {badge}
+                            </span>
+                          )}
+                        </span>
+                      )}
                       {redimensionavel(e) && <span className="alca" onPointerDown={(ev) => iniciarArrasto(ev, e, 'duracao')} />}
                     </div>
                   );
@@ -232,12 +268,81 @@ function Trilhos() {
           </div>
         </div>
       </div>
+      {/* Context menu for speech events */}
+      {contextMenu && (
+        <>
+          <div
+            style={{ position: 'fixed', inset: 0, zIndex: 999 }}
+            onClick={() => setContextMenu(null)}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              setContextMenu(null);
+            }}
+          />
+          <div
+            className="context-menu-timeline"
+            style={{ left: contextMenu.x, top: contextMenu.y, zIndex: 1000 }}
+          >
+            <button
+              type="button"
+              onClick={() => {
+                setEditingEvento(contextMenu.evento);
+                setContextMenu(null);
+              }}
+            >
+              ✏️ Editar fala
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setRecordingEvento(contextMenu.evento);
+                setContextMenu(null);
+              }}
+            >
+              🎙️ Gravar áudio
+            </button>
+          </div>
+        </>
+      )}
+      {/* Dialogs */}
+      <EditSpeechDialog open={!!editingEvento} evento={editingEvento} onClose={() => setEditingEvento(null)} onSave={(novoTexto) => {
+        if (editingEvento && editingEvento.origem) {
+          const trechoAntigo = roteiro.slice(editingEvento.origem.ini, editingEvento.origem.fim);
+          const trechoNovo = trechoAntigo.includes('"')
+            ? trechoAntigo.replace(/"([^"]*)"/, `"${novoTexto}"`)
+            : `${trechoAntigo.trimEnd()} "${novoTexto}".`;
+          const novoRoteiro = roteiro.slice(0, editingEvento.origem.ini) + trechoNovo + roteiro.slice(editingEvento.origem.fim);
+          aplicar(novoRoteiro, 'Fala editada');
+        }
+        setEditingEvento(null);
+      }} />
+      <RecordAudioDialog
+        open={!!recordingEvento}
+        evento={recordingEvento}
+        onClose={() => setRecordingEvento(null)}
+        onSave={async (arquivo) => {
+          if (recordingEvento && recordingEvento.origem) {
+            try {
+              await importarAudio(arquivo);
+              const trechoAntigo = roteiro.slice(recordingEvento.origem.ini, recordingEvento.origem.fim);
+              const trechoNovo = /\[áudio:\s*[^\]]+\]/i.test(trechoAntigo)
+                ? trechoAntigo.replace(/\[áudio:\s*[^\]]+\]/i, `[áudio: ${arquivo.name}]`)
+                : `${trechoAntigo.trimEnd()} [áudio: ${arquivo.name}]`;
+              const novoRoteiro = roteiro.slice(0, recordingEvento.origem.ini) + trechoNovo + roteiro.slice(recordingEvento.origem.fim);
+              aplicar(novoRoteiro, `Áudio “${arquivo.name}” anexado à fala`);
+            } catch (err: unknown) {
+              console.error('Erro ao importar áudio:', err);
+            }
+          }
+          setRecordingEvento(null);
+        }}
+      />
     </div>
   );
 }
 
 export function LinhaDoTempoPanel() {
-  const { timeline } = useRoteiroDerivado();
+  const { timeline } = useRoteiroEstatico();
   return (
     <Painel titulo="Linha do tempo" className="tempo-painel" acoes={<small>{timeline.cenas.length} cena(s) · {timeline.eventos.length} ações</small>}>
       <Trilhos />

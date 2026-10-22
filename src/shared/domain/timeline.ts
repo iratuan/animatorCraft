@@ -4,9 +4,10 @@ import { latexParaTexto } from './latex';
 import { rotuloDoGrafico } from './grafico';
 import { chaveImagem, DURACAO_EFEITO, type EfeitoImagem } from './imagem';
 import { FOLGA_FALA_AUDIO, infoDoAudio } from './audio';
+import { removerMarcasFala } from './script/fala-colorida';
 import type { NomeExpressao } from './expressoes';
 import type { PoseId } from './poses';
-import type { Acao, Conteudo, Origem, Roteiro } from './types';
+import type { Acao, CenarioTipo, Conteudo, FormatoProducao, Origem, Roteiro } from './types';
 
 const { abs } = Math;
 
@@ -21,10 +22,19 @@ export interface Evento {
   origem?: Origem;
 }
 
+export interface TimelineCena {
+  titulo: string;
+  inicio: number;
+  fim: number;
+  cenario?: CenarioTipo;
+  formato?: FormatoProducao;
+  semLousa?: boolean;
+}
+
 export interface Timeline {
   eventos: Evento[];
   duracao: number;
-  cenas: { titulo: string; inicio: number; fim: number }[];
+  cenas: TimelineCena[];
 }
 
 export const TRANSICAO_POSE = 0.3;
@@ -42,7 +52,11 @@ function duracaoDe(a: Acao): number {
     case 'pose': return a.duracao ?? 0.9;
     case 'expressao': return 0.7;
     case 'audio': return 0;
-    case 'fala': if (a.audio && infoDoAudio(a.audio)) return infoDoAudio(a.audio)!.duracao + FOLGA_FALA_AUDIO; return Math.max(1.4, a.texto.split(/\s+/).length * 0.4 + 0.4);
+    case 'fala': {
+      if (a.audio && infoDoAudio(a.audio)) return infoDoAudio(a.audio)!.duracao + FOLGA_FALA_AUDIO;
+      const textoLimpo = removerMarcasFala(a.texto);
+      return Math.max(1.4, textoLimpo.split(/\s+/).filter(Boolean).length * 0.4 + 0.4);
+    }
     case 'remover': return a.saida === 'nenhum' ? 0.1 : DURACAO_EFEITO;
     case 'escrever': if (a.conteudo.tipo === 'imagem') return a.conteudo.entrada === 'nenhum' ? 0.1 : DURACAO_EFEITO; if (a.conteudo.tipo === 'grafico') return 3.5; return Math.max(1.5, textoDoConteudo(a.conteudo).length * 0.13);
     case 'apontar': return 1.4;
@@ -90,7 +104,14 @@ export function construirTimeline(roteiro: Roteiro): Timeline {
       eventos.push({ indice: eventos.length, inicio, fim: inicio + d, acao, rotulo: rotuloDe(acao), cena: ci, origem: origens[ai] });
       t = Math.max(t, inicio + d);
     }
-    cenas.push({ titulo: cena.titulo, inicio: inicioCena, fim: t });
+    cenas.push({
+      titulo: cena.titulo,
+      inicio: inicioCena,
+      fim: t,
+      cenario: cena.cenario,
+      formato: cena.formato,
+      semLousa: cena.semLousa,
+    });
   });
   return { eventos, duracao: t, cenas };
 }
@@ -140,6 +161,12 @@ export interface Estado {
   /** Item sendo escrito agora (o conteúdo é revelado aos poucos; não há mão nem caneta na lousa). */
   mao?: { item: number; progresso: number; ator: ActorId };
   eventoAtual?: Evento;
+  /** Cenário ativo na cena atual */
+  cenario?: CenarioTipo;
+  /** Formato ativo na cena atual */
+  formato?: FormatoProducao;
+  /** Se a lousa está oculta na cena atual */
+  semLousa?: boolean;
 }
 
 const LADO_X = { esquerda: 0.13, direita: 0.87, centro: 0.5 } as const;
@@ -257,7 +284,8 @@ export function estadoEm(tl: Timeline, t: number): Estado {
         a.fala = undefined;
         const fade = 1 - clamp01((t - ev.fim) / 0.5);
         if (t <= ev.fim + 0.5) {
-          const palavras = ac.texto.split(/\s+/);
+          const textoLimpo = removerMarcasFala(ac.texto);
+          const palavras = textoLimpo.split(/\s+/).filter(Boolean);
           const n = Math.max(1, Math.ceil(palavras.length * Math.min(1, p * 1.25)));
           a.fala = { texto: palavras.slice(0, n).join(' '), completo: ac.texto, progresso: p, duracao: dur, opacidade: feito ? fade : 1, boca: !feito, audio: ac.audio };
         }
@@ -318,7 +346,13 @@ export function estadoEm(tl: Timeline, t: number): Estado {
   // Posição vertical dos itens: índice entre os que sobreviveram à última limpeza.
   itens.forEach((it, i) => { it.ordem = i; });
   const camera = { atual: cameraAtual, anterior: cameraAnterior, progresso: suave((t - cameraDesde) / 0.8) };
-  return { t, atores, quadro: itens, mao, eventoAtual, camera };
+  const cenaAtiva = tl.cenas.find((c) => t >= c.inicio && t <= c.fim) ?? tl.cenas[tl.cenas.length - 1];
+  return {
+    t, atores, quadro: itens, mao, eventoAtual, camera,
+    cenario: cenaAtiva?.cenario,
+    formato: cenaAtiva?.formato,
+    semLousa: cenaAtiva?.semLousa,
+  };
 }
 
 

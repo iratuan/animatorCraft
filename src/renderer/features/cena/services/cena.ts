@@ -1,9 +1,10 @@
-import { ATORES, ORDEM_ATORES, infoDoAudio, piscando, visemaDoAudio, visemaEm, type ActorId, type Estado } from '@shared/domain';
+import { ATORES, ORDEM_ATORES, quebrarLinhasFala, type ActorId, type Estado } from '@shared/domain';
 import { desenharAtor } from './ator';
 import { interpolarRect, retanguloDaCamera, visibilidadeDaCamera } from './camera';
 import { desenharItemPlanejado, FONTE_MANUSCRITA, fonteCSS, planejarLousa } from './lousa';
-import { calcularAtorSprite, desenharAtorSprite, temSprites, type Rect } from './sprites';
+import { type Rect } from './sprites';
 import { tracoTremido } from './tremor';
+import { obterEstrategiaCenario } from './cenarios/registro';
 
 export { FONTE_MANUSCRITA };
 
@@ -39,18 +40,13 @@ function desenharMoldura(ctx: CanvasRenderingContext2D, L: Layout) {
 }
 
 
-function quebrarLinhas(ctx: CanvasRenderingContext2D, texto: string, larguraMax: number): string[] {
-  const linhas: string[] = [];
-  let atual = '';
-  for (const palavra of texto.split(/\s+/)) {
-    const teste = atual ? `${atual} ${palavra}` : palavra;
-    if (ctx.measureText(teste).width > larguraMax && atual) { linhas.push(atual); atual = palavra; } else atual = teste;
-  }
-  if (atual) linhas.push(atual);
-  return linhas;
-}
-
-function desenharBalao(ctx: CanvasRenderingContext2D, L: Layout, f: { texto: string; completo: string; opacidade: number; decorrido: number }, ancora: { x: number; y: number }) {
+function desenharBalao(
+  ctx: CanvasRenderingContext2D,
+  L: Layout,
+  f: { texto: string; completo: string; opacidade: number; decorrido: number },
+  ancora: { x: number; y: number },
+  viewRect?: Rect,
+) {
   const tam = L.vertical ? 46 : 38;
   const pad = { x: 30, y: 20 };
   ctx.save();
@@ -58,12 +54,17 @@ function desenharBalao(ctx: CanvasRenderingContext2D, L: Layout, f: { texto: str
   ctx.font = fonteCSS('fala', tam);
   const maxW = L.vertical ? 680 : 560;
   // o tamanho do balão vem da fala inteira: ele não "cresce" enquanto as palavras aparecem
-  const linhas = quebrarLinhas(ctx, f.completo, maxW);
-  const larguras = linhas.map((l) => ctx.measureText(l).width);
-  const larg = Math.max(...larguras) + pad.x * 2;
-  const alto = linhas.length * tam * 1.22 + pad.y * 2;
-  const bx = Math.min(L.w - 24 - larg, Math.max(24, ancora.x - larg / 2));
-  const by = Math.max(20, ancora.y - 38 - alto);
+  const linhas = quebrarLinhasFala(ctx, f.completo, maxW);
+  const larguras = linhas.map((l) => l.largura);
+  const larg = Math.max(...larguras, 60) + pad.x * 2;
+  const alto = Math.max(1, linhas.length) * tam * 1.22 + pad.y * 2;
+  // Margens: se há viewRect ativo (ex.: close de câmera), delimita dentro da viewport visível
+  const minX = viewRect ? viewRect.x + 16 : 24;
+  const maxX = viewRect ? viewRect.x + viewRect.w - 16 - larg : L.w - 24 - larg;
+  const minY = viewRect ? viewRect.y + 16 : 20;
+
+  const bx = Math.min(Math.max(minX, maxX), Math.max(minX, ancora.x - larg / 2));
+  const by = Math.max(minY, ancora.y - 38 - alto);
   const base = by + alto;
   const tx = Math.min(bx + larg - 56, Math.max(bx + 56, ancora.x));
 
@@ -90,21 +91,45 @@ function desenharBalao(ctx: CanvasRenderingContext2D, L: Layout, f: { texto: str
   ctx.beginPath(); ctx.moveTo(tx - 19, base - 1); ctx.lineTo(tx + 15, base - 1); ctx.stroke();
 
   // texto: só as palavras já ditas, nas posições finais
-  ctx.fillStyle = '#111'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
   let restante = f.texto.split(/\s+/).filter(Boolean).length;
   linhas.forEach((linha, i) => {
     if (restante <= 0) return;
-    const palavras = linha.split(' ');
-    const visiveis = palavras.slice(0, restante).join(' ');
-    restante -= palavras.length;
-    ctx.fillText(visiveis, bx + (larg - larguras[i]!) / 2, by + pad.y + tam * 0.61 + i * tam * 1.22);
+    const y = by + pad.y + tam * 0.61 + i * tam * 1.22;
+    const xBase = bx + (larg - linha.largura) / 2;
+    const qtdVisivel = Math.min(restante, linha.palavras.length);
+    restante -= qtdVisivel;
+
+    if (!linha.temDestaque) {
+      const visiveis = linha.palavras.slice(0, qtdVisivel).map((p) => p.texto).join(' ');
+      ctx.fillStyle = '#111';
+      ctx.fillText(visiveis, xBase, y);
+    } else {
+      const espacoW = ctx.measureText(' ').width;
+      let curX = xBase;
+      for (let wIdx = 0; wIdx < qtdVisivel; wIdx++) {
+        const p = linha.palavras[wIdx]!;
+        const pW = ctx.measureText(p.texto).width;
+
+        if (p.fundo) {
+          ctx.save();
+          ctx.fillStyle = p.fundo;
+          ctx.beginPath();
+          ctx.roundRect(curX - 4, y - tam * 0.55, pW + 8, tam * 1.1, 6);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        ctx.fillStyle = p.cor ?? '#111';
+        ctx.fillText(p.texto, curX, y);
+        curX += pW + espacoW;
+      }
+    }
   });
   ctx.restore();
 }
 export interface OpcoesCena { selecionado?: ActorId | null; guias?: boolean }
 export interface ResultadoCena { lousaEstoura: boolean }
-
-const fechada = (a: { alvo: string; ator?: ActorId }, id: ActorId) => a.alvo === 'personagem' && a.ator === id;
 
 /** Desenha um quadro completo da animação. É a única função de desenho usada no preview e na exportação. */
 export function renderizarCena(ctx: CanvasRenderingContext2D, estado: Estado, w: number, h: number, op: OpcoesCena = {}): ResultadoCena {
@@ -113,14 +138,11 @@ export function renderizarCena(ctx: CanvasRenderingContext2D, estado: Estado, w:
   const visiveis = ORDEM_ATORES.filter((id) => estado.atores[id]?.visivel);
 
   // geometria dos atores: serve à câmera (rosto) e aos balões
-  const calc: Partial<Record<ActorId, ReturnType<typeof calcularAtorSprite>>> = {};
   const cabecas: Partial<Record<ActorId, Rect>> = {};
   for (const id of visiveis) {
     const a = estado.atores[id], x = a.x * w;
-    const c = temSprites(id) ? calcularAtorSprite(a, x, L.chao, escalaG, estado.t, { rosto: fechada(estado.camera.atual, id) || fechada(estado.camera.anterior, id), falando: !!a.fala?.boca }) : null;
-    calc[id] = c;
     const alt = ATORES[id]!.altura * escalaG;
-    cabecas[id] = c?.cabeca ?? { x: x - alt * 0.14, y: L.chao - alt * 1.05, w: alt * 0.28, h: alt * 0.28 };
+    cabecas[id] = { x: x - alt * 0.14, y: L.chao - alt * 1.05, w: alt * 0.28, h: alt * 0.28 };
   }
   const rect = interpolarRect(
     retanguloDaCamera(estado.camera.anterior, { w, h }, L.quadro, cabecas),
@@ -136,16 +158,35 @@ export function renderizarCena(ctx: CanvasRenderingContext2D, estado: Estado, w:
   ctx.scale(k, k);
   ctx.translate(-rect.x, -rect.y);
 
-  ctx.globalAlpha = vis.cenario; desenharChao(ctx, L);
+  ctx.globalAlpha = vis.cenario;
+  desenharChao(ctx, L);
 
-  // lousa: moldura e conteúdo planejado para caber
-  ctx.globalAlpha = vis.lousa;
-  desenharMoldura(ctx, L);
-  const plano = planejarLousa(ctx, estado.quadro, L.quadro, L.vertical);
-  // o conteúdo só é revelado aos poucos; não há mão nem caneta na lousa
-  for (const p of plano.itens) desenharItemPlanejado(ctx, p, L.quadro);
+  // Resolução e aplicação da estratégia de cenário (Open-Closed Principle)
+  const cenarioNome = estado.cenario ?? (
+    estado.formato === 'podcast' ? 'podcast' :
+    estado.formato === 'telejornal' ? 'telejornal' :
+    estado.formato === 'debate' ? 'debate' :
+    (estado.formato === 'papo_livre' || estado.formato === 'livre') ? 'papo_livre' : 'lousa'
+  );
+  const estrategia = obterEstrategiaCenario(cenarioNome);
+  estrategia.desenharFundo(ctx, L);
 
-  // personagens
+  // lousa: moldura e conteúdo planejado para caber (somente se não estiver desativada pelo cenário/tag)
+  const temLousa = estrategia.temLousa && !estado.semLousa;
+  let plano: ReturnType<typeof planejarLousa> = { itens: [], escala: 1, estoura: false };
+  if (temLousa) {
+    ctx.globalAlpha = vis.lousa;
+    desenharMoldura(ctx, L);
+    plano = planejarLousa(ctx, estado.quadro, L.quadro, L.vertical);
+    // o conteúdo só é revelado aos poucos; não há mão nem caneta na lousa
+    for (const p of plano.itens) desenharItemPlanejado(ctx, p, L.quadro);
+  }
+
+  // Camada atrás dos personagens (ex.: cadeiras de estúdio)
+  const rc = { visiveis, estado, w, escalaG, vis };
+  estrategia.desenharAtras?.(ctx, L, rc);
+
+  // personagens: renderizados 100% no estilo Stickman cinematográfico
   const ancoras: Partial<Record<ActorId, { x: number; y: number }>> = {};
   for (const id of visiveis) {
     const alpha = vis.atores[id];
@@ -153,24 +194,26 @@ export function renderizarCena(ctx: CanvasRenderingContext2D, estado: Estado, w:
     const a = estado.atores[id], x = a.x * w;
     ctx.save();
     ctx.globalAlpha = alpha;
-    const c = calc[id];
-    if (c) {
-      const env = a.fala?.audio ? infoDoAudio(a.fala.audio)?.envelope : undefined;
-      const visema = a.fala?.boca ? (env?.length ? visemaDoAudio(env, a.fala.progresso * a.fala.duracao) : visemaEm(a.fala.completo, a.fala.progresso, a.fala.duracao)) : null;
-      desenharAtorSprite(ctx, a, x, L.chao, escalaG, {
-        alpha: 1, t: estado.t, visema, piscar: piscando(estado.t, ORDEM_ATORES.indexOf(id)), falando: !!a.fala?.boca,
-        selecionado: op.selecionado === id && estado.camera.atual.alvo === 'aberto' && estado.camera.progresso > 0.99 || op.selecionado === id && estado.camera.atual.alvo === 'aberto' && estado.camera.anterior.alvo === 'aberto', rosto: fechada(estado.camera.atual, id) || fechada(estado.camera.anterior, id),
-      });
-      ancoras[id] = { x: c.cabeca.x + c.cabeca.w / 2, y: c.cabeca.y };
-    } else {
-      const e = desenharAtor(ctx, a, x, L.chao, escalaG, { t: estado.t, idadePose: estado.t - a.poseDesde, selecionado: op.selecionado === id });
-      ancoras[id] = { x: e.cabeca.x, y: e.cabeca.y - e.raio * 1.2 };
-    }
+    const e = desenharAtor(ctx, a, x, L.chao, escalaG, {
+      t: estado.t,
+      idadePose: estado.t - a.poseDesde,
+      cenario: cenarioNome,
+      selecionado: op.selecionado === id,
+    });
+    ancoras[id] = { x: e.cabeca.x, y: e.cabeca.y - e.raio * 1.2 };
     ctx.restore();
   }
+
+  // Bancada ou móveis em primeiro plano
+  estrategia.desenharFrente?.(ctx, L, rc);
   for (const id of visiveis) {
     const f = estado.atores[id].fala, alpha = Math.min(vis.atores[id], vis.balao);
-    if (f && ancoras[id] && alpha > 0.01) { ctx.save(); ctx.globalAlpha = alpha; desenharBalao(ctx, L, { texto: f.texto, completo: f.completo, opacidade: f.opacidade, decorrido: f.progresso * f.duracao }, ancoras[id]!); ctx.restore(); }
+    if (f && ancoras[id] && alpha > 0.01) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      desenharBalao(ctx, L, { texto: f.texto, completo: f.completo, opacidade: f.opacidade, decorrido: f.progresso * f.duracao }, ancoras[id]!, rect);
+      ctx.restore();
+    }
   }
   ctx.restore();
   return { lousaEstoura: plano.estoura };

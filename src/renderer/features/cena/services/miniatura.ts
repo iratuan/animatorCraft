@@ -1,18 +1,14 @@
-import { ATORES, clipeDaPose, poseDef, type ActorId, type AtorEstado, type NomeExpressao, type PoseId } from '@shared/domain';
+import { ATORES, type ActorId, type AtorEstado, type NomeExpressao, type PoseId, poseDef } from '@shared/domain';
 import { desenharAtor, resolver } from './ator';
-import { desenharRostoNaCaixa, desenharSpriteNaCaixa, temSprites } from './sprites';
 
 /**
  * Miniatura quadrada de um personagem em uma pose (biblioteca e seletor de poses).
- * Personagens com ficha usam o sprite da pose; os demais, o boneco de reserva.
+ * Renderizada no estilo Stickman com roupas e personalidade procedural.
  */
 export function desenharMiniatura(
   ctx: CanvasRenderingContext2D, id: ActorId, pose: PoseId, expressao: NomeExpressao, tamanho: number,
-  modo: 'corpo' | 'rosto' = 'corpo', fase = 0.8, etiqueta?: string,
+  modo: 'corpo' | 'rosto' = 'corpo', fase = 0.8, _etiqueta?: string,
 ) {
-  if (temSprites(id) && modo === 'rosto' && desenharRostoNaCaixa(ctx, id, expressao, tamanho)) return;
-  if (temSprites(id) && desenharSpriteNaCaixa(ctx, id, etiqueta ? [etiqueta] : clipeDaPose(pose).passos[0]!.tags, tamanho, modo === 'rosto')) return;
-
   const real = ATORES[id]!;
   const a: AtorEstado = {
     id, visivel: true, x: 0.5, facing: 1, pose, poseDe: pose, poseDesde: -10, fase, faseDe: fase,
@@ -34,6 +30,3 @@ export function desenharMiniatura(
   }
   desenharAtor(ctx, a, x, chao, escala, { t: 1.3, idadePose: 5 });
 }
-
-
-

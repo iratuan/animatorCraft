@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%">
+  <!-- Fundo sala de estar / lounge informal -->
+  <rect width="1280" height="720" fill="#ffffff"/>
+  
+  <!-- Rodapé / linha de chão da sala -->
+  <line x1="0" y1="580" x2="1280" y2="580" stroke="#14161a" stroke-width="3"/>
+  <line x1="0" y1="595" x2="1280" y2="595" stroke="#14161a" stroke-width="1.5"/>
+
+  <!-- Quadro decorativo moderno stickman na parede de fundo -->
+  <g transform="translate(520, 90)">
+    <rect x="0" y="0" width="240" height="160" rx="4" fill="#ffffff" stroke="#14161a" stroke-width="3"/>
+    <circle cx="90" cy="80" r="35" fill="none" stroke="#14161a" stroke-width="2"/>
+    <line x1="40" y1="120" x2="200" y2="40" stroke="#14161a" stroke-width="2.5"/>
+    <rect x="140" y="60" width="50" height="60" fill="none" stroke="#14161a" stroke-width="2" stroke-dasharray="4 2"/>
+    <text x="120" y="145" font-family="sans-serif" font-weight="700" font-size="11" text-anchor="middle" fill="#14161a">STICK ART</text>
+  </g>
+
+  <!-- Luminária de chão de haste curva à esquerda -->
+  <g transform="translate(140, 200)">
+    <!-- Base redonda -->
+    <ellipse cx="60" cy="380" rx="35" ry="8" fill="#ffffff" stroke="#14161a" stroke-width="3"/>
+    <!-- Haste arqueada alta -->
+    <path d="M 60,380 Q 20,80 140,20 Q 200,0 210,50" fill="none" stroke="#14161a" stroke-width="4" stroke-linecap="round"/>
+    <!-- Cúpula suspensa da lâmpada -->
+    <path d="M 190,50 C 190,30 230,30 230,50 Z" fill="#ffffff" stroke="#14161a" stroke-width="2.5"/>
+    <line x1="210" y1="50" x2="210" y2="60" stroke="#14161a" stroke-width="2"/>
+    <circle cx="210" cy="64" r="5" fill="#14161a"/>
+  </g>
+
+  <!-- Estante com livros minimalista à direita -->
+  <g transform="translate(1020, 220)">
+    <line x1="0" y1="0" x2="180" y2="0" stroke="#14161a" stroke-width="3"/>
+    <!-- Livros em pé e tombados -->
+    <rect x="20" y="-45" width="12" height="45" fill="#ffffff" stroke="#14161a" stroke-width="1.8"/>
+    <rect x="34" y="-50" width="14" height="50" fill="#14161a"/>
+    <rect x="50" y="-42" width="10" height="42" fill="#ffffff" stroke="#14161a" stroke-width="1.8"/>
+    <rect x="62" y="-46" width="12" height="46" fill="#ffffff" stroke="#14161a" stroke-width="1.8"/>
+    <!-- Vaso na prateleira -->
+    <circle cx="130" cy="-20" r="16" fill="#ffffff" stroke="#14161a" stroke-width="2"/>
+    <line x1="130" y1="-36" x2="130" y2="-48" stroke="#14161a" stroke-width="1.8"/>
+    <circle cx="130" cy="-50" r="3" fill="#14161a"/>
+  </g>
+
+  <!-- Tapete da sala centralizado -->
+  <ellipse cx="640" cy="600" rx="420" ry="65" fill="#ffffff" stroke="#14161a" stroke-width="2.5" stroke-dasharray="10 5"/>
+
+  <!-- Poltrona 1 (Esquerda) -->
+  <g transform="translate(240, 360)">
+    <path d="M 40,20 Q 90,10 140,20 L 150,110 Q 90,120 30,110 Z" fill="#ffffff" stroke="#14161a" stroke-width="3"/>
+    <line x1="65" y1="20" x2="65" y2="110" stroke="#14161a" stroke-width="1.5" stroke-dasharray="5 3"/>
+    <line x1="90" y1="18" x2="90" y2="112" stroke="#14161a" stroke-width="1.5" stroke-dasharray="5 3"/>
+    <line x1="115" y1="20" x2="115" y2="110" stroke="#14161a" stroke-width="1.5" stroke-dasharray="5 3"/>
+    <rect x="25" y="105" width="130" height="35" rx="10" fill="#ffffff" stroke="#14161a" stroke-width="3"/>
+    <line x1="45" y1="140" x2="30" y2="200" stroke="#14161a" stroke-width="4.5" stroke-linecap="round"/>
+    <line x1="135" y1="140" x2="150" y2="200" stroke="#14161a" stroke-width="4.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- Mesinha de Centro baixa com café e planta -->
+  <g transform="translate(520, 470)">
+    <ellipse cx="120" cy="50" rx="90" ry="24" fill="#ffffff" stroke="#14161a" stroke-width="3"/>
+    <!-- Planta -->
+    <g transform="translate(90, 25)">
+      <polygon points="5,15 25,15 22,28 8,28" fill="#ffffff" stroke="#14161a" stroke-width="1.8"/>
+      <path d="M 15,15 Q 15,4 12,2 Q 10,8 15,15" fill="#14161a"/>
+      <path d="M 15,15 Q 7,7 4,9 Q 9,14 15,15" fill="#14161a"/>
+      <path d="M 15,15 Q 23,7 26,9 Q 21,14 15,15" fill="#14161a"/>
+    </g>
+    <!-- Caneca de café -->
+    <g transform="translate(135, 30)">
+      <rect x="0" y="0" width="12" height="15" rx="2" fill="#ffffff" stroke="#14161a" stroke-width="1.8"/>
+      <path d="M 12,3 C 16,3 16,12 12,12" fill="none" stroke="#14161a" stroke-width="1.5"/>
+    </g>
+    <!-- Pés palito -->
+    <line x1="50" y1="68" x2="35" y2="130" stroke="#14161a" stroke-width="4" stroke-linecap="round"/>
+    <line x1="190" y1="68" x2="205" y2="130" stroke="#14161a" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <!-- Poltrona 2 (Direita) -->
+  <g transform="translate(860, 360) scale(-1, 1) translate(-180, 0)">
+    <path d="M 40,20 Q 90,10 140,20 L 150,110 Q 90,120 30,110 Z" fill="#ffffff" stroke="#14161a" stroke-width="3"/>
+    <line x1="65" y1="20" x2="65" y2="110" stroke="#14161a" stroke-width="1.5" stroke-dasharray="5 3"/>
+    <line x1="90" y1="18" x2="90" y2="112" stroke="#14161a" stroke-width="1.5" stroke-dasharray="5 3"/>
+    <line x1="115" y1="20" x2="115" y2="110" stroke="#14161a" stroke-width="1.5" stroke-dasharray="5 3"/>
+    <rect x="25" y="105" width="130" height="35" rx="10" fill="#ffffff" stroke="#14161a" stroke-width="3"/>
+    <line x1="45" y1="140" x2="30" y2="200" stroke="#14161a" stroke-width="4.5" stroke-linecap="round"/>
+    <line x1="135" y1="140" x2="150" y2="200" stroke="#14161a" stroke-width="4.5" stroke-linecap="round"/>
+  </g>
+</svg>

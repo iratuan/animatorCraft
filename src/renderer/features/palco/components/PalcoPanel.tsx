@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { ATORES, posicionarNoRoteiro, type Evento } from '@shared/domain';
 import { atorEm } from '@renderer/features/cena';
 import { Painel } from '@renderer/components/Painel';
@@ -19,6 +19,7 @@ function ancoraDaPosicao(eventos: Evento[], t: number, ator: string): { ancora?:
 }
 
 export function PalcoPanel() {
+  const [telaCheia, setTelaCheia] = useState(false);
   const formato = useEditor((s) => s.formato);
   const set = useEditor((s) => s.set);
   const roteiro = useEditor((s) => s.roteiro);
@@ -28,6 +29,15 @@ export function PalcoPanel() {
   const { estado, timeline, dim } = useRoteiroDerivado();
   const { canvas, area, estilo } = usePalcoCanvas();
   const pegada = useRef<{ id: string; dx: number; x0: number; moveu: boolean } | null>(null);
+
+  useEffect(() => {
+    if (!telaCheia) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setTelaCheia(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [telaCheia]);
 
   const fracao = (e: React.PointerEvent) => { const r = canvas.current!.getBoundingClientRect(); return (e.clientX - r.left) / r.width; };
   const emPlanoAberto = estado.camera.atual.alvo === 'aberto' && estado.camera.progresso > 0.99;
@@ -62,12 +72,24 @@ export function PalcoPanel() {
 
   return (
     <Painel
-      className="palco"
+      className={`palco ${telaCheia ? 'em-tela-cheia' : ''}`}
       titulo={<>Palco <small>{dim.w}×{dim.h} · {FPS} fps · escala de cinza · arraste um personagem para posicioná-lo</small></>}
-      acoes={<div className="seg">
-        <button className={formato === '16:9' ? 'on' : ''} onClick={() => set({ formato: '16:9' })}>16:9</button>
-        <button className={formato === '9:16' ? 'on' : ''} onClick={() => set({ formato: '9:16' })}>9:16</button>
-      </div>}
+      acoes={
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div className="seg">
+            <button className={formato === '16:9' ? 'on' : ''} title="Formato horizontal 16:9 (YouTube / Desktop / 1920×1080)" onClick={() => set({ formato: '16:9' })}>16:9</button>
+            <button className={formato === '9:16' ? 'on' : ''} title="Formato vertical 9:16 (Shorts / Reels / TikTok / 1080×1920)" onClick={() => set({ formato: '9:16' })}>9:16</button>
+          </div>
+          <button
+            className={telaCheia ? 'on' : ''}
+            style={{ padding: '2px 8px', fontSize: '11px', borderRadius: 3, border: '1px solid #444', background: telaCheia ? 'var(--azul, #2d9cff)' : 'transparent', color: telaCheia ? '#fff' : 'inherit' }}
+            onClick={() => setTelaCheia((v) => !v)}
+            title={telaCheia ? 'Sair da tela cheia (Esc)' : 'Modo apresentação / tela cheia'}
+          >
+            {telaCheia ? '✕ Sair' : '⛶ Tela cheia'}
+          </button>
+        </div>
+      }
     >
       <div className="area-palco" ref={area}>
         <canvas ref={canvas} onPointerDown={baixar} onPointerMove={mover} onPointerUp={soltar} onPointerCancel={soltar} style={{ ...estilo, touchAction: 'none', cursor: arrasto ? 'grabbing' : 'default' }} />

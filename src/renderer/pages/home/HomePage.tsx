@@ -1,6 +1,6 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MODELOS, ROTEIRO_EXEMPLO, resumirRoteiro } from '@shared/domain';
+import { MODELOS, ROTEIRO_EXEMPLO, resumirRoteiro, type FormatoProducao } from '@shared/domain';
 import { useEditor, type AcaoInicial } from '@renderer/store/editor-store';
 import { plataforma } from '@renderer/features/sistema';
 import { precarregarEditor } from '@renderer/routes/editor-lazy';
@@ -10,6 +10,25 @@ declare const __APP_VERSION__: string;
 const VERSAO = typeof __APP_VERSION__ === 'string' ? __APP_VERSION__ : '';
 
 const ROTEIRO_EM_BRANCO = '[papéis: professor=CringeFather, aluno=BetaSon]\n\n# Cena 1\n\n';
+
+const FILTROS_FORMATO: { id: 'todos' | FormatoProducao; rotulo: string }[] = [
+  { id: 'todos', rotulo: 'Todos os modelos' },
+  { id: 'aula', rotulo: '📚 Aulas com Lousa' },
+  { id: 'podcast', rotulo: '🎙️ Podcasts' },
+  { id: 'telejornal', rotulo: '📺 Telejornais' },
+  { id: 'debate', rotulo: '⚖️ Debates' },
+  { id: 'papo_livre', rotulo: '🛋️ Papo Livre' },
+  { id: 'livre', rotulo: '🎭 Esquetes Livres' },
+];
+
+const ROTULOS_FORMATO: Record<FormatoProducao, string> = {
+  aula: '📚 Aula',
+  podcast: '🎙️ Podcast',
+  telejornal: '📺 Telejornal',
+  debate: '⚖️ Debate',
+  papo_livre: '🛋️ Papo Livre',
+  livre: '🎭 Esquete',
+};
 
 function Boneco() {
   return (
@@ -31,6 +50,7 @@ export function HomePage() {
   const roteiro = useEditor((s) => s.roteiro);
   const resumo = useMemo(() => resumirRoteiro(roteiro), [roteiro]);
   const continuavel = !resumo.vazio && !resumo.exemplo;
+  const [filtro, setFiltro] = useState<'todos' | FormatoProducao>('todos');
 
   // o editor começa a chegar assim que a tela inicial aparece; no clique ele já está pronto
   useEffect(() => {
@@ -48,39 +68,59 @@ export function HomePage() {
     if (r) abrir(r.texto, `Aberto: ${r.nome}`);
   };
 
+  const modelosFiltrados = useMemo(
+    () => (filtro === 'todos' ? MODELOS : MODELOS.filter((m) => m.formato === filtro)),
+    [filtro],
+  );
+
   return (
     <main className="home" aria-label="Tela inicial do StickBoard">
       <header className="home-topo">
         <Boneco />
         <div>
           <h1>StickBoard</h1>
-          <p>Escreva o roteiro, ganhe o vídeo: aulas de quadro branco com personagens animados, em MP4 horizontal ou vertical.</p>
+          <p>Escreva o roteiro, ganhe o vídeo: aulas didáticas, podcasts, telejornais e esquetes com personagens animados.</p>
         </div>
       </header>
 
-      <section className="home-principais" aria-label="Começar">
+      <section className="home-principais" aria-label="Ações principais">
         {continuavel && (
           <button className="home-card destaque" autoFocus onPointerEnter={precarregarEditor} onClick={() => abrir()} data-teste="continuar">
-            <b>Continuar o último roteiro</b>
-            <span className="home-resumo">{resumo.titulo ? `“${resumo.titulo}” · ` : ''}{resumo.cenas} cena{resumo.cenas === 1 ? '' : 's'} · {resumo.palavras} palavras</span>
+            <b>Continuar editando</b>
+            <span className="home-resumo">{resumo.cenas} cena(s), {resumo.palavras} palavra(s){resumo.titulo ? ` · “${resumo.titulo}”` : ''}</span>
+            <span>Retoma exatamente onde você parou.</span>
           </button>
         )}
-        <button className="home-card" autoFocus={!continuavel} onPointerEnter={precarregarEditor} onClick={() => abrir(ROTEIRO_EM_BRANCO)} data-teste="novo">
-          <b>Novo roteiro em branco</b>
+        <button className="home-card" autoFocus={!continuavel} onPointerEnter={precarregarEditor} onClick={() => abrir(ROTEIRO_EM_BRANCO, 'Projeto em branco criado.')} data-teste="novo">
+          <b>Novo projeto em branco</b>
           <span>Começa do zero, com Professor e Aluno prontos.</span>
         </button>
         <button className="home-card ia" onClick={() => set({ promptMestreAberto: true })} data-teste="prompt-mestre">
           <b>Gerar roteiro com qualquer IA</b>
-          <span>Copie o prompt mestre, cole no Claude, ChatGPT ou Gemini e traga o roteiro de volta já conferido.</span>
+          <span>Copie o prompt mestre para qualquer formato (aula, podcast, telejornal, esquete) e cole no Claude, ChatGPT ou Gemini.</span>
         </button>
       </section>
 
       <section aria-label="Modelos">
         <h2>Começar de um modelo</h2>
+        <div className="home-filtros">
+          {FILTROS_FORMATO.map((f) => (
+            <button
+              key={f.id}
+              className={`home-filtro-btn ${filtro === f.id ? 'ativo' : ''}`}
+              onClick={() => setFiltro(f.id)}
+            >
+              {f.rotulo}
+            </button>
+          ))}
+        </div>
         <div className="home-modelos">
-          {MODELOS.map((m) => (
+          {modelosFiltrados.map((m) => (
             <button key={m.id} className="home-modelo" onPointerEnter={precarregarEditor} onClick={() => abrir(m.roteiro, `Modelo “${m.nome}” carregado. Troque o que está entre {chaves}.`)} data-teste={`modelo-${m.id}`}>
-              <small>{m.area}</small>
+              <small>
+                <span>{m.area}</span>
+                <span className="home-modelo-formato">{ROTULOS_FORMATO[m.formato]}</span>
+              </small>
               <b>{m.nome}</b>
               <span>{m.descricao}</span>
             </button>

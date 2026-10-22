@@ -1,8 +1,8 @@
 import { ATORES, MODELOS, ORDEM_ATORES, type ActorId } from '@shared/domain';
+import { FORMATOS } from '@shared/constants/video';
 import { useEditor } from '@renderer/store/editor-store';
 import { FONTES } from '@renderer/features/fontes';
-import { SeletorSkin, useSkins } from '@renderer/features/personagens';
-import { useRoteiroDerivado } from '@renderer/features/roteiro';
+import { useRoteiroEstatico } from '@renderer/features/roteiro';
 import { fmtTempo } from '@renderer/features/palco';
 
 /** Aba "Aula": papéis (professor/aluno), fontes, modelos de roteiro, cheat-sheet da câmera. */
@@ -13,8 +13,8 @@ export function AulaPanel() {
   useEditor((s) => s.versaoPersonagens); // redesenha quando a lista de personagens muda
   const setRoteiro = useEditor((s) => s.setRoteiro);
   const definirPapeis = useEditor((s) => s.definirPapeis);
-  const { roteiro, timeline, dim } = useRoteiroDerivado();
-  const skins = useSkins();
+  const formato = useEditor((s) => s.formato);
+  const { roteiro, timeline } = useRoteiroEstatico();
 
   const carregarModelo = (texto: string, nome: string) => {
     setRoteiro(texto);
@@ -36,10 +36,6 @@ export function AulaPanel() {
         </select>
       </label>
 
-      <h4>Estilo dos personagens</h4>
-      <p className="dica">Vale para todos; cada personagem pode ter o seu na aba Personagem. Quem ainda não tem sprites aparece como stickman.</p>
-      <SeletorSkin valor={skins.padrao} aoEscolher={skins.definirPadrao} />
-
       <h4>Fontes</h4>
       <label className="campo">Fonte da lousa
         <select value={fonteLousa} onChange={(e) => set({ fonteLousa: e.target.value })}>
@@ -57,7 +53,7 @@ export function AulaPanel() {
       <div className="modelos">
         {MODELOS.map((m) => (
           <button key={m.id} className="seq" onClick={() => carregarModelo(m.roteiro, m.nome)}>
-            <b>{m.area}: {m.nome}</b><small>{m.descricao}</small>
+            <b>[{m.formato.toUpperCase()}] {m.area}: {m.nome}</b><small>{m.descricao}</small>
           </button>
         ))}
       </div>
@@ -83,11 +79,19 @@ export function AulaPanel() {
       </dl>
       <p className="dica">A próxima ação espera a mais longa terminar. Na linha do tempo, arraste um bloco sobre outro para juntá-los.</p>
 
+      <h4>Cores e destaque na fala</h4>
+      <dl className="cheat">
+        <dt>[azul:x] · [verde:y]</dt><dd>destaca variáveis com contraste sobre fundo branco</dd>
+        <dt>[vermelho:erro] · [laranja:alerta]</dt><dd>cores semânticas para avisos e termos-chave</dd>
+        <dt>[marca:fórmula]</dt><dd>fundo estilo marca-texto suave</dd>
+        <dt>[#2563eb:termo]</dt><dd>código hexadecimal livre</dd>
+      </dl>
+
       <p className="dica">O que for escrito na lousa se ajusta ao tamanho dela; se não couber nem na menor letra, o editor avisa.</p>
 
       <h4>Documento</h4>
       <dl>
-        <dt>Formato</dt><dd>{dim.nome}</dd>
+        <dt>Formato</dt><dd>{FORMATOS[formato].nome}</dd>
         <dt>Duração</dt><dd>{fmtTempo(timeline.duracao)}</dd>
         <dt>Cenas</dt><dd>{timeline.cenas.length}</dd>
         <dt>Ações</dt><dd>{timeline.eventos.length}</dd>

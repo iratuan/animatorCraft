@@ -1,0 +1,81 @@
+{
+  "versao": 1,
+  "id": "veio",
+  "nome": "Véio",
+  "apelidos": [
+    "veio",
+    "poeta",
+    "sogro"
+  ],
+  "descricao": "Poeta, olhos grandes e expressivos, detesta receber ordens. Declama e gesticula teatralmente.",
+  "idade": "80 anos",
+  "altura": 510,
+  "temSprites": false,
+  "modeloPalito": "professor",
+  "expressaoPadrao": "neutra",
+  "slotPadrao": 0.38,
+  "dancaPadrao": "danca_serenata",
+  "visual": {
+    "formato": "stickman",
+    "acessorios": []
+  },
+  "clipesProprios": [
+    {
+      "id": "declamar-poema",
+      "nome": "Declamar poema",
+      "ator": "veio",
+      "categoria": "Movimento",
+      "loop": true,
+      "passos": [
+        {
+          "tags": [
+            "apresentar",
+            "parado"
+          ],
+          "dur": 0.8,
+          "mov": "balancar",
+          "amp": 4,
+          "espelhar": false
+        },
+        {
+          "tags": [
+            "bracos-abertos",
+            "parado"
+          ],
+          "dur": 0.8,
+          "mov": "inclinar",
+          "amp": 5,
+          "espelhar": false
+        }
+      ]
+    },
+    {
+      "id": "reverencia",
+      "nome": "Reverência clássica",
+      "ator": "veio",
+      "categoria": "Movimento",
+      "loop": false,
+      "passos": [
+        {
+          "tags": [
+            "apresentar",
+            "parado"
+          ],
+          "dur": 0.7,
+          "mov": "inclinar",
+          "amp": 8,
+          "espelhar": false
+        },
+        {
+          "tags": [
+            "parado-calmo",
+            "parado"
+          ],
+          "dur": 0.8,
+          "mov": "respirar",
+          "espelhar": false
+        }
+      ]
+    }
+  ]
+}

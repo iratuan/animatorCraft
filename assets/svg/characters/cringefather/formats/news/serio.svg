@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-110 -65 220 250" width="100%" height="100%" style="overflow: visible;">
+  
+  <g id="cringefather-corpo-inteiro">
+    <path d="M -2.5,-0.8 L -7.6,34.9 L 26.1,30.2" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -2.5,-0.8 L -7.6,34.9 L 26.1,30.2" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -2.5,-0.8 L -7.6,34.9 L 19.4,31.1" fill="none" stroke="#14161a" stroke-width="17.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -2.5,-0.8 L -7.6,34.9 L 19.4,31.1" fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="28.6" cy="34.5" r="3" fill="#ffffff" stroke="#14161a" stroke-width="2.6" />
+    <circle cx="26.1" cy="30.2" r="6" fill="#ffffff" stroke="#14161a" stroke-width="2.6" />
+    <path d="M 0.0,72.0 L -10.8,117.7 L -15.6,163.5" fill="none" stroke="#14161a" stroke-width="18.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,72.0 L -10.8,117.7 L -15.6,163.5" fill="none" stroke="#14161a" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -21.616618620624116,154.49601437388114 L -9.616618620624116,154.49601437388114 L 3.3833813793758836,161.49601437388114 L 3.3833813793758836,165.49601437388114 L -21.616618620624116,165.49601437388114 Z" fill="#14161a" stroke="#14161a" stroke-width="2.6" stroke-linejoin="round" />
+    <path d="M 0.0,72.0 L 10.8,117.7 L 15.6,163.5" fill="none" stroke="#14161a" stroke-width="18.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0.0,72.0 L 10.8,117.7 L 15.6,163.5" fill="none" stroke="#14161a" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 9.616618620624116,154.49601437388114 L 21.616618620624116,154.49601437388114 L 34.616618620624116,161.49601437388114 L 34.616618620624116,165.49601437388114 L 9.616618620624116,165.49601437388114 Z" fill="#14161a" stroke="#14161a" stroke-width="2.6" stroke-linejoin="round" />
+    <g transform="translate(-1.3, 35.6)">
+    <path d="M -18,-15 L 18,-15 L 14,75 L -14,75 Z" fill="#fff" stroke="#14161a" stroke-width="3.3800000000000003" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -18,-15 L -6,25 L -14,25" fill="none" stroke="#14161a" stroke-width="2.8600000000000003" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 18,-15 L 6,25 L 14,25" fill="none" stroke="#14161a" stroke-width="2.8600000000000003" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -3,-12 L 3,-12 L 2,-6 L 4,14 L 0,20 L -4,14 L -2,-6 Z" fill="#14161a" stroke="#14161a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 0,32 L 0,70" fill="none" stroke="#14161a" stroke-width="2.08" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <path d="M -2.5,-0.8 L 10.9,32.6 L 35.4,9.0" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -2.5,-0.8 L 10.9,32.6 L 35.4,9.0" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -2.5,-0.8 L 10.9,32.6 L 30.5,13.7" fill="none" stroke="#14161a" stroke-width="17.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -2.5,-0.8 L 10.9,32.6 L 30.5,13.7" fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="39.9" cy="11.1" r="3" fill="#ffffff" stroke="#14161a" stroke-width="2.6" />
+    <circle cx="35.4" cy="9.0" r="6" fill="#ffffff" stroke="#14161a" stroke-width="2.6" />
+    <path d="M -2.5,-0.8 L -4.4,-26.7" fill="none" stroke="#14161a" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -2.5,-0.8 L -4.4,-26.7" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <g id="cringefather-cabeca" transform="translate(-4.4, -48.3)">
+    <ellipse cx="0" cy="0" rx="36" ry="36" fill="#fff" stroke="#14161a" stroke-width="3.36" />
+    <ellipse cx="-14" cy="-4" rx="7.225" ry="7.225" fill="#fff" stroke="#14161a" stroke-width="2.16" />
+    <ellipse cx="14" cy="-4" rx="7.225" ry="7.225" fill="#fff" stroke="#14161a" stroke-width="2.16" />
+    <ellipse cx="-14" cy="-4" rx="2.7455" ry="2.7455" fill="#14161a" />
+    <ellipse cx="14" cy="-4" rx="2.7455" ry="2.7455" fill="#14161a" />
+    <polygon points="-21.225,-11.225 -6.775,-5.445 -6.775,-11.225 -21.225,-11.225" fill="#fff" />
+    <line x1="-21.225" y1="-10.5025" x2="-6.775" y2="-5.445" stroke="#14161a" stroke-width="2.16" />
+    <polygon points="6.775,-5.445 21.225,-11.225 21.225,-11.225 6.775,-11.225" fill="#fff" />
+    <line x1="6.775" y1="-5.445" x2="21.225" y2="-10.5025" stroke="#14161a" stroke-width="2.16" />
+    <path d="M -18,-21 Q -10,-18 -2,-13" fill="none" stroke="#14161a" stroke-width="2.64" stroke-linecap="round" />
+    <path d="M 2,-13 Q 10,-18 18,-21" fill="none" stroke="#14161a" stroke-width="2.64" stroke-linecap="round" />
+    <path d="M -24,-14 L -4,-14 L -4,0 L -24,0 Z" fill="none" stroke="#14161a" stroke-width="2.88" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 4,-14 L 24,-14 L 24,0 L 4,0 Z" fill="none" stroke="#14161a" stroke-width="2.88" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -4,-7 L 4,-7" fill="none" stroke="#14161a" stroke-width="2.88" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -24,-7 L -32,-7 M 24,-7 L 32,-7" fill="none" stroke="#14161a" stroke-width="2.16" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -11,15 L 11,13" fill="none" stroke="#14161a" stroke-width="2.52" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -32,-18 C -36,-38 -20,-50 -8,-45 C -4,-62 14,-62 20,-48 C 30,-58 42,-44 36,-22 C 40,-12 36,0 32,8 L 30,-6 C 24,-18 10,-22 0,-18 C -14,-22 -26,-14 -32,-18 Z" fill="#fff" stroke="#14161a" stroke-width="2.88" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M -16,-34 L -6,-22 M 4,-38 L 8,-22 M 18,-32 L 20,-16" fill="#ffffff" stroke="#14161a" stroke-width="1.92" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+  </g>
+</svg>
