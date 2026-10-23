@@ -18,7 +18,10 @@
     "dist": "npm run build && electron-builder --win",
     "dist:dir": "npm run build && electron-builder --win --dir",
     "android:sync": "cross-env SEM_ELECTRON=1 vite build && cap sync android",
-    "android:apk": "npm run android:sync && cd android && gradlew.bat assembleDebug && cd .. && node -e \"require('fs').copyFileSync('android/app/build/outputs/apk/debug/app-debug.apk', 'release/StickBoard-' + require('./package.json').version + '.apk')\""
+    "android:apk": "npm run android:sync && cd android && gradlew.bat assembleDebug && cd .. && node -e \"require('fs').copyFileSync('android/app/build/outputs/apk/debug/app-debug.apk', 'release/StickBoard-' + require('./package.json').version + '.apk')\"",
+    "vscode:install": "cd vscode-extension && npm install",
+    "vscode:compile": "cd vscode-extension && npm run compile",
+    "vscode:package": "npm run build && cd vscode-extension && npm run compile && npx --yes @vscode/vsce package"
   },
   "dependencies": {
     "@capacitor/android": "^7.0.0",

@@ -1,0 +1,97 @@
+{
+  "name": "stickboard-vscode",
+  "displayName": "StickBoard — Animador Whiteboard & Educacional",
+  "description": "Estúdio de animação whiteboard com stickmen animados, roteiro inteligente, lousa interativa e exportação de vídeos para YouTube e Shorts dentro do VS Code.",
+  "version": "0.8.2",
+  "publisher": "stickboard",
+  "icon": "assets/icon.png",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Visualization",
+    "Education"
+  ],
+  "keywords": [
+    "animation",
+    "stickman",
+    "whiteboard",
+    "video",
+    "storyboard",
+    "education"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onCustomEditor:stickboard.editor",
+    "onCommand:stickboard.abrir",
+    "onCommand:stickboard.novoRoteiro"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "stickboard-script",
+        "aliases": [
+          "StickBoard Script",
+          "stickboard"
+        ],
+        "extensions": [
+          ".stk",
+          ".stk.txt",
+          ".stickboard"
+        ]
+      }
+    ],
+    "customEditors": [
+      {
+        "viewType": "stickboard.editor",
+        "displayName": "StickBoard Studio",
+        "selector": [
+          {
+            "filenamePattern": "*.{stk,stk.txt,stickboard}"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
+    "commands": [
+      {
+        "command": "stickboard.abrir",
+        "title": "Abrir Estúdio StickBoard",
+        "category": "StickBoard"
+      },
+      {
+        "command": "stickboard.novoRoteiro",
+        "title": "Criar Novo Roteiro StickBoard",
+        "category": "StickBoard"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "stickboard.abrir"
+        },
+        {
+          "command": "stickboard.novoRoteiro"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "stickboard.abrir",
+          "when": "resourceExtname == .stk || resourceExtname == .stickboard",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^20.x",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.6.0"
+  }
+}

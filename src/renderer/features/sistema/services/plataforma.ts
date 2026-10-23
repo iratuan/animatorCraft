@@ -4,14 +4,26 @@ import { Share } from '@capacitor/share';
 import type { PacoteEscolhido, RoteiroAberto } from '@shared/types/ipc';
 import { baixarArquivo, blobParaBase64, escolherArquivos } from './arquivos';
 
+declare global {
+  interface Window {
+    __VSCODE_API__?: {
+      postMessage(msg: unknown): void;
+      setState(state: unknown): void;
+      getState(): unknown;
+    };
+    __STICKBOARD_DOC_NAME__?: string;
+  }
+}
+
 /**
  * Porta de plataforma: o resto do app pede "abrir/salvar" sem saber onde roda.
+ *  - VS Code: sincroniza via postMessage com o Custom Editor do VS Code
  *  - Electron: diálogos nativos e gravação em disco via IPC (window.stickboard, definido no preload)
  *  - Android (Capacitor): grava no cache e abre a folha de compartilhamento
  *  - Navegador: download e seletor de arquivos do HTML
  */
 export interface Plataforma {
-  nome: 'electron' | 'android' | 'web';
+  nome: 'electron' | 'android' | 'web' | 'vscode';
   abrirRoteiro(): Promise<RoteiroAberto | null>;
   salvarRoteiro(texto: string, nomeSugerido: string): Promise<string | null>;
   /** devolve uma mensagem para mostrar ao usuário */
@@ -82,7 +94,32 @@ const android: Plataforma = {
   },
 };
 
+const vscodePlatform: Plataforma = {
+  nome: 'vscode',
+  async abrirRoteiro() {
+    return web.abrirRoteiro();
+  },
+  async salvarRoteiro(texto, nome) {
+    if (typeof window !== 'undefined' && window.__VSCODE_API__) {
+      window.__VSCODE_API__.postMessage({ tipo: 'atualizar-roteiro', texto });
+      return nome;
+    }
+    return web.salvarRoteiro(texto, nome);
+  },
+  async salvarVideo(video, nome) {
+    if (typeof window !== 'undefined' && window.__VSCODE_API__) {
+      const dadosBase64 = await blobParaBase64(video);
+      window.__VSCODE_API__.postMessage({ tipo: 'salvar-video', dadosBase64, nome });
+      return `Solicitando salvamento no VS Code: ${nome}`;
+    }
+    return web.salvarVideo(video, nome);
+  },
+  abrirPacoteSprites: web.abrirPacoteSprites,
+  salvarPacoteSprites: web.salvarPacoteSprites,
+};
+
 export function obterPlataforma(): Plataforma {
+  if (typeof window !== 'undefined' && window.__VSCODE_API__) return vscodePlatform;
   if (typeof window !== 'undefined' && window.stickboard) return electron;
   if (Capacitor.isNativePlatform()) return android;
   return web;

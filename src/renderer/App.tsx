@@ -6,6 +6,7 @@ import { SplashScreen } from '@renderer/components/SplashScreen';
 export function App() {
   const [mostrarSplash, setMostrarSplash] = useState(() => {
     if (typeof window !== 'undefined') {
+      if (window.__VSCODE_API__) return false;
       const p = new URLSearchParams(window.location.search);
       return p.get('splash') !== '0';
     }

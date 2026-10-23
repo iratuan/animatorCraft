@@ -30,10 +30,23 @@ function JanelasGlobais() {
 
 /** Rotas do app. HashRouter (em App.tsx) funciona em file:// no Electron e no WebView do Android. "/" é a tela inicial; "/editor" o editor. */
 export function Rotas() {
+  const isVsCode = typeof window !== 'undefined' && !!window.__VSCODE_API__;
+
   return (
     <>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route
+          path="/"
+          element={
+            isVsCode ? (
+              <Suspense fallback={<Carregando texto="Abrindo o StickBoard no VS Code…" />}>
+                <EditorPage />
+              </Suspense>
+            ) : (
+              <HomePage />
+            )
+          }
+        />
         <Route path="/editor" element={<Suspense fallback={<Carregando texto="Abrindo o editor…" />}><EditorPage /></Suspense>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
