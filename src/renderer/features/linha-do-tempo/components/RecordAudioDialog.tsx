@@ -17,6 +17,7 @@ export default function RecordAudioDialog({ open, evento, onClose, onSave }: Rec
   const [erro, setErro] = useState<string | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<number | null>(null);
 
@@ -24,6 +25,10 @@ export default function RecordAudioDialog({ open, evento, onClose, onSave }: Rec
   useEffect(() => {
     if (!open) {
       if (audioUrl) URL.revokeObjectURL(audioUrl);
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((t) => t.stop());
+        streamRef.current = null;
+      }
       setAudioUrl(null);
       setAudioFile(null);
       setGravando(false);
@@ -38,11 +43,30 @@ export default function RecordAudioDialog({ open, evento, onClose, onSave }: Rec
   const nomeAtor = evento && evento.acao.tipo === 'fala' ? ATORES[evento.acao.ator]?.nome ?? 'Ator' : 'Personagem';
   const textoFala = evento && evento.acao.tipo === 'fala' ? evento.acao.texto : '';
 
+  const getSupportedMimeType = (): { mimeType: string; extensao: string } => {
+    const tipos = [
+      { mime: 'audio/webm;codecs=opus', ext: 'webm' },
+      { mime: 'audio/webm', ext: 'webm' },
+      { mime: 'audio/mp4', ext: 'mp4' },
+      { mime: 'audio/aac', ext: 'aac' },
+      { mime: 'audio/ogg', ext: 'ogg' },
+    ];
+    if (typeof MediaRecorder === 'undefined') return { mimeType: '', extensao: 'webm' };
+    const suportado = tipos.find((t) => MediaRecorder.isTypeSupported(t.mime));
+    return suportado ? { mimeType: suportado.mime, extensao: suportado.ext } : { mimeType: '', extensao: 'webm' };
+  };
+
   const iniciarGravacao = async () => {
     setErro(null);
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('API de gravação não suportada neste dispositivo.');
+      }
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
+      streamRef.current = stream;
+
+      const { mimeType, extensao } = getSupportedMimeType();
+      const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
       mediaRecorderRef.current = recorder;
       chunksRef.current = [];
 
@@ -51,13 +75,15 @@ export default function RecordAudioDialog({ open, evento, onClose, onSave }: Rec
       };
 
       recorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        const finalType = mimeType || recorder.mimeType || 'audio/webm';
+        const blob = new Blob(chunksRef.current, { type: finalType });
         const url = URL.createObjectURL(blob);
         setAudioUrl(url);
-        const nomeArquivo = `fala_${nomeAtor.toLowerCase()}_${Date.now()}.webm`;
-        const file = new File([blob], nomeArquivo, { type: 'audio/webm' });
+        const nomeArquivo = `fala_${nomeAtor.toLowerCase()}_${Date.now()}.${extensao}`;
+        const file = new File([blob], nomeArquivo, { type: finalType });
         setAudioFile(file);
         stream.getTracks().forEach((t) => t.stop());
+        streamRef.current = null;
       };
 
       recorder.start();
@@ -67,7 +93,17 @@ export default function RecordAudioDialog({ open, evento, onClose, onSave }: Rec
         setTempo((t) => t + 1);
       }, 1000);
     } catch (err: unknown) {
-      setErro('Não foi possível acessar o microfone. Verifique as permissões de áudio.');
+      const msg = err instanceof Error ? err.message : String(err);
+      if (
+        msg.toLowerCase().includes('permission') ||
+        (err instanceof DOMException && (err.name === 'NotAllowedError' || err.name === 'SecurityError'))
+      ) {
+        setErro('Permissão de microfone negada. No Android, permita o acesso ao microfone nas Configurações do aplicativo.');
+      } else if (err instanceof DOMException && err.name === 'NotFoundError') {
+        setErro('Nenhum microfone encontrado neste dispositivo.');
+      } else {
+        setErro(`Não foi possível acessar o microfone (${msg}). Verifique as permissões de áudio do app.`);
+      }
     }
   };
 
