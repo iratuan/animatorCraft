@@ -72,4 +72,20 @@ describe('modelos de roteiro', () => {
     const r = parseRoteiro(MODELOS.find((m) => m.area === 'Inglês')!.roteiro);
     expect(r.papeis).toEqual({ professor: 'betason', aluno: 'cringefather' });
   });
+
+  it('reconhece novas poses e expressões expandidas sem avisos no roteiro', () => {
+    const texto = `
+      CringeFather faz cara de deboche.
+      BetaSon em desespero diz "Socorro!" desesperado.
+      Erika aponta para a lousa.
+      Laura comemora.
+      Dario senta na bancada.
+    `;
+    const r = parseRoteiro(texto);
+    expect(r.avisos).toEqual([]);
+    const acoes = r.cenas.flatMap((c) => c.acoes);
+    expect(acoes.some((a) => a.tipo === 'expressao' && a.expressao === 'deboche')).toBe(true);
+    expect(acoes.some((a) => a.tipo === 'expressao' && a.expressao === 'desespero')).toBe(true);
+    expect(acoes.some((a) => a.tipo === 'pose' && a.pose === 'comemorar')).toBe(true);
+  });
 });

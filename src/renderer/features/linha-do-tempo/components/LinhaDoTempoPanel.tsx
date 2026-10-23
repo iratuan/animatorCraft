@@ -88,6 +88,32 @@ function Trilhos() {
     const r = area.current!.getBoundingClientRect();
     return Math.max(0, (clientX - r.left + area.current!.scrollLeft) / zoom);
   };
+
+  /** Snapping magnético: atrai para bordas de outros blocos ou múltiplos de 0.5s/1.0s */
+  const aplicarSnap = (tempoBruto: number, toleranciaSegundos = 0.16): number => {
+    let melhorSnap = tempoBruto;
+    let menorDist = toleranciaSegundos;
+    for (const ev of tl.eventos) {
+      const dIni = Math.abs(ev.inicio - tempoBruto);
+      if (dIni < menorDist) {
+        menorDist = dIni;
+        melhorSnap = ev.inicio;
+      }
+      const dFim = Math.abs(ev.fim - tempoBruto);
+      if (dFim < menorDist) {
+        menorDist = dFim;
+        melhorSnap = ev.fim;
+      }
+    }
+    if (menorDist < toleranciaSegundos) return melhorSnap;
+
+    // Atrai para múltiplos de 0.5s se estiver bem próximo
+    const meioSeg = Math.round(tempoBruto * 2) / 2;
+    if (Math.abs(meioSeg - tempoBruto) < 0.10) return meioSeg;
+
+    return tempoBruto;
+  };
+
   const buscar = (clientX: number) => set({ t: Math.min(tl.duracao, tempoDe(clientX)), tocando: false });
   const arrastar = (e: React.PointerEvent) => {
     (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
@@ -121,13 +147,17 @@ function Trilhos() {
     let moveu = false;
     const mv = (m: PointerEvent) => {
       if (Math.abs(m.clientX - x0) > 4) moveu = true;
-      if (moveu) setArrasto({ indice: ev.indice, t: tempoDe(m.clientX), modo });
+      if (moveu) {
+        const tBruto = tempoDe(m.clientX);
+        const tSnap = aplicarSnap(tBruto);
+        setArrasto({ indice: ev.indice, t: tSnap, modo });
+      }
     };
     const up = (u: PointerEvent) => {
       window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up);
       setArrasto(null);
       if (!moveu) return;
-      const tSolto = tempoDe(u.clientX);
+      const tSolto = aplicarSnap(tempoDe(u.clientX));
       if (modo === 'duracao') {
         const dur = tSolto - ev.inicio;
         if (dur > 0.4) aplicar(reescreverDuracao(roteiro, ev.origem!, dur), `Duração de “${ev.rotulo}”: ${dur.toFixed(1)} s.`);

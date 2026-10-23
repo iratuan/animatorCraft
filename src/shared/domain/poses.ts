@@ -5,6 +5,7 @@ export const POSES = [
   'pensar', 'ideia', 'entender', 'confuso', 'surpreso', 'bravo', 'rindo', 'chorando', 'envergonhado', 'sarcastico',
   'danca_funky', 'danca_atual', 'danca_ballet', 'danca_descoordenada', 'danca_hippie',
   'costas', 'agachar', 'meditar', 'apresentar', 'gesticular',
+  'apontar_lousa', 'segurando_microfone', 'sentado_bancada', 'digitando_laptop', 'comemorar',
 ] as const;
 export type PoseId = (typeof POSES)[number];
 
@@ -20,6 +21,7 @@ export const DANCA_PADRAO: Record<string, PoseId> = {
 
 export const EXPRESSOES = [
   'neutra', 'feliz', 'triste', 'brava', 'surpresa', 'confusa', 'sarcastica', 'assustada', 'empolgada', 'entediada',
+  'deboche', 'desespero', 'pensativa', 'piscadela',
 ] as const;
 export type ExpressaoId = (typeof EXPRESSOES)[number];
 
@@ -54,11 +56,17 @@ export const FRASE_POSE: Partial<Record<PoseId, string>> = {
   meditar: 'medita',
   apresentar: 'apresenta',
   gesticular: 'gesticula',
+  apontar_lousa: 'aponta para a lousa',
+  segurando_microfone: 'segura o microfone',
+  sentado_bancada: 'senta na bancada',
+  digitando_laptop: 'digita no laptop',
+  comemorar: 'comemora',
 };
 
 export const NOME_EXPRESSAO: Record<ExpressaoId, string> = {
   neutra: 'Neutra', feliz: 'Feliz', triste: 'Triste', brava: 'Brava', surpresa: 'Surpresa',
   confusa: 'Confusa', sarcastica: 'Sarcástica', assustada: 'Assustada', empolgada: 'Empolgada', entediada: 'Entediada',
+  deboche: 'Deboche', desespero: 'Desespero', pensativa: 'Pensativa', piscadela: 'Piscadela',
 };
 
 export const NOME_POSE: Record<PoseId, string> = {
@@ -70,6 +78,8 @@ export const NOME_POSE: Record<PoseId, string> = {
   danca_funky: 'Dança funky (anos 70)', danca_atual: 'Dança atual', danca_ballet: 'Balé',
   danca_descoordenada: 'Pulos descoordenados', danca_hippie: 'Dança hippie',
   costas: 'De costas', agachar: 'Agachar', meditar: 'Meditar', apresentar: 'Apresentar', gesticular: 'Gesticular',
+  apontar_lousa: 'Apontar para a lousa', segurando_microfone: 'Segurando microfone',
+  sentado_bancada: 'Sentado na bancada', digitando_laptop: 'Digitando no laptop', comemorar: 'Comemorar',
 };
 
 /** Esqueleto: [ângulo do segmento superior, ângulo do inferior relativo ao superior]. F = braço/perna da frente, T = de trás. */
@@ -384,6 +394,11 @@ const DEFINICOES: Record<PoseId, Gerador> = {
     bracoF: [96 + 24 * sin(t * 4.6), 26 + 16 * cos(t * 4.6)],
     bracoT: [-86 + 22 * sin(t * 3.9 + 1.1), 32 + 14 * cos(t * 3.9)],
   }),
+  apontar_lousa: () => P({ torso: -6, cabeca: 4, bracoF: [125, 4], bracoT: [-15, 12], pernaF: [4, 0], pernaT: [-4, 0] }),
+  segurando_microfone: () => P({ torso: 2, cabeca: -2, bracoF: [68, 88], bracoT: [-14, 14], pernaF: [4, 0], pernaT: [-4, 0] }),
+  sentado_bancada: () => P({ torso: 4, cabeca: 0, pernaF: [88, -88], pernaT: [80, -80], bracoF: [35, 60], bracoT: [-8, 62] }),
+  digitando_laptop: (_f, t) => P({ torso: 8, cabeca: 10, pernaF: [88, -88], pernaT: [80, -80], bracoF: [48 + 4 * sin(t * 12), 72], bracoT: [-2 - 4 * sin(t * 12), 70] }),
+  comemorar: (_f, t) => P({ torso: -4, cabeca: -6, bracoF: [148, 16], bracoT: [-148, 16], pernaF: [8, -12], pernaT: [-8, -12], salto: 12 + 6 * sin(t * 6) }),
 };
 
 function smooth(x: number): number { return x * x * (3 - 2 * x); }

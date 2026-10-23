@@ -134,6 +134,10 @@ const ROSTOS: Record<ExpressaoId, Rosto> = {
   assustada: { olho: 'grande', sobr: 10, boca: 'onda' },
   empolgada: { olho: 'grande', sobr: 6, boca: 'aberta' },
   entediada: { olho: 'meia', sobr: 0, boca: 'reta' },
+  deboche: { olho: 'meia', sobr: 10, sobrAssimetrica: true, boca: 'lado' },
+  desespero: { olho: 'grande', sobr: 12, sobrAssimetrica: false, boca: 'aberta' },
+  pensativa: { olho: 'normal', sobr: 4, sobrAssimetrica: true, boca: 'reta' },
+  piscadela: { olho: 'grande', sobr: 4, boca: 'sorriso' },
 };
 
 function desenharRosto(ctx: CanvasRenderingContext2D, e: Esqueleto, rosto: Rosto, falando: number, t: number, grosso: boolean, v: VisualPalito, atorId?: ActorId) {

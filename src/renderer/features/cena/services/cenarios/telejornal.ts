@@ -5,7 +5,7 @@ export const cenarioTelejornal: CenarioStrategy = {
   id: 'telejornal',
   temLousa: false,
 
-  desenharFundo(ctx: CanvasRenderingContext2D, L: LayoutCena): void {
+  desenharFundo(ctx: CanvasRenderingContext2D, L: LayoutCena, rc?: CenarioRenderContext): void {
     ctx.save();
     ctx.strokeStyle = '#111';
     ctx.fillStyle = '#fff';
@@ -25,9 +25,15 @@ export const cenarioTelejornal: CenarioStrategy = {
     ctx.font = 'bold 20px system-ui, sans-serif';
     ctx.fillStyle = '#111';
     ctx.textAlign = 'left';
-    ctx.fillText('🔴 STICK NEWS NETWORK  |  EDIÇÃO DAS 20H', vwX + 24, vwY + 31);
+
+    const tAtual = rc?.estado.t ?? 0;
+    const segs = Math.floor(tAtual) % 60;
+    const mins = Math.floor(tAtual / 60) % 60;
+    const textoUtc = `20:${mins.toString().padStart(2, '0')}:${segs.toString().padStart(2, '0')} UTC`;
+    const piscaAoVivo = (tAtual % 1.2) < 0.6 ? '🔴' : '⭕';
+    ctx.fillText(`${piscaAoVivo} STICK NEWS NETWORK  |  EDIÇÃO DAS 20H`, vwX + 24, vwY + 31);
     ctx.textAlign = 'right';
-    ctx.fillText('20:00:00 UTC', vwX + vwW - 24, vwY + 31);
+    ctx.fillText(textoUtc, vwX + vwW - 24, vwY + 31);
 
     const cx = vwX + vwW / 2, cy = vwY + 54 + (vwH - 54) / 2;
     ctx.lineWidth = 1.5;
@@ -96,12 +102,17 @@ export const cenarioTelejornal: CenarioStrategy = {
     ctx.roundRect(tampoX, mesaY - 14, tampoW, 28, 14);
     ctx.fill(); ctx.stroke();
 
-    const ancorasX = rc.visiveis
+    const ancoras = rc.visiveis
       .filter((id) => (rc.vis.atores[id] ?? 0) > 0.01 && id !== 'paraiba' && id !== 'mingau')
-      .map((id) => (rc.estado.atores[id]?.x ?? 0.5) * rc.w);
-    const posFinal = ancorasX.length > 0 ? ancorasX : [L.w * 0.5];
+      .map((id) => ({
+        id,
+        x: (rc.estado.atores[id]?.x ?? 0.5) * rc.w,
+        falando: !!rc.estado.atores[id]?.fala,
+      }));
+    const posFinal = ancoras.length > 0 ? ancoras : [{ id: 'padrao', x: L.w * 0.5, falando: false }];
 
-    for (const ax of posFinal) {
+    for (const a of posFinal) {
+      const ax = a.x;
       const px = ax - 35, py = mesaY - 6;
       ctx.lineWidth = 2.5;
       ctx.beginPath();
@@ -124,20 +135,33 @@ export const cenarioTelejornal: CenarioStrategy = {
       ctx.moveTo(micX, micY);
       ctx.quadraticCurveTo(micX - 10, micY - 30, micX - 4, micY - 55);
       ctx.stroke();
+
+      // Cúpula do microfone: se estiver falando, acende em vermelho com anel de luz
       ctx.lineWidth = 2.5;
+      ctx.fillStyle = a.falando ? '#ef4444' : '#111';
       ctx.beginPath();
       ctx.ellipse(micX - 4, micY - 57, 5, 8, -0.2, 0, Math.PI * 2);
       ctx.fill(); ctx.stroke();
+
+      if (a.falando) {
+        ctx.save();
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.arc(micX - 4, micY - 57, 10, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
     }
 
     if (posFinal.length > 1) {
-      const cx = (posFinal[0]! + posFinal[1]!) / 2;
+      const cx = (posFinal[0]!.x + posFinal[1]!.x) / 2;
       ctx.lineWidth = 2.5;
       ctx.beginPath();
       ctx.roundRect(cx - 30, mesaY - 4, 60, 16, 3);
       ctx.fill(); ctx.stroke();
     } else {
-      const gx = (posFinal[0] ?? L.w * 0.5) - 75;
+      const gx = (posFinal[0]?.x ?? L.w * 0.5) - 75;
       ctx.lineWidth = 2.5;
       ctx.beginPath();
       ctx.roundRect(gx - 8, mesaY - 6, 16, 22, 2);

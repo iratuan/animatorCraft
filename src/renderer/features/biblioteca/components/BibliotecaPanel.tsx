@@ -18,7 +18,19 @@ export function BibliotecaPanel() {
       <h4>Personagens</h4>
       <button className="botao-novo-personagem" onClick={() => set({ fichaPersonagem: {} })}>＋ Novo personagem</button>
       {ORDEM_ATORES.map((id) => (
-        <button key={id} className={`ficha ${selecionado === id ? 'on' : ''}`} onClick={() => set({ selecionado: id, aba: 'props' })}>
+        <button
+          key={id}
+          className={`ficha ${selecionado === id ? 'on' : ''}`}
+          onClick={() => set({ selecionado: id, aba: 'props' })}
+          draggable={true}
+          onDragStart={(e) => {
+            e.dataTransfer.setData('application/stickboard-actor', id);
+            e.dataTransfer.setData('text/plain', id);
+            e.dataTransfer.effectAllowed = 'copy';
+          }}
+          style={{ cursor: 'grab' }}
+          title={`Clique para selecionar ou arraste ${ATORES[id]!.nome} para o palco`}
+        >
           <Miniatura ator={id} expressao={ATORES[id]!.expressaoPadrao} tamanho={72} />
           <b>{ATORES[id]!.nome} <em>{ATORES[id]!.idade}</em></b><small>{ATORES[id]!.descricao}</small>
         </button>

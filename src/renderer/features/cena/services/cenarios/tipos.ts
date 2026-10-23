@@ -29,7 +29,7 @@ export interface CenarioRenderContext {
 export interface CenarioStrategy {
   id: string;
   temLousa: boolean;
-  desenharFundo(ctx: CanvasRenderingContext2D, L: LayoutCena): void;
+  desenharFundo(ctx: CanvasRenderingContext2D, L: LayoutCena, rc?: CenarioRenderContext): void;
   desenharAtras?(ctx: CanvasRenderingContext2D, L: LayoutCena, rc: CenarioRenderContext): void;
   desenharFrente?(ctx: CanvasRenderingContext2D, L: LayoutCena, rc: CenarioRenderContext): void;
 }

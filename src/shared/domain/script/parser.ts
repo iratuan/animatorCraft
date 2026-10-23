@@ -26,10 +26,16 @@ export const ESTADOS: Record<string, { pose?: PoseId; expressao?: ExpressaoId }>
   empolgado: { expressao: 'empolgada' },
   entediado: { expressao: 'entediada' },
   sarcastico: { pose: 'sarcastico', expressao: 'sarcastica' },
-  pensativo: { pose: 'pensar' },
+  pensativo: { pose: 'pensar', expressao: 'pensativa' },
   envergonhado: { pose: 'envergonhado' },
   rindo: { pose: 'rindo', expressao: 'feliz' },
   chorando: { pose: 'chorando', expressao: 'triste' },
+  deboche: { expressao: 'deboche', pose: 'sarcastico' },
+  desesperado: { expressao: 'desespero', pose: 'maos_na_cabeca' },
+  comemorando: { pose: 'comemorar', expressao: 'empolgada' },
+  apresentando: { pose: 'apresentar', expressao: 'feliz' },
+  gesticulando: { pose: 'gesticular' },
+  piscando: { expressao: 'piscadela' },
 };
 
 export const VERBOS_FALA = ['diz', 'fala', 'grita', 'pergunta', 'responde', 'sussurra', 'reclama', 'exclama'];

@@ -169,7 +169,8 @@ export function renderizarCena(ctx: CanvasRenderingContext2D, estado: Estado, w:
     (estado.formato === 'papo_livre' || estado.formato === 'livre') ? 'papo_livre' : 'lousa'
   );
   const estrategia = obterEstrategiaCenario(cenarioNome);
-  estrategia.desenharFundo(ctx, L);
+  const rc = { visiveis, estado, w, escalaG, vis };
+  estrategia.desenharFundo(ctx, L, rc);
 
   // lousa: moldura e conteúdo planejado para caber (somente se não estiver desativada pelo cenário/tag)
   const temLousa = estrategia.temLousa && !estado.semLousa;
@@ -183,7 +184,6 @@ export function renderizarCena(ctx: CanvasRenderingContext2D, estado: Estado, w:
   }
 
   // Camada atrás dos personagens (ex.: cadeiras de estúdio)
-  const rc = { visiveis, estado, w, escalaG, vis };
   estrategia.desenharAtras?.(ctx, L, rc);
 
   // personagens: renderizados 100% no estilo Stickman cinematográfico

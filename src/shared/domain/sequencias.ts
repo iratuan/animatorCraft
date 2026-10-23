@@ -53,6 +53,28 @@ export const SEQUENCIAS: Sequencia[] = [
   { id: 'laura-balé', nome: 'Balé', categoria: 'Dança', descricao: 'Gira e saltita (5 s).', atores: ['laura'], roteiro: '{A} dança balé por 5 segundos. {A} ri.' },
   { id: 'laura-sapeca', nome: 'Sapeca esperta', categoria: 'Reação', descricao: 'Sorriso de quem já sabia.', atores: ['laura'], roteiro: '{A} fica sarcástico. {A} diz "Eu já sabia!" empolgado.' },
   { id: 'laura-resposta', nome: 'Sabe a resposta', categoria: 'Reação', descricao: 'Pula e responde.', atores: ['laura'], roteiro: '{A} pula. {A} diz "Eu sei, eu sei!" empolgado. {A} aponta.' },
+
+  // ---- Geral: Debate e Apresentação
+  { id: 'apresentar-tema', nome: 'Apresentar Tema da Aula', categoria: 'Reação', descricao: 'Apresenta a lousa e introduz o tópico.', roteiro: '{A} apresenta. {A} diz "Hoje vamos aprender um conceito essencial." feliz. {A} aponta.' },
+  { id: 'debate-argumento', nome: 'Argumentação Firme', categoria: 'Reação', descricao: 'Gesticula com convicção e defende sua tese.', roteiro: '{A} gesticula. {A} diz "Os dados mostram exatamente o contrário!" empolgado. {A} cruza os braços.' },
+  { id: 'panico-comico', nome: 'Pânico / Desespero Cômico', categoria: 'Expressões', descricao: 'Mãos na cabeça, pânico e desespero total.', roteiro: '{A} põe as mãos na cabeça. {A} diz "Meu Deus, esqueci de salvar o projeto!" desesperado. {A} tropeça.' },
+
+  // ---- Mingau (gato curioso, ágil)
+  { id: 'mingau-curioso', nome: 'Curiosidade Felina', categoria: 'Reação', descricao: 'Chega perto, observa e dá um salto.', atores: ['mingau'], roteiro: '{A} fica confuso. {A} pula. {A} diz "Miau!" feliz.' },
+
+  // ---- Paraíba (direto, bem-humorado)
+  { id: 'paraiba-oxente', nome: 'Oxente!', categoria: 'Reação', descricao: 'Surpresa e risada autêntica.', atores: ['paraiba'], roteiro: '{A} fica surpreso. {A} diz "Oxente, mas isso é bom demais da conta!" feliz. {A} ri.' },
+
+  // ---- Véia e Vêio (sabedoria e implicância bem-humorada)
+  { id: 'veia-bronca', nome: 'Bronca Carinhosa', categoria: 'Reação', descricao: 'Mãos na cintura e conselho sábio.', atores: ['veia'], roteiro: '{A} põe as mãos na cintura. {A} diz "No meu tempo a gente estudava com afinco!" brava. {A} ri.' },
+  { id: 'veio-filosofo', nome: 'Filosofia da Vida', categoria: 'Reação', descricao: 'Pensa devagar e solta uma pérola.', atores: ['veio'], roteiro: '{A} pensa. {A} diz "A calma é a virtude dos sábios, meu jovem." feliz. {A} cruza os braços.' },
+
+  // ---- Artur e Carol (estudantes focados)
+  { id: 'artur-explicacao', nome: 'Explicação Didática', categoria: 'Reação', descricao: 'Apresenta o raciocínio no detalhe.', atores: ['artur'], roteiro: '{A} apresenta. {A} diz "Analisando por esse ângulo, tudo faz sentido." empolgado. {A} gesticula.' },
+  { id: 'carol-dedicada', nome: 'Anotação Crítica', categoria: 'Reação', descricao: 'Analisa, compreende e conclui.', atores: ['carol'], roteiro: '{A} pensa. {A} diz "Excelente observação, anotei aqui!" feliz. {A} acena.' },
+
+  // ---- Elizendra (professora inspiradora)
+  { id: 'elizendra-mestra', nome: 'Intervenção da Mestra', categoria: 'Reação', descricao: 'Elogia a turma e estimula a curiosidade.', atores: ['elizendra'], roteiro: '{A} apresenta. {A} diz "Muito bem, turma! Vocês superaram todas as expectativas!" feliz. {A} comemora.' },
 ];
 
 export function sequenciasPara(ator: ActorId | null): Sequencia[] {

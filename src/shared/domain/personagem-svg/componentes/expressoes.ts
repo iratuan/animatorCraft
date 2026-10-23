@@ -74,6 +74,31 @@ export const EXPRESSOES_VETORIAIS: Record<ExpressaoId, GeometriaExpressaoSVG> = 
     olhoCaido: true,
     boca: 'M -10,13 L 10,13',
   },
+  deboche: {
+    sobrancelhaEsq: 'M -18,-14 Q -10,-17 -2,-13',
+    sobrancelhaDir: 'M 2,-25 Q 10,-28 18,-23', // sobrancelha altamente levantada
+    olhoAbertura: 0.8,
+    olhoCaido: true,
+    boca: 'M -10,15 Q 0,14 13,8', // sorriso de deboche torto
+  },
+  desespero: {
+    sobrancelhaEsq: 'M -19,-26 Q -10,-21 -2,-28',
+    sobrancelhaDir: 'M 2,-28 Q 10,-21 19,-26',
+    olhoAbertura: 1.45,
+    boca: 'M -12,8 Q 0,30 12,8 Q 0,16 -12,8 Z', // boca aberta em pânico
+  },
+  pensativa: {
+    sobrancelhaEsq: 'M -18,-16 Q -10,-19 -2,-15',
+    sobrancelhaDir: 'M 2,-19 Q 10,-23 18,-18',
+    olhoAbertura: 0.9,
+    boca: 'M -8,14 L 8,13',
+  },
+  piscadela: {
+    sobrancelhaEsq: 'M -18,-20 Q -10,-24 -2,-19',
+    sobrancelhaDir: 'M 2,-19 Q 10,-23 18,-18',
+    olhoAbertura: 1.15,
+    boca: 'M -12,10 Q 0,22 12,10 Q 0,14 -12,10 Z',
+  },
 };
 
 /** Formatos de boca para sincronia labial (visemas) */

@@ -106,12 +106,17 @@ export const cenarioPodcast: CenarioStrategy = {
       bolinha(ctx, mx + 12 + i * 14, mesaY + 12 + (i % 2) * 5, 2.5);
     }
 
-    const atoresX = rc.visiveis
+    const participantes = rc.visiveis
       .filter((id) => (rc.vis.atores[id] ?? 0) > 0.01 && id !== 'paraiba' && id !== 'mingau')
-      .map((id) => (rc.estado.atores[id]?.x ?? 0.5) * rc.w);
-    const microfonesX = atoresX.length > 0 ? atoresX : [L.w * 0.32, L.w * 0.68];
+      .map((id) => ({
+        id,
+        x: (rc.estado.atores[id]?.x ?? 0.5) * rc.w,
+        falando: !!rc.estado.atores[id]?.fala,
+      }));
+    const microfones = participantes.length > 0 ? participantes : [{ id: 'padrao', x: L.w * 0.5, falando: false }];
 
-    for (const ax of microfonesX) {
+    for (const p of microfones) {
+      const ax = p.x;
       const cugX = ax + (ax < L.w * 0.5 ? 85 : -85);
       ctx.lineWidth = 3;
       ctx.beginPath();
@@ -153,9 +158,20 @@ export const cenarioPodcast: CenarioStrategy = {
       ctx.beginPath();
       ctx.roundRect(-14, -20, 28, 42, 10);
       ctx.fill(); ctx.stroke();
-      ctx.lineWidth = 2;
-      linha(ctx, { x: -10, y: -4 }, { x: 10, y: -4 });
+
+      // Anel de indicação de estúdio ativo
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = p.falando ? '#ef4444' : '#111';
+      linha(ctx, { x: -12, y: -4 }, { x: 12, y: -4 });
+      ctx.strokeStyle = '#111';
       linha(ctx, { x: -10, y: 4 }, { x: 10, y: 4 });
+
+      if (p.falando) {
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.arc(0, -10, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
       ctx.restore();
     }
 

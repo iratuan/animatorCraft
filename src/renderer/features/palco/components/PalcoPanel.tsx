@@ -29,6 +29,7 @@ export function PalcoPanel() {
   const { estado, timeline, dim } = useRoteiroDerivado();
   const { canvas, area, estilo } = usePalcoCanvas();
   const pegada = useRef<{ id: string; dx: number; x0: number; moveu: boolean } | null>(null);
+  const [dragOverX, setDragOverX] = useState<number | null>(null);
 
   useEffect(() => {
     if (!telaCheia) return;
@@ -70,6 +71,40 @@ export function PalcoPanel() {
     set({ mensagem: `${nome} agora fica na posição ${Math.round(a.x * 100)}% a partir de ${(ancora?.fim ?? 0).toFixed(1)} s.` });
   };
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+    if (canvas.current) {
+      const r = canvas.current.getBoundingClientRect();
+      const fx = Math.min(0.95, Math.max(0.05, (e.clientX - r.left) / r.width));
+      setDragOverX(fx);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    // Só zera se realmente saiu da área
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setDragOverX(null);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOverX(null);
+    const id = e.dataTransfer.getData('application/stickboard-actor') || e.dataTransfer.getData('text/plain');
+    if (!id || !ATORES[id] || !canvas.current) return;
+
+    const r = canvas.current.getBoundingClientRect();
+    const fx = Math.min(0.95, Math.max(0.05, (e.clientX - r.left) / r.width));
+    const nome = ATORES[id]!.nome;
+    const { ancora, existente } = ancoraDaPosicao(timeline.eventos, t, id);
+    setRoteiro(posicionarNoRoteiro(roteiro, nome, fx * 100, ancora?.origem, existente?.origem));
+    set({
+      selecionado: id,
+      mensagem: `${nome} adicionado/posicionado no palco em ${Math.round(fx * 100)}% (t = ${t.toFixed(1)}s).`,
+    });
+  };
+
   return (
     <Painel
       className={`palco ${telaCheia ? 'em-tela-cheia' : ''}`}
@@ -91,8 +126,57 @@ export function PalcoPanel() {
         </div>
       }
     >
-      <div className="area-palco" ref={area}>
-        <canvas ref={canvas} onPointerDown={baixar} onPointerMove={mover} onPointerUp={soltar} onPointerCancel={soltar} style={{ ...estilo, touchAction: 'none', cursor: arrasto ? 'grabbing' : 'default' }} />
+      <div
+        className="area-palco"
+        ref={area}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        style={{ position: 'relative' }}
+      >
+        <canvas
+          ref={canvas}
+          onPointerDown={baixar}
+          onPointerMove={mover}
+          onPointerUp={soltar}
+          onPointerCancel={soltar}
+          style={{ ...estilo, touchAction: 'none', cursor: arrasto ? 'grabbing' : 'default' }}
+        />
+        {dragOverX !== null && (
+          <div
+            style={{
+              position: 'absolute',
+              left: `${dragOverX * 100}%`,
+              top: 0,
+              bottom: 0,
+              width: 2,
+              background: 'var(--azul, #3b82f6)',
+              boxShadow: '0 0 8px rgba(59, 130, 246, 0.8)',
+              pointerEvents: 'none',
+              zIndex: 10,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                top: 14,
+                background: 'var(--azul, #3b82f6)',
+                color: '#fff',
+                fontSize: '11px',
+                fontWeight: 600,
+                padding: '2px 8px',
+                borderRadius: 10,
+                whiteSpace: 'nowrap',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+              }}
+            >
+              Soltar em {Math.round(dragOverX * 100)}%
+            </div>
+          </div>
+        )}
       </div>
       <Transporte />
     </Painel>
