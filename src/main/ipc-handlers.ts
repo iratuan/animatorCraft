@@ -4,6 +4,7 @@ import type { InfoApp, PacoteEscolhido, PedidoSalvarVideo, RoteiroAberto } from 
 import { abrirPacote, abrirRoteiro, salvarRoteiro } from './services/arquivos';
 import { salvarVideo } from './services/video';
 import { salvarPacote } from './services/pacotes';
+import { definirAlteracoesPendentes } from './services/janela';
 
 /** Registra todos os canais IPC. Cada canal só delega para um serviço; a regra de negócio fica em services/. */
 export function registrarIpc(): void {
@@ -13,5 +14,6 @@ export function registrarIpc(): void {
   ipcMain.handle(CANAIS_IPC.pacoteAbrir, (): Promise<PacoteEscolhido | null> => abrirPacote());
   ipcMain.handle(CANAIS_IPC.pacoteSalvar, (_e, pedido: PedidoSalvarVideo): Promise<string | null> => salvarPacote(pedido));
   ipcMain.handle(CANAIS_IPC.copiarTexto, (_e, texto: string): boolean => { if (typeof texto !== 'string' || texto.length > 5_000_000) return false; clipboard.writeText(texto); return true; });
+  ipcMain.handle(CANAIS_IPC.alteracoesPendentes, (_e, pendentes: boolean): void => definirAlteracoesPendentes(pendentes));
   ipcMain.handle(CANAIS_IPC.infoApp, (): InfoApp => ({ versao: app.getVersion(), plataforma: process.platform, electron: process.versions.electron }));
 }

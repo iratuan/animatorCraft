@@ -9,6 +9,8 @@ import { Miniatura } from '@renderer/components/Miniatura';
 import { useEditor } from '@renderer/store/editor-store';
 import { carregarAnimacoesSalvas, salvarClipes, salvarExpressoes } from '../services/animacoes';
 import { PreviaAnimacao } from './PreviaAnimacao';
+import { Modal, fecharSeguro } from '@renderer/components/Modal';
+import { useAlterado } from '@renderer/components/useAlterado';
 
 const NOME_MOV: Record<Movimento, string> = {
   respirar: 'Respirar', quicar: 'Quicar', balancar: 'Balançar', tremer: 'Tremer', girar: 'Girar (vira de lado)', pular: 'Pular', inclinar: 'Inclinar', andar: 'Andar', correr: 'Correr', encolher: 'Encolher',
@@ -52,6 +54,8 @@ export function EditorAnimacaoModal() {
   const [lista, setLista] = useState(0); // força a releitura dos registros depois de salvar/excluir
   const [msg, setMsg] = useState('');
   const [abertoDe, setAbertoDe] = useState<ActorId | null>(null);
+  // rascunhos de expressão e de clipe ainda não gravados: pergunta antes de fechar
+  const alterado = useAlterado({ exprRasc, clipeRasc });
   if (!alvo) return null;
   const id: ActorId = alvo.ator;
   // ao abrir (ou trocar de personagem) começa limpo
@@ -149,8 +153,7 @@ export function EditorAnimacaoModal() {
   };
 
   return (
-    <div className="modal-fundo" onClick={fechar}>
-      <div className="modal largo anim" role="dialog" aria-label="Expressões e clipes do personagem" onClick={(ev) => ev.stopPropagation()}>
+    <Modal titulo="Expressões e clipes do personagem" classe="largo anim" sujo={alterado} onFechar={fechar}>
         <h3>Expressões e clipes de {espec.nome}</h3>
         <div className="seletor-personagem">
           {ORDEM_ATORES.map((a) => <button key={a} className={a === id ? 'on' : ''} onClick={() => { carregarAnimacoesSalvas(); set({ editorAnimacao: { ator: a, aba } }); }}>{ATORES[a]!.nome}</button>)}
@@ -307,8 +310,7 @@ export function EditorAnimacaoModal() {
           </div>
         </div>
 
-        <div className="modal-botoes"><button className="primario" onClick={fechar}>Fechar</button></div>
-      </div>
-    </div>
+        <div className="modal-botoes"><button className="primario" onClick={() => fecharSeguro(alterado, fechar)}>Fechar</button></div>
+    </Modal>
   );
 }

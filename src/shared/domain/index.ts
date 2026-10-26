@@ -8,9 +8,12 @@ export * from './visemas';
 export * from './modelos';
 export * from './latex';
 export { parseRoteiro } from './script/parser';
+export { sugestoesDeFrase, sugerirParecidos, separarFrase, catalogoDeAcoes, candidatosDoAtor, diagnosticoDe } from './script/sugestoes';
 export * from './script/fala-colorida';
 export * from './nomenclatura';
 export { tornarSimultanea, tornarSequencial, reescreverDuracao, excluirFrase, posicionarNoRoteiro, fraseDaImagem, reescreverImagem, inserirNoCursor, substituirFala } from './script/editar';
+export { mencaoNoCursor, opcoesMencao, inserirMencao, type Mencao, type OpcaoMencao } from './script/mencao';
+export { colchetesNoCursor, imagensCitadas, opcoesColchetes, inserirColchetes, teclaColchetes, desembrulharColchetes, type Colchetes, type OpcaoColchetes } from './script/colchetes';
 
 export * from './audio';
 export * from './grafico';

@@ -7,6 +7,7 @@ import { useEditor } from '@renderer/store/editor-store';
 import { plataforma } from '@renderer/features/sistema';
 import { aplicarPacote, lerPacote } from '../services/pacotes';
 import { montarPacoteExportacao, nomeDoZip } from '../services/exportarSprites';
+import { Modal, fecharSeguro } from '@renderer/components/Modal';
 
 type Espaco = { tipo: 'pose' | 'rosto' | 'prop'; nome: string; rotulo: string };
 
@@ -26,6 +27,8 @@ export function EditorSpritesModal() {
   const pendente = useRef<Espaco | null>(null);
   const [novoNome, setNovoNome] = useState('');
   const [novoTipo, setNovoTipo] = useState<'pose' | 'prop'>('pose');
+  // nome de um sprite novo digitado e ainda não criado: pergunta antes de fechar
+  const alterado = novoNome.trim() !== '';
   if (!alvo) return null;
 
   const id: ActorId = alvo;
@@ -97,8 +100,7 @@ export function EditorSpritesModal() {
   };
 
   return (
-    <div className="modal-fundo" onClick={fechar}>
-      <div className="modal largo" role="dialog" aria-label="Editor de sprites do personagem" onClick={(ev) => ev.stopPropagation()}>
+    <Modal titulo="Editor de sprites do personagem" classe="largo" sujo={novoNome.trim() !== ''} onFechar={fechar}>
         <h3>Sprites de {ATORES[id]!.nome}</h3>
         <p className="dica">
           Clique em um espaço para editá-lo no editor de imagem integrado (camadas, pincel, borracha, seleção…); o botão PNG envia um arquivo pronto. Fundo transparente; nos rostos, só a cabeça com a pele do personagem. Para editar fora do app (Photoshop, Krita, Photopea…), exporte o zip,
@@ -125,10 +127,9 @@ export function EditorSpritesModal() {
         <div className="modal-botoes">
           <button onClick={() => void exportar([id])}>Exportar {ATORES[id]!.nome} (.zip)</button>
           <button onClick={() => void exportar([...ORDEM_ATORES])}>Exportar todos (.zip)</button>
-          <button className="primario" onClick={fechar}>Fechar</button>
+          <button className="primario" onClick={() => fecharSeguro(alterado, fechar)}>Fechar</button>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }
 

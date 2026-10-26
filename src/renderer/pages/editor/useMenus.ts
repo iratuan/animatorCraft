@@ -8,7 +8,7 @@ import { useRoteiroEstatico } from '@renderer/features/roteiro';
 import { limparPacotesSalvos, lerPacote, montarPacoteExportacao, nomeDoZip } from '@renderer/features/personagens';
 import { gerarSrt, estadoEm, ATORES, gerarRoteiroGravacaoMarkdown } from '@shared/domain';
 import { renderizarCena } from '@renderer/features/cena';
-import { abrirProjeto, montarProjeto } from '@renderer/features/projeto';
+import { abrirProjeto, montarProjeto, pedirTexto } from '@renderer/features/projeto';
 import { escolherEInserirImagem } from '@renderer/features/imagens';
 import { useExportar } from '@renderer/features/exportacao';
 import { baixarArquivo, plataforma } from '@renderer/features/sistema';
@@ -56,9 +56,8 @@ export function useMenus(): GrupoMenu[] {
   const salvarProjetoComo = async () => {
     const { nomeProjeto, marcarSalvo } = useEditor.getState();
     const nomeAtual = nomeProjeto || 'meu-projeto';
-    const nomeDigitado = typeof window !== 'undefined'
-      ? window.prompt('Qual o nome com que deseja salvar o projeto (.zip)?', nomeAtual)
-      : nomeAtual;
+    // pergunta dentro do app: o window.prompt não é suportado no Electron
+    const nomeDigitado = await pedirTexto('Nome com que deseja salvar o projeto (.zip)', nomeAtual);
     if (nomeDigitado === null) return;
     const nomeLimpo = nomeDigitado.trim() || nomeAtual;
     set({ nomeProjeto: nomeLimpo });

@@ -1,6 +1,7 @@
 import { ATORES, type ActorId } from '@shared/domain';
 import { useEditor } from '@renderer/store/editor-store';
 import { aplicarPacote } from '../services/pacotes';
+import { Modal } from '@renderer/components/Modal';
 
 /** Relatório de validação do pacote de sprites antes de importar. Erros de nome bloqueiam; avisos não. */
 export function ImportarPacoteModal() {
@@ -28,8 +29,7 @@ export function ImportarPacoteModal() {
   };
 
   return (
-    <div className="modal-fundo" onClick={fechar}>
-      <div className="modal" role="dialog" aria-label="Importar pacote de sprites" onClick={(e) => e.stopPropagation()}>
+    <Modal titulo="Importar pacote de sprites" sujo={false} onFechar={fechar}>
         <h3>Importar pacote de sprites</h3>
         <p className="dica">{importacao.nome} — {r.sprites.length} sprite(s) reconhecido(s)</p>
         {Object.entries(r.resumo).map(([id, s]) => (
@@ -54,8 +54,7 @@ export function ImportarPacoteModal() {
           <button onClick={fechar}>Cancelar</button>
           <button className="primario" disabled={bloqueado} onClick={confirmar}>{bloqueado ? 'Corrija os erros e tente de novo' : 'Importar'}</button>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }
 

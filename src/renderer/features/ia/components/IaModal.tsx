@@ -3,14 +3,17 @@ import { ATORES, MODELOS, ORDEM_ATORES, gerarRoteiro, promptGerar, promptMelhora
 import { bibliotecaAtual } from '@renderer/features/prompt-mestre';
 import { useEditor } from '@renderer/store/editor-store';
 import { criarPedidoIA, gravarConfigIA, lerConfigIA, PREDEFINICOES, type ConfigIA } from '../services/cliente';
+import { Modal, fecharSeguro } from '@renderer/components/Modal';
+import { useAlterado } from '@renderer/components/useAlterado';
+import { Icones, type NomeIcone } from '@renderer/components/Icones';
 
 const FORMATOS: { id: FormatoProducao; rotulo: string; icone: string; desc: string }[] = [
-  { id: 'aula', rotulo: 'Aula com Lousa', icone: '📚', desc: 'Explicações didáticas passo a passo na lousa com fórmulas e gráficos' },
-  { id: 'podcast', rotulo: 'Podcast / Mesa', icone: '🎙️', desc: 'Bancada com microfones Shure, fones de ouvido e debate entre participantes' },
-  { id: 'telejornal', rotulo: 'Telejornal / Drops', icone: '📺', desc: 'Bancada de estúdio de TV, videowall global e tarja de notícias ao vivo' },
-  { id: 'debate', rotulo: 'Grande Debate', icone: '⚖️', desc: 'Mesa de debate oficial com microfones gooseneck, mediação e cronômetro de tempo' },
-  { id: 'papo_livre', rotulo: 'Papo Livre / Lounge', icone: '🛋️', desc: 'Sala confortável descontraída com poltronas, mesa de centro e conversa espontânea' },
-  { id: 'livre', rotulo: 'Esquete Livre', icone: '🎭', desc: 'Palco aberto sem lousa com atuação física cômica e mascotes' },
+  { id: 'aula', rotulo: 'Aula com Lousa', icone: 'formatoAula', desc: 'Explicações didáticas passo a passo na lousa com fórmulas e gráficos' },
+  { id: 'podcast', rotulo: 'Podcast / Mesa', icone: 'formatoPodcast', desc: 'Bancada com microfones Shure, fones de ouvido e debate entre participantes' },
+  { id: 'telejornal', rotulo: 'Telejornal / Drops', icone: 'formatoTelejornal', desc: 'Bancada de estúdio de TV, videowall global e tarja de notícias ao vivo' },
+  { id: 'debate', rotulo: 'Grande Debate', icone: 'formatoDebate', desc: 'Mesa de debate oficial com microfones gooseneck, mediação e cronômetro de tempo' },
+  { id: 'papo_livre', rotulo: 'Papo Livre / Lounge', icone: 'formatoPapoLivre', desc: 'Sala confortável descontraída com poltronas, mesa de centro e conversa espontânea' },
+  { id: 'livre', rotulo: 'Esquete Livre', icone: 'formatoLivre', desc: 'Palco aberto sem lousa com atuação física cômica e mascotes' },
 ];
 
 const OPCOES_MATERIA: Record<FormatoProducao, { rotulo: string; opcoes: string[] }> = {
@@ -65,6 +68,8 @@ export function IaModal() {
   const [ocupado, setOcupado] = useState(false);
   const [erro, setErro] = useState('');
   const [resultado, setResultado] = useState<{ roteiro: string; avisos: string[]; rodadas: number } | null>(null);
+  // um pedido digitado ou um roteiro gerado e ainda não usado se perdem ao fechar: pergunta antes
+  const alterado = useAlterado({ pedido, instrucao }) || resultado !== null;
 
   if (!aberto) return null;
 
@@ -118,8 +123,7 @@ export function IaModal() {
   const serieCfg = OPCOES_SERIE[formato];
 
   return (
-    <div className="modal-fundo" onClick={fechar}>
-      <div className="modal largo" role="dialog" aria-label="Roteiro com IA" onClick={(e) => e.stopPropagation()}>
+    <Modal titulo="Roteiro com IA" classe="largo" sujo={alterado} onFechar={fechar}>
         <h3>Roteiro com IA</h3>
         <div className="seletor-personagem">
           <button className={modo === 'novo' ? 'on' : ''} onClick={() => setModo('novo')}>Criar roteiro novo</button>
@@ -149,7 +153,7 @@ export function IaModal() {
                     }}
                     onClick={() => trocarFormato(f.id)}
                   >
-                    <span style={{ fontSize: '1.2rem', marginBottom: 2 }}>{f.icone}</span>
+                    <span style={{ marginBottom: 2 }}>{Icones[f.icone as NomeIcone]}</span>
                     <strong style={{ fontSize: '0.85rem' }}>{f.rotulo}</strong>
                   </button>
                 ))}
@@ -272,12 +276,11 @@ export function IaModal() {
           </>
         )}
         <div className="modal-botoes">
-          <button onClick={fechar}>Fechar</button>
+          <button onClick={() => fecharSeguro(alterado, fechar)}>Fechar</button>
           {resultado && modo === 'novo' && <button onClick={() => usar(true)}>Acrescentar ao roteiro</button>}
           {resultado && <button className="primario" onClick={() => usar(false)}>Substituir o roteiro</button>}
           <button className="primario" disabled={ocupado || precisaChave || (modo === 'novo' && !pedido.tema.trim())} onClick={() => void gerar()}>{ocupado ? 'Gerando…' : resultado ? 'Gerar de novo' : 'Gerar'}</button>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }

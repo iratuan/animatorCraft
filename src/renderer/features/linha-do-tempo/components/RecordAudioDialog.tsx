@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { ATORES, type Evento } from '@shared/domain';
+import { Modal, fecharSeguro } from '@renderer/components/Modal';
 
 interface RecordAudioDialogProps {
   open: boolean;
@@ -15,6 +16,8 @@ export default function RecordAudioDialog({ open, evento, onClose, onSave }: Rec
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [erro, setErro] = useState<string | null>(null);
+  // gravando agora, ou um áudio gravado que ainda não foi anexado à fala: perguntar antes de fechar
+  const alterado = gravando || audioFile !== null;
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -140,14 +143,7 @@ export default function RecordAudioDialog({ open, evento, onClose, onSave }: Rec
   };
 
   return (
-    <div className="modal-fundo" onClick={onClose}>
-      <div
-        className="modal"
-        style={{ width: 480, maxWidth: '92vw' }}
-        role="dialog"
-        aria-label={`Gravar ou anexar áudio para ${nomeAtor}`}
-        onClick={(e) => e.stopPropagation()}
-      >
+    <Modal titulo="Áudio da fala" sujo={alterado} onFechar={onClose} estilo={{ width: 480, maxWidth: '92vw' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <h3 style={{ margin: 0, fontSize: '15px' }}>🎙️ Áudio da fala: {nomeAtor}</h3>
           <button
@@ -306,7 +302,7 @@ export default function RecordAudioDialog({ open, evento, onClose, onSave }: Rec
 
         {/* Ações */}
         <div className="modal-botoes" style={{ marginTop: 20 }}>
-          <button type="button" onClick={onClose}>
+          <button type="button" onClick={() => fecharSeguro(alterado, onClose)}>
             Cancelar
           </button>
           <button
@@ -318,7 +314,6 @@ export default function RecordAudioDialog({ open, evento, onClose, onSave }: Rec
             Anexar à Linha do Tempo
           </button>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }

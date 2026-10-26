@@ -108,7 +108,7 @@ export function PalcoPanel() {
   return (
     <Painel
       className={`palco ${telaCheia ? 'em-tela-cheia' : ''}`}
-      titulo={<>Palco <small>{dim.w}×{dim.h} · {FPS} fps · escala de cinza · arraste um personagem para posicioná-lo</small></>}
+      titulo={<>Palco <small className="palco-legenda" title="Formato do palco e dica de uso">{dim.w}×{dim.h} · {FPS} fps · escala de cinza · arraste um personagem para posicioná-lo</small></>}
       acoes={
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <div className="seg">

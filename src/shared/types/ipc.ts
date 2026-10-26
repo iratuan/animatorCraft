@@ -23,4 +23,6 @@ export interface StickboardApi {
   info(): Promise<InfoApp>;
   /** copia texto para a área de transferência do sistema (o navegador do Electron bloqueia a API web) */
   copiarTexto(texto: string): Promise<boolean>;
+  /** avisa o processo principal se há alterações não salvas: ao fechar a janela, ele pergunta antes */
+  definirAlteracoesPendentes(pendentes: boolean): Promise<void>;
 }

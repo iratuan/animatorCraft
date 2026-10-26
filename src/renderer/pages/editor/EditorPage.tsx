@@ -15,7 +15,9 @@ import { EditorImagemModal } from '@renderer/features/editor-imagem';
 import { useCargaInicial } from '@renderer/pages/editor/useCargaInicial';
 import { RoteiroPanel, useRoteiroDerivado } from '@renderer/features/roteiro';
 import { EditorMatematicaModal } from '@renderer/features/matematica';
-import { ConfirmarFecharProjetoModal } from '@renderer/features/projeto';
+import { ConfirmarFecharProjetoModal, PedidoTextoModal } from '@renderer/features/projeto';
+import { ConfirmarExportacaoModal } from '@renderer/features/exportacao';
+import { AvisoFlutuante } from '@renderer/components/AvisoFlutuante';
 import { prepararPersonagens } from '@renderer/bootstrap';
 
 // os personagens criados pelo usuário precisam existir antes da primeira interpretação do roteiro
@@ -90,6 +92,9 @@ export function EditorPage() {
       <IaModal />
       <EditorMatematicaModal />
       <ConfirmarFecharProjetoModal />
+      <PedidoTextoModal />
+      <ConfirmarExportacaoModal />
+      <AvisoFlutuante />
     </>
   );
 }

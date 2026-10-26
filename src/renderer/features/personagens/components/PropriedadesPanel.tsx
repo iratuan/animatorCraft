@@ -40,7 +40,7 @@ export function PropriedadesPanel() {
         {espec.personalizado ? (
           <button onClick={() => set({ fichaPersonagem: { id: selecionado } })}>Editar ficha</button>
         ) : (
-          <button onClick={() => set({ fichaPersonagem: { id: selecionado } })}>🎨 Ficha & Vetores SVG</button>
+          <button onClick={() => set({ fichaPersonagem: { id: selecionado } })}>🎨 Ficha do personagem</button>
         )}
         <button onClick={() => set({ fichaPersonagem: { duplicarDe: selecionado } })}>Duplicar como novo</button>
       </div>

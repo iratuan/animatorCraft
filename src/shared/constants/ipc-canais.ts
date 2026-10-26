@@ -7,6 +7,7 @@ export const CANAIS_IPC = {
   pacoteSalvar: 'pacote:salvar',
   infoApp: 'app:info',
   copiarTexto: 'area-de-transferencia:copiar',
+  alteracoesPendentes: 'janela:alteracoes-pendentes',
 } as const;
 
 export type CanalIpc = (typeof CANAIS_IPC)[keyof typeof CANAIS_IPC];

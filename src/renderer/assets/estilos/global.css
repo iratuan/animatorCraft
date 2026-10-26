@@ -33,6 +33,11 @@ button:disabled { opacity: 0.35; cursor: default; }
 .dropdown .item-com-submenu > .botao-item-sub .seta-sub { font-size: 10px; margin-left: 14px; opacity: 0.7; }
 .dropdown .item-com-submenu:hover > .botao-item-sub,
 .dropdown .item-com-submenu.sub-on > .botao-item-sub { background: var(--azul); color: #fff; }
+/* foco pelo teclado com o mesmo destaque do mouse, para o usuário ver onde está */
+.menubar button:focus-visible, .dropdown button:focus-visible, .submenu button:focus-visible { outline: none; }
+.dropdown button:focus-visible:not(:disabled), .submenu button:focus-visible:not(:disabled), .dropdown .item-com-submenu > .botao-item-sub:focus-visible { background: var(--azul); color: #fff; }
+.menubar > .menu > button:focus-visible { background: var(--bg3); box-shadow: inset 0 -2px var(--azul); }
+.menubar-projeto-ativo button:focus-visible { outline: 2px solid var(--azul); }
 .submenu { position: absolute; top: -4px; left: 100%; min-width: 250px; background: var(--bg2); border: 1px solid #000; box-shadow: 0 8px 24px rgba(0,0,0,.6); padding: 4px 0; z-index: 50; }
 .submenu button { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 6px 14px; text-align: left; }
 .submenu button:hover:not(:disabled) { background: var(--azul); color: #fff; }
@@ -48,6 +53,8 @@ button:disabled { opacity: 0.35; cursor: default; }
 /* painéis */
 .painel { background: var(--bg2); border-right: 1px solid var(--linha); display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 .painel > header { height: 28px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 10px; background: var(--bg1); border-bottom: 1px solid var(--linha); text-transform: uppercase; letter-spacing: 0.6px; font-size: 11px; color: var(--txt2); }
+/* o <small> do navegador encolhe para ~83% do texto pai, o que deixava as legendas em 9 px: piso de 11 px */
+small { font-size: max(11px, 0.92em); }
 .painel > header small { text-transform: none; letter-spacing: 0; margin-left: 8px; opacity: .8; }
 .painel > .corpo { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: auto; }
 .roteiro { grid-area: roteiro; }
@@ -58,6 +65,28 @@ button:disabled { opacity: 0.35; cursor: default; }
 .tempo-painel > .corpo { overflow: hidden; }
 
 .roteiro textarea { flex: 1; min-height: 120px; resize: none; background: #1b1b1b; color: #e8e8e8; border: 0; outline: 0; padding: 12px; font: 13.5px/1.65 Consolas, "Cascadia Mono", monospace; tab-size: 2; }
+.roteiro-corpo { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+/* sublinhado do roteiro: a camada e o textarea têm a mesma caixa, fonte e barra de rolagem (senão os trechos não caem sob as letras) */
+.roteiro-corpo textarea { box-sizing: border-box; overflow-y: scroll; scrollbar-color: #444 #1b1b1b; }
+.roteiro-corpo textarea.com-camada { position: relative; z-index: 1; background: transparent; color: transparent; caret-color: #e8e8e8; }
+.roteiro-corpo textarea.com-camada::selection { background: rgba(56, 189, 248, 0.35); color: transparent; }
+.camada-roteiro { position: absolute; inset: 0; z-index: 0; margin: 0; padding: 12px; box-sizing: border-box; overflow-y: scroll; scrollbar-color: transparent transparent; background: #1b1b1b; color: #e8e8e8; font: 13.5px/1.65 Consolas, "Cascadia Mono", monospace; tab-size: 2; white-space: pre-wrap; overflow-wrap: break-word; pointer-events: none; }
+.camada-roteiro .sub-erro { text-decoration: underline wavy #f87171; }
+.camada-roteiro .sub-aviso { text-decoration: underline wavy #fbbf24; }
+.avisos.diagnosticos li.diag { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 3px 0; }
+.avisos.diagnosticos li.diag.erro { color: #fca5a5; }
+.avisos.diagnosticos li.diag.atual { outline: 1px solid #fbbf24; outline-offset: 2px; border-radius: 3px; }
+.diag-ir { background: none; border: 0; padding: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.diag-ir:hover { text-decoration: underline; }
+.diag-sugestao { font-size: 11px; padding: 1px 8px; background: #333; color: #e8e8e8; border: 1px solid #555; border-radius: 10px; cursor: pointer; }
+.diag-sugestao:hover { background: #0c4a6e; border-color: #0284c7; }
+/* seletor de personagens do "@": flutua junto ao cursor, sem tirar o foco do roteiro */
+.seletor-mencao { position: absolute; z-index: 20; min-width: 220px; max-height: 240px; overflow: auto; margin: 0; padding: 4px 0; list-style: none; background: #262626; border: 1px solid #444; border-radius: 6px; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5); font-size: 13px; }
+.seletor-mencao li { display: flex; justify-content: space-between; gap: 12px; padding: 5px 10px; cursor: pointer; color: #ddd; }
+.seletor-mencao li.ativo { background: #0c4a6e; color: #fff; }
+.seletor-mencao .detalhe { color: #9a9a9a; font-size: 11px; align-self: center; white-space: nowrap; }
+.seletor-mencao li.ativo .detalhe { color: #bae6fd; }
+.seletor-mencao li.grupo { display: block; padding: 4px 10px 2px; color: #7dd3fc; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; cursor: default; }
 .avisos { margin: 0; padding: 6px 10px; list-style: none; background: #3a2f1a; color: #ffc86b; max-height: 90px; overflow: auto; font-size: 12px; }
 .badge { padding: 1px 8px; border-radius: 9px; font-size: 11px; text-transform: none; letter-spacing: 0; }
 .badge.ok { background: #1e3a2a; color: #6ee7a0; } .badge.aviso { background: #4a3a14; color: #ffc86b; }
@@ -66,7 +95,7 @@ button:disabled { opacity: 0.35; cursor: default; }
 .area-palco { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: repeating-conic-gradient(#262626 0% 25%, #222 0% 50%) 0 0/20px 20px; }
 .area-palco canvas { flex: none; background: #fff; box-shadow: 0 6px 30px rgba(0,0,0,.6); cursor: pointer; }
 .seg { display: flex; border: 1px solid #000; border-radius: 4px; overflow: hidden; }
-.seg button { padding: 2px 10px; text-transform: none; letter-spacing: 0; background: var(--bg2); }
+.seg button { padding: 5px 10px; min-height: 24px; text-transform: none; letter-spacing: 0; background: var(--bg2); }
 .seg button.on { background: var(--azul); color: #fff; }
 .transporte { flex: none; height: 44px; display: flex; align-items: center; gap: 4px; padding: 0 10px; background: var(--bg1); border-top: 1px solid var(--linha); }
 .transporte button { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 4px; }
@@ -78,12 +107,30 @@ button:disabled { opacity: 0.35; cursor: default; }
 .espaco { flex: 1; }
 .zoom { display: flex; align-items: center; gap: 6px; color: var(--txt2); margin-right: 10px; }
 .zoom input { width: 90px; }
-.transporte .exportar { width: auto; padding: 0 16px; background: var(--laranja); color: #1a0e00; font-weight: 600; }
+.transporte .exportar { width: auto; padding: 0 16px; background: var(--laranja); color: #1a0e00; font-weight: 600; white-space: nowrap; }
+/* palco estreito (janelas de 1280 px): o zoom perde o rótulo e o slider encolhe, para o Exportar caber na linha */
+@media (max-width: 1400px) {
+  .transporte .zoom-rotulo { display: none; }
+  .transporte .zoom input[type=range] { width: 70px; }
+  .transporte .tempo { font-size: 12px; }
+}
 .transporte .exportar:hover:not(:disabled) { background: #ffa05f; }
 
 /* propriedades */
-.abas { display: flex; gap: 0; height: 100%; min-width: 0; overflow-x: auto; scrollbar-width: none; }
-.abas button { flex: none; padding: 0 7px; text-transform: uppercase; font-size: 11px; letter-spacing: .3px; color: var(--txt2); }
+.abas { display: flex; gap: 0; height: 100%; min-width: 0; overflow-x: auto; scrollbar-width: thin; }
+/* janelas estreitas: as abas ficam mais compactas para todos os rótulos caberem (sem rolagem escondida) */
+.abas-compacto { display: none; }
+@media (max-width: 1400px) {
+  /* janela estreita: as abas viram um seletor compacto (mesmas opções, nenhuma cortada) */
+  .abas { display: none; }
+  .abas-compacto { display: block; flex: none; height: 22px; max-width: 170px; padding: 0 4px; font-size: 11px; background: #1b1b1b; color: inherit; border: 1px solid #444; border-radius: 4px; }
+  /* o subtítulo do palco some na janela estreita (o formato continua no título do botão) */
+  .palco-legenda { display: none; }
+}
+/* a faixa de abas ocupa só a largura que sobra no cabeçalho: se não couber, rola (em vez de sair pela borda) */
+.painel > header { min-width: 0; overflow: hidden; }
+.painel > header > .abas { flex: 1 1 0; }
+.abas button { flex: none; height: 26px; padding: 0 7px; text-transform: uppercase; font-size: 11px; letter-spacing: .3px; color: var(--txt2); }
 .abas button.on { color: #fff; box-shadow: inset 0 -2px var(--azul); }
 .propriedades { padding: 10px 12px 16px; }
 .propriedades h4 { margin: 16px 0 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .6px; color: var(--txt2); font-weight: 600; }
@@ -123,8 +170,8 @@ dt { color: var(--txt2); } dd { margin: 0; text-align: right; }
 .trilhos { overflow: auto; position: relative; }
 .regua { height: 26px; position: relative; background: var(--bg1); border-bottom: 1px solid var(--linha); cursor: ew-resize; }
 .marca { position: absolute; top: 0; bottom: 0; border-left: 1px solid #4a4a4a; }
-.marca span { position: absolute; left: 4px; top: 8px; font-size: 10px; color: var(--txt2); }
-.cena-marca { position: absolute; top: 0; padding: 0 6px; height: 10px; font-size: 9px; line-height: 10px; background: var(--laranja); color: #1a0e00; white-space: nowrap; border-radius: 0 0 3px 0; }
+.marca span { position: absolute; left: 4px; top: 7px; font-size: 11px; color: var(--txt2); }
+.cena-marca { position: absolute; top: 0; padding: 0 6px; height: 14px; font-size: 11px; line-height: 14px; background: var(--laranja); color: #1a0e00; white-space: nowrap; border-radius: 0 0 3px 0; }
 .trilho { height: 30px; position: relative; border-bottom: 1px solid #262626; background: repeating-linear-gradient(90deg, transparent 0 69px, rgba(255,255,255,.03) 69px 70px); cursor: ew-resize; }
 .bloco { position: absolute; top: 4px; height: 22px; border-radius: 3px; padding: 0 6px; font-size: 11px; line-height: 22px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,.5); opacity: .85; }
 .bloco.ativo { opacity: 1; outline: 1px solid #fff; }
@@ -191,9 +238,11 @@ code { background: #111; padding: 1px 5px; border-radius: 3px; font-size: 12px; 
 .preview-svg-controles { display: flex; flex-direction: column; gap: 8px; }
 .preview-svg-abas { display: flex; gap: 4px; background: var(--bg3); padding: 2px; border-radius: 6px; }
 .preview-svg-abas button { flex: 1; padding: 4px 8px; border-radius: 4px; font-size: 11px; background: transparent; color: var(--txt2); }
+.barra-superior button, .palco-ferramentas button, .painel > header button, .transporte button { white-space: nowrap; }
+.painel > header button { min-height: 24px; }
 .preview-svg-abas button.on { background: var(--azul); color: #fff; font-weight: 600; }
 .grade-expressoes-svg { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
-.grade-expressoes-svg button { padding: 4px 2px; border-radius: 4px; font-size: 10px; background: var(--bg3); color: var(--txt2); text-transform: capitalize; text-align: center; }
+.grade-expressoes-svg button { padding: 5px 2px; border-radius: 4px; font-size: 11px; background: var(--bg3); color: var(--txt2); text-transform: capitalize; text-align: center; }
 .grade-expressoes-svg button.on { background: var(--azul); color: #fff; font-weight: 600; }
 .preview-svg-botoes { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
 .preview-svg-botoes button { flex: 1; padding: 6px 10px; border-radius: 4px; font-size: 11px; background: var(--bg3); color: var(--txt); }
@@ -391,7 +440,19 @@ code { background: #111; padding: 1px 5px; border-radius: 3px; font-size: 12px; 
 .mixer-trilha input[type=range] { grid-column: 1 / -1; width: 100%; }
 
 /* barra de ferramentas do topo */
-.barra-superior { grid-area: barra; display: flex; align-items: center; gap: 4px; padding: 0 8px; background: var(--bg1); border-bottom: 1px solid var(--linha); overflow-x: auto; scrollbar-width: none; }
+/* aviso curto sobre a tela com a mensagem do app (components/AvisoFlutuante.tsx) */
+.aviso-flutuante { position: fixed; left: 50%; bottom: 44px; transform: translateX(-50%); z-index: 150; max-width: min(640px, 80vw); padding: 9px 16px; border-radius: 6px; background: #1f2937; color: #f3f4f6; border: 1px solid #374151; box-shadow: 0 8px 22px rgba(0,0,0,.45); font-size: 13px; pointer-events: none; opacity: 0; transition: opacity .25s; }
+.aviso-flutuante.on { opacity: 1; }
+.barra-superior { grid-area: barra; display: flex; align-items: center; gap: 4px; padding: 0 8px; background: var(--bg1); border-bottom: 1px solid var(--linha); overflow: hidden; }
+/* o que não cabe vai para o menu "Mais" (BarraSuperior.tsx): nada fica escondido sem aviso */
+.barra-mais { position: relative; flex: none; margin-left: auto; }
+.barra-mais > button { display: flex; align-items: center; gap: 4px; height: 32px; padding: 0 9px; border-radius: 5px; color: var(--txt); white-space: nowrap; }
+.barra-mais > button:hover, .barra-mais > button[aria-expanded="true"] { background: var(--bg3); }
+.barra-mais-menu { position: fixed; z-index: 200; min-width: 220px; display: flex; flex-direction: column; padding: 4px; background: var(--bg2); border: 1px solid #000; border-radius: 6px; box-shadow: 0 8px 20px rgba(0,0,0,.5); }
+.barra-mais-menu button { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 4px; text-align: left; color: var(--txt); }
+.barra-mais-menu button:hover:not(:disabled), .barra-mais-menu button:focus-visible { background: var(--bg3); outline: none; }
+.barra-mais-menu button svg { width: 16px; height: 16px; }
+.barra-mais-menu kbd { margin-left: auto; color: var(--txt2); font-size: 11px; }
 .grupo-barra { display: flex; gap: 2px; padding-right: 8px; margin-right: 6px; border-right: 1px solid #3a3a3a; }
 .grupo-barra:last-child { border-right: 0; }
 .barra-superior button { flex: none; display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 9px; border-radius: 5px; color: var(--txt); white-space: nowrap; }

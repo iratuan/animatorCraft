@@ -26,6 +26,10 @@ export interface UiState {
   abaMatematicaInicial: 'latex' | 'grafico';
   arrastoPalco: { id: ActorId; x: number } | null;
   confirmarFecharProjetoAberto: boolean;
+  /** pedido de um texto ao usuário (ex.: nome ao salvar o projeto); feito por `pedirTexto`, dentro do app */
+  pedidoTexto: { titulo: string; valor: string } | null;
+  /** frases com erro que a exportação encontrou; a resposta do usuário vai por `confirmarExportacao` */
+  pedidoExportacao: { erros: { mensagem: string; ini: number; fim: number }[] } | null;
 }
 
 export type UiSlice = UiState;
@@ -49,4 +53,6 @@ export const createUiSlice: StateCreator<any, [], [], UiSlice> = () => ({
   abaMatematicaInicial: 'latex',
   arrastoPalco: null,
   confirmarFecharProjetoAberto: false,
+  pedidoTexto: null,
+  pedidoExportacao: null,
 });

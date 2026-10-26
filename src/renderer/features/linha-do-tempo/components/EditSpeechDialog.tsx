@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ATORES, type Evento } from '@shared/domain';
+import { Modal, fecharSeguro } from '@renderer/components/Modal';
+import { useAlterado } from '@renderer/components/useAlterado';
 
 interface EditSpeechDialogProps {
   open: boolean;
@@ -10,6 +12,9 @@ interface EditSpeechDialogProps {
 
 export default function EditSpeechDialog({ open, evento, onClose, onSave }: EditSpeechDialogProps) {
   const [texto, setTexto] = useState('');
+  // o texto original da fala é a referência: só é "alterado" se o usuário mexeu nele
+  const original = evento && evento.acao && evento.acao.tipo === 'fala' ? evento.acao.texto : '';
+  const alterado = useAlterado(texto, original);
 
   useEffect(() => {
     if (evento && evento.acao && evento.acao.tipo === 'fala') {
@@ -27,14 +32,7 @@ export default function EditSpeechDialog({ open, evento, onClose, onSave }: Edit
       : 'Personagem';
 
   return (
-    <div className="modal-fundo" onClick={onClose}>
-      <div
-        className="modal"
-        style={{ width: 480, maxWidth: '92vw' }}
-        role="dialog"
-        aria-label="Editar fala do personagem"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <Modal titulo="Editar fala do personagem" sujo={alterado} onFechar={onClose} estilo={{ width: 480, maxWidth: '92vw' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <h3 style={{ margin: 0, fontSize: '15px' }}>✏️ Editar fala: {nomeAtor}</h3>
           <button
@@ -75,7 +73,7 @@ export default function EditSpeechDialog({ open, evento, onClose, onSave }: Edit
         </div>
 
         <div className="modal-botoes" style={{ marginTop: 16 }}>
-          <button type="button" onClick={onClose}>
+          <button type="button" onClick={() => fecharSeguro(alterado, onClose)}>
             Cancelar
           </button>
           <button
@@ -87,7 +85,6 @@ export default function EditSpeechDialog({ open, evento, onClose, onSave }: Edit
             Salvar fala
           </button>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }

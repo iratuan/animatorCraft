@@ -3,7 +3,9 @@ import { ATORES, PAPEIS_PADRAO, type ActorId, type Papeis } from '../characters'
 import { acharClipe, clipesPersonalizados, duracaoDoClipe, nomeDeClipe } from '../clipes';
 import { ehExpressao, expressoesDe } from '../expressoes';
 import { DANCA_PADRAO, DURACAO_PADRAO_DANCA, FRASE_POSE, POSES_DE_DANCA, type ExpressaoId, type PoseId } from '../poses';
-import type { Acao, Cena, CenarioTipo, FormatoProducao, Lado, Roteiro } from '../types';
+import type { Acao, Cena, CenarioTipo, Diagnostico, FormatoProducao, Lado, Roteiro } from '../types';
+import { desembrulharColchetes } from './colchetes';
+import { diagnosticoDe } from './sugestoes';
 import { lerGrafico } from '../grafico';
 import { lerEfeito } from '../imagem';
 import { nomeDeTrilha } from '../audio';
@@ -73,6 +75,8 @@ function dividirFrases(texto: string): FraseComPosicao[] {
   for (let i = 0; i < texto.length; i++) {
     const c = texto[i]!;
     // comandos entre colchetes ([nota: ...], [close na lousa], [plano aberto]) são frases por si só
+    // "[[...]]" é referência ou ação dentro da frase, não comando: o trecho continua na mesma frase
+    if (c === '[' && texto[i + 1] === '[' && !aspas && !latex) { i++; continue; }
     if (c === '[' && !aspas && !latex) {
       fechar(i);
       const fim = texto.indexOf(']', i);
@@ -148,7 +152,8 @@ function interpretarCamera(frase: string, avisos: string[], papeis: Papeis): Aca
   return [];
 }
 
-function interpretarFrase(frase: string, avisos: string[], presentes: Set<ActorId>, papeis: Papeis): Acao[] {
+function interpretarFrase(fraseOriginal: string, avisos: string[], presentes: Set<ActorId>, papeis: Papeis): Acao[] {
+  const frase = desembrulharColchetes(fraseOriginal);
   const nota = /^\[\s*nota\s*:\s*(.*?)\s*\]$/i.exec(frase);
   if (nota) return [{ tipo: 'nota', texto: nota[1]! }];
   const camera = interpretarCamera(frase, avisos, papeis);
@@ -361,6 +366,11 @@ function interpretarComSimultaneidade(frase: string, avisos: string[], presentes
  */
 export function parseRoteiro(textoOriginal: string): Roteiro {
   const avisos: string[] = [];
+  // diagnósticos com posição: cada aviso gerado por uma frase fica com o intervalo dela no roteiro
+  const diagnosticos: Diagnostico[] = [];
+  const registrarAvisos = (de: number, origem: { ini: number; fim: number }, frase: string) => {
+    for (const msg of avisos.slice(de)) diagnosticos.push(diagnosticoDe(msg, frase, origem.ini, origem.fim));
+  };
   const cenas: Cena[] = [];
   let cena: Cena | undefined;
   let buffer: { txt: string; off: number }[] = [];
@@ -388,16 +398,18 @@ export function parseRoteiro(textoOriginal: string): Roteiro {
     const mapa: number[] = [];
     buffer.forEach((l, i) => { if (i > 0) mapa.push(l.off - 1); for (let k = 0; k < l.txt.length; k++) mapa.push(l.off + k); });
     for (const frase of dividirFrases(unido)) {
+      const antes = avisos.length;
+      const origem = { ini: mapa[frase.ini]!, fim: mapa[frase.fim - 1]! + 1 };
       const audio = interpretarAudio(frase.texto, cena.acoes, avisos);
       if (audio) {
-        const origem = { ini: mapa[frase.ini]!, fim: mapa[frase.fim - 1]! + 1 };
         if (audio.nova) { cena.acoes.push(audio.nova); cena.origens.push(origem); }
         // a etiqueta [áudio: …] faz parte da frase da fala: mover/excluir a fala leva a etiqueta junto
         if (audio.anexada) { const ult = cena.origens[cena.origens.length - 1]; if (ult) ult.fim = origem.fim; }
+        registrarAvisos(antes, origem, frase.texto);
         continue;
       }
       const acoes = interpretarComSimultaneidade(frase.texto, avisos, presentes, papeis, bloco);
-      const origem = { ini: mapa[frase.ini]!, fim: mapa[frase.fim - 1]! + 1 };
+      registrarAvisos(antes, origem, frase.texto);
       for (const a of acoes) if ('ator' in a && a.ator) { if (a.tipo === 'sair') presentes.delete(a.ator); else presentes.add(a.ator); }
       cena.acoes.push(...acoes);
       cena.origens.push(...acoes.map(() => origem));
@@ -473,7 +485,7 @@ export function parseRoteiro(textoOriginal: string): Roteiro {
     }
   }
   fecharBuffer();
-  return { cenas, avisos, papeis };
+  return { cenas, avisos, diagnosticos, papeis };
 }
 
 

@@ -3,6 +3,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { NOME_APP } from '@shared/constants/video';
 import { registrarIpc } from './ipc-handlers';
+import { protegerFechamento } from './services/janela';
 
 // Em desenvolvimento o plugin do Vite define VITE_DEV_SERVER_URL; empacotado, carrega o index.html compilado.
 const urlDev = process.env.VITE_DEV_SERVER_URL;
@@ -19,6 +20,7 @@ function criarJanela(): void {
     webPreferences: { preload: join(__dirname, 'preload.js'), contextIsolation: true, sandbox: true, nodeIntegration: false },
   });
   Menu.setApplicationMenu(null);
+  protegerFechamento(janela);
 
   // A janela só mostra o próprio app: sem navegação para fora, sem novas janelas, sem permissões de dispositivo.
   const origemApp = urlDev ? new URL(urlDev).origin : 'file://';

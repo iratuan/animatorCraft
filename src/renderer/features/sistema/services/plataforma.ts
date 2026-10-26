@@ -31,6 +31,8 @@ export interface Plataforma {
   abrirPacoteSprites(): Promise<PacoteEscolhido | null>;
   /** devolve uma mensagem para mostrar ao usuário */
   salvarPacoteSprites(zip: Uint8Array, nomeSugerido: string): Promise<string>;
+  /** avisa o sistema que há (ou não há) alterações não salvas; só o desktop precisa disso */
+  definirAlteracoesPendentes?(pendentes: boolean): void;
 }
 
 const escolherArquivoHtml = async (accept: string): Promise<File | null> => (await escolherArquivos(accept))[0] ?? null;
@@ -61,6 +63,7 @@ const electron: Plataforma = {
     const caminho = await window.stickboard!.salvarPacoteSprites({ nomeSugerido: nome, dados: zip });
     return caminho ? `Sprites exportados em ${caminho}` : 'Exportação cancelada.';
   },
+  definirAlteracoesPendentes: (pendentes) => { void window.stickboard!.definirAlteracoesPendentes(pendentes); },
 };
 
 const android: Plataforma = {

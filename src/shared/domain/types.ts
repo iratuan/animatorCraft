@@ -63,7 +63,14 @@ export interface Cena {
   /** Se a cena oculta a lousa escolar (ex.: [sem lousa]) */
   semLousa?: boolean;
 }
-export interface Roteiro { cenas: Cena[]; avisos: string[]; papeis: Papeis; }
+/**
+ * Problema encontrado numa frase do roteiro, com a posição dela no texto (para sublinhar).
+ * `erro`: o app não consegue executar a frase. `aviso`: executa, mas pode não ser o que você quis.
+ * `sugestoes`: frases inteiras que podem substituir o trecho `[ini, fim)`.
+ */
+export interface Diagnostico { mensagem: string; ini: number; fim: number; gravidade: 'erro' | 'aviso'; sugestoes: string[] }
+
+export interface Roteiro { cenas: Cena[]; avisos: string[]; diagnosticos: Diagnostico[]; papeis: Papeis; }
 
 
 

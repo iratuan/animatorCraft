@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import katex from 'katex';
 import { useEditor } from '@renderer/store/editor-store';
+import { Modal, fecharSeguro } from '@renderer/components/Modal';
+import { useAlterado } from '@renderer/components/useAlterado';
 import {
   CATALOGO_LATEX,
   SIMBOLOS_PALETA,
@@ -47,6 +49,8 @@ export function EditorMatematicaModal() {
   const [destacarIntegral, setDestacarIntegral] = useState<boolean>(false);
   const [intA, setIntA] = useState<number>(-2);
   const [intB, setIntB] = useState<number>(2);
+  // fórmula e gráfico digitados se perdem ao fechar: pergunta antes
+  const alterado = useAlterado({ latex, expr, xmin, xmax, intA, intB, destacarRaizes, destacarGrade, destacarIntegral });
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -296,14 +300,13 @@ export function EditorMatematicaModal() {
   };
 
   return (
-    <div className="modal-overlay-matematica" onClick={fechar}>
-      <div className="modal-matematica" onClick={(e) => e.stopPropagation()}>
+    <Modal titulo="Editor de fórmulas e gráficos" fundoClasse="modal-overlay-matematica" caixaClasse="modal-matematica" sujo={alterado} onFechar={fechar}>
         <header>
           <h2>
             <span>📐</span> Editor Matemático para a Lousa
             <span className="badge-offline">100% Offline (KaTeX)</span>
           </h2>
-          <button type="button" className="btn-fechar" onClick={fechar} title="Fechar">✕</button>
+          <button type="button" className="btn-fechar" onClick={() => fecharSeguro(alterado, fechar)} title="Fechar">✕</button>
         </header>
 
         <div className="abas-matematica">
@@ -623,7 +626,6 @@ export function EditorMatematicaModal() {
             )}
           </div>
         </footer>
-      </div>
-    </div>
+    </Modal>
   );
 }

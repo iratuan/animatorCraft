@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { useEditor } from '@renderer/store/editor-store';
+import { Modal } from '@renderer/components/Modal';
 
 declare const __APP_VERSION__: string;
 const VERSAO = typeof __APP_VERSION__ === 'string' ? __APP_VERSION__ : '';
@@ -306,8 +307,7 @@ export function ManualModal() {
   const fechar = () => set({ manualAberto: false, manualSecao: null });
   const sec = SECOES.find((s) => s.id === ativo) ?? SECOES[0]!;
   return (
-    <div className="modal-fundo" onClick={fechar}>
-      <div className="modal manual" role="dialog" aria-label="Manual de uso" onClick={(e) => e.stopPropagation()}>
+    <Modal titulo="Manual de uso" classe="manual" sujo={false} onFechar={fechar}>
         <nav>
           <h3>Manual de uso</h3>
           {SECOES.map((s) => <button key={s.id} className={s.id === ativo ? 'on' : ''} onClick={() => setAtivo(s.id)}>{s.titulo}</button>)}
@@ -317,8 +317,7 @@ export function ManualModal() {
           <h2>{sec.titulo}</h2>
           {sec.corpo}
         </article>
-      </div>
-    </div>
+    </Modal>
   );
 }
 
