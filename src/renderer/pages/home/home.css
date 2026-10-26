@@ -35,3 +35,7 @@
 .home-mais button:hover, .home-mais button:focus-visible { background: var(--azul); color: #fff; outline: 0; }
 .home-rodape { margin-top: auto; padding-top: 8px; color: var(--txt2); font-size: 12px; }
 @media (max-width: 560px) { .home-topo { flex-direction: column; align-items: flex-start; } .home-topo p { font-size: 13px; } }
+
+/* ícone de formato alinhado ao texto (chips e cartões) */
+.ico-formato { display: inline-flex; align-items: center; vertical-align: middle; width: 15px; height: 15px; margin-right: 4px; flex: none; }
+.ico-formato svg { width: 15px; height: 15px; }

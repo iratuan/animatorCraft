@@ -111,7 +111,7 @@ export function HomePage() {
               className={`home-filtro-btn ${filtro === f.id ? 'ativo' : ''}`}
               onClick={() => setFiltro(f.id)}
             >
-              {f.id !== 'todos' && Icones[ICONE_DO_FORMATO[f.id] as NomeIcone]}{f.rotulo}
+              {f.id !== 'todos' && <span className="ico-formato">{Icones[ICONE_DO_FORMATO[f.id] as NomeIcone]}</span>}{f.rotulo}
             </button>
           ))}
         </div>
@@ -120,7 +120,7 @@ export function HomePage() {
             <button key={m.id} className="home-modelo" onPointerEnter={precarregarEditor} onClick={() => abrir(m.roteiro, `Modelo “${m.nome}” carregado. Troque o que está entre {chaves}.`)} data-teste={`modelo-${m.id}`}>
               <small>
                 <span>{m.area}</span>
-                <span className="home-modelo-formato">{Icones[ICONE_DO_FORMATO[m.formato] as NomeIcone]}{ROTULOS_FORMATO[m.formato]}</span>
+                <span className="home-modelo-formato"><span className="ico-formato">{Icones[ICONE_DO_FORMATO[m.formato] as NomeIcone]}</span>{ROTULOS_FORMATO[m.formato]}</span>
               </small>
               <b>{m.nome}</b>
               <span>{m.descricao}</span>
