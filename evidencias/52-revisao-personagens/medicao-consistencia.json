@@ -1,0 +1,211 @@
+{
+  "artur": {
+    "arquivos": 55,
+    "espessurasMaisComuns": [
+      "2.6×264",
+      "8×220",
+      "3.36×220",
+      "13.2×220",
+      "2.16×116"
+    ],
+    "preenchimentosMaisComuns": [
+      "none×1196",
+      "#ffffff×319",
+      "#fff×318",
+      "#14161a×124"
+    ],
+    "preenchimentoPretoMaciço": 124
+  },
+  "betason": {
+    "arquivos": 55,
+    "espessurasMaisComuns": [
+      "2.6×352",
+      "2.16×226",
+      "13×176",
+      "18.2×176",
+      "8×132"
+    ],
+    "preenchimentosMaisComuns": [
+      "none×1031",
+      "#ffffff×319",
+      "#fff×274",
+      "#14161a×212"
+    ],
+    "preenchimentoPretoMaciço": 212
+  },
+  "carol": {
+    "arquivos": 55,
+    "espessurasMaisComuns": [
+      "2.6×264",
+      "13×176",
+      "18.2×176",
+      "8×132",
+      "13.2×132"
+    ],
+    "preenchimentosMaisComuns": [
+      "none×767",
+      "#fff×329",
+      "#ffffff×319",
+      "#14161a×124",
+      "#0284c7×44"
+    ],
+    "preenchimentoPretoMaciço": 124
+  },
+  "cringefather": {
+    "arquivos": 60,
+    "espessurasMaisComuns": [
+      "2.6×308",
+      "2.88×240",
+      "2.16×186",
+      "8×132",
+      "13.2×132"
+    ],
+    "preenchimentosMaisComuns": [
+      "none×1154",
+      "#fff×294",
+      "#14161a×266",
+      "#ffffff×236"
+    ],
+    "preenchimentoPretoMaciço": 266
+  },
+  "dario": {
+    "arquivos": 55,
+    "espessurasMaisComuns": [
+      "2.6×264",
+      "8×220",
+      "13.2×220",
+      "2.16×116",
+      "2.64×110"
+    ],
+    "preenchimentosMaisComuns": [
+      "none×987",
+      "#ffffff×319",
+      "#fff×274",
+      "#14161a×124"
+    ],
+    "preenchimentoPretoMaciço": 124
+  },
+  "elizendra": {
+    "arquivos": 55,
+    "espessurasMaisComuns": [
+      "2.6×352",
+      "2.64×275",
+      "8×220",
+      "2.4×220",
+      "13.2×220"
+    ],
+    "preenchimentosMaisComuns": [
+      "none×1031",
+      "#fff×373",
+      "#ffffff×330",
+      "#14161a×256"
+    ],
+    "preenchimentoPretoMaciço": 256
+  },
+  "erika": {
+    "arquivos": 55,
+    "espessurasMaisComuns": [
+      "2.4×385",
+      "2.6×264",
+      "8×220",
+      "13.2×220",
+      "2.16×116"
+    ],
+    "preenchimentosMaisComuns": [
+      "none×932",
+      "#ffffff×363",
+      "#14161a×289",
+      "#fff×219"
+    ],
+    "preenchimentoPretoMaciço": 289
+  },
+  "laura": {
+    "arquivos": 55,
+    "espessurasMaisComuns": [
+      "2.6×308",
+      "8×220",
+      "13.2×220",
+      "2.16×116",
+      "1.68×110"
+    ],
+    "preenchimentosMaisComuns": [
+      "none×767",
+      "#fff×274",
+      "#ffffff×220",
+      "#14161a×212",
+      "#f43f5e×44"
+    ],
+    "preenchimentoPretoMaciço": 212
+  },
+  "mingau": {
+    "arquivos": 55,
+    "espessurasMaisComuns": [
+      "1.8199999999999998×352",
+      "2.6×220",
+      "9×176",
+      "14.2×176",
+      "2.16×116"
+    ],
+    "preenchimentosMaisComuns": [
+      "none×657",
+      "#fff×285",
+      "#ffffff×220",
+      "#14161a×124",
+      "#ffe4e6×110",
+      "#f43f5e×55"
+    ],
+    "preenchimentoPretoMaciço": 124
+  },
+  "paraiba": {
+    "arquivos": 55,
+    "espessurasMaisComuns": [
+      "1.8199999999999998×352",
+      "2.6×220",
+      "9×176",
+      "14.2×176",
+      "2.16×171"
+    ],
+    "preenchimentosMaisComuns": [
+      "none×547",
+      "#fff×340",
+      "#ffffff×220",
+      "#14161a×179",
+      "#fbbf24×44"
+    ],
+    "preenchimentoPretoMaciço": 179
+  },
+  "veia": {
+    "arquivos": 55,
+    "espessurasMaisComuns": [
+      "2.6×308",
+      "8×220",
+      "13.2×220",
+      "2.16×116",
+      "2.64×110"
+    ],
+    "preenchimentosMaisComuns": [
+      "none×811",
+      "#ffffff×275",
+      "#fff×274",
+      "#14161a×212"
+    ],
+    "preenchimentoPretoMaciço": 212
+  },
+  "veio": {
+    "arquivos": 55,
+    "espessurasMaisComuns": [
+      "2.6×308",
+      "8×132",
+      "13.2×132",
+      "2.16×116",
+      "2.64×110"
+    ],
+    "preenchimentosMaisComuns": [
+      "none×767",
+      "#fff×329",
+      "#14161a×256",
+      "#ffffff×231"
+    ],
+    "preenchimentoPretoMaciço": 256
+  }
+}

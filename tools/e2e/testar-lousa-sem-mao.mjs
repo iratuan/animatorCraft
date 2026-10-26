@@ -20,7 +20,7 @@ for (const [nome, t] of instantes) {
   console.log(nome, 't=' + t, '| pixels da cor da mão (linha de base ~150; a mão antiga passava de 3000):', gr);
   if (gr > 1500) throw new Error('parece haver uma mão desenhada na lousa');
 }
-console.log('seletor de escrita ainda existe na aba Aula?', await (async () => { await p.getByRole('button', { name: 'Aula', exact: true }).click(); return (await p.locator('.propriedades').innerText()).includes('Mão com marcador'); })());
+console.log('seletor de escrita ainda existe na aba Aula?', await (async () => { await p.getByRole('tab', { name: 'Aula', exact: true }).click(); return (await p.locator('.propriedades').innerText()).includes('Mão com marcador'); })());
 await p.screenshot({ path: `${dest}/04-aba-aula.png` });
 console.log('erros', erros);
 await b.close();

@@ -19,6 +19,7 @@ await p.waitForTimeout(800);
 await p.screenshot({ path: `${dest}/01-simultaneo.png` });
 // cria personagem
 await p.getByText('Arquivo').first().click();
+await p.getByText('Personagens', { exact: true }).first().click();
 await p.getByText('Novo personagem…').click();
 await p.getByPlaceholder('ex.: Tia Marta').fill('Tia Marta');
 await p.getByPlaceholder('ex.: tia, martinha').fill('tia');

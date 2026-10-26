@@ -1,5 +1,5 @@
 import { ORDEM_ATORES, type ActorId, type AlvoCamera, type Estado } from '@shared/domain';
-import type { Rect } from './sprites';
+import type { Rect } from './geometria';
 
 /**
  * Câmera: o palco inteiro, a lousa ou o rosto de um personagem. A câmera é um retângulo do palco que vira a tela toda;

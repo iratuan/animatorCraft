@@ -27,7 +27,7 @@ export function SeletorMencao({ itens, selecionado, posicao, onPassar }: Props) 
             role="option"
             aria-selected={i === selecionado}
             className={i === selecionado ? 'ativo' : undefined}
-            onMouseEnter={() => onPassar(i)}
+            onMouseMove={() => { if (i !== selecionado) onPassar(i); }}
             // mousedown (e não click) e sem trocar o foco: o textarea continua com o cursor
             onMouseDown={(e) => { e.preventDefault(); o.escolher(); }}
           >

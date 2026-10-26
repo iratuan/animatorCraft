@@ -1,5 +1,4 @@
 import { carregarFontes } from '@renderer/features/fontes';
-import { carregarPersonagens } from '@renderer/features/personagens';
 import { plataforma } from '@renderer/features/sistema';
 import { FORMATOS, FPS, type FormatoVideo } from '@shared/constants/video';
 import { useEditor } from '@renderer/store/editor-store';
@@ -27,7 +26,6 @@ export function useExportar() {
     const dim = FORMATOS[formato];
     set({ exportando: 0, tocando: false, mensagem: `Exportando ${dim.nome}…` });
     try {
-      await carregarPersonagens();
       await carregarFontes();
       const blob = await exportarMp4(timeline, { w: dim.w, h: dim.h, fps: FPS, onProgresso: (p) => set({ exportando: p }), avisos: (m) => m && set({ mensagem: m }) });
       const nomeProjetoAtual = useEditor.getState().nomeProjeto || 'stickboard';

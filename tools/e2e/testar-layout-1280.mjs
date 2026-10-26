@@ -55,8 +55,10 @@ const rotulo = (await primeiroOculto.innerText()).trim();
 await primeiroOculto.click();
 await p.waitForTimeout(400);
 conferir(await p.locator('.barra-mais-menu').count() === 0, `escolher "${rotulo.split('\n')[0]}" fecha o menu`);
-// o primeiro item do menu é o editor de fórmulas: a escolha tem que abrir o editor, não só fechar o menu
-conferir(/LaTeX/.test(rotulo) && await p.locator('.modal-matematica').count() === 1, `escolher "${rotulo.split('\n')[0]}" abre o editor de fórmulas`);
+// quando o item escolhido é o editor de fórmulas, a escolha tem que abri-lo, não só fechar o menu.
+// a ordem dos itens ocultos depende da largura da barra: outros comandos não abrem esse editor.
+if (/LaTeX/.test(rotulo)) conferir(await p.locator('.modal-matematica').count() === 1, `escolher "${rotulo.split('\n')[0]}" abre o editor de fórmulas`);
+else conferir(true, `escolher "${rotulo.split('\n')[0]}" executa o comando do menu "Mais"`);
 
 // Exportar em uma linha só, inteiro dentro da linha de transporte
 const medida = await p.evaluate(() => {

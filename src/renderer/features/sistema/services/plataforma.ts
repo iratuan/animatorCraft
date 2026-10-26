@@ -1,7 +1,7 @@
 import { Capacitor } from '@capacitor/core';
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
-import type { PacoteEscolhido, RoteiroAberto } from '@shared/types/ipc';
+import type { ArquivoEscolhido, RoteiroAberto } from '@shared/types/ipc';
 import { baixarArquivo, blobParaBase64, escolherArquivos } from './arquivos';
 
 declare global {
@@ -28,16 +28,16 @@ export interface Plataforma {
   salvarRoteiro(texto: string, nomeSugerido: string): Promise<string | null>;
   /** devolve uma mensagem para mostrar ao usuário */
   salvarVideo(video: Blob, nomeSugerido: string): Promise<string>;
-  abrirPacoteSprites(): Promise<PacoteEscolhido | null>;
+  abrirZip(): Promise<ArquivoEscolhido | null>;
   /** devolve uma mensagem para mostrar ao usuário */
-  salvarPacoteSprites(zip: Uint8Array, nomeSugerido: string): Promise<string>;
+  salvarZip(zip: Uint8Array, nomeSugerido: string): Promise<string>;
   /** avisa o sistema que há (ou não há) alterações não salvas; só o desktop precisa disso */
   definirAlteracoesPendentes?(pendentes: boolean): void;
 }
 
 const escolherArquivoHtml = async (accept: string): Promise<File | null> => (await escolherArquivos(accept))[0] ?? null;
 
-const lerArquivo = async (f: File): Promise<PacoteEscolhido> => ({ nome: f.name, dados: new Uint8Array(await f.arrayBuffer()) });
+const lerArquivo = async (f: File): Promise<ArquivoEscolhido> => ({ nome: f.name, dados: new Uint8Array(await f.arrayBuffer()) });
 
 // ---------------------------------------------------------------- implementações
 
@@ -46,8 +46,8 @@ const web: Plataforma = {
   async abrirRoteiro() { const f = await escolherArquivoHtml('.txt,.stk'); return f ? { nome: f.name, texto: await f.text() } : null; },
   async salvarRoteiro(texto, nome) { baixarArquivo(new Blob([texto], { type: 'text/plain' }), nome); return nome; },
   async salvarVideo(video, nome) { baixarArquivo(video, nome); return `Arquivo baixado: ${nome}`; },
-  async abrirPacoteSprites() { const f = await escolherArquivoHtml('.zip'); return f ? lerArquivo(f) : null; },
-  async salvarPacoteSprites(zip, nome) { baixarArquivo(new Blob([zip as BlobPart], { type: 'application/zip' }), nome); return `Arquivo baixado: ${nome}`; },
+  async abrirZip() { const f = await escolherArquivoHtml('.zip'); return f ? lerArquivo(f) : null; },
+  async salvarZip(zip, nome) { baixarArquivo(new Blob([zip as BlobPart], { type: 'application/zip' }), nome); return `Arquivo baixado: ${nome}`; },
 };
 
 const electron: Plataforma = {
@@ -58,9 +58,9 @@ const electron: Plataforma = {
     const caminho = await window.stickboard!.salvarVideo({ nomeSugerido: nome, dados: new Uint8Array(await video.arrayBuffer()) });
     return caminho ? `Vídeo salvo em ${caminho}` : 'Salvamento cancelado.';
   },
-  abrirPacoteSprites: () => window.stickboard!.abrirPacoteSprites(),
-  async salvarPacoteSprites(zip, nome) {
-    const caminho = await window.stickboard!.salvarPacoteSprites({ nomeSugerido: nome, dados: zip });
+  abrirZip: () => window.stickboard!.abrirZip(),
+  async salvarZip(zip, nome) {
+    const caminho = await window.stickboard!.salvarZip({ nomeSugerido: nome, dados: zip });
     return caminho ? `Sprites exportados em ${caminho}` : 'Exportação cancelada.';
   },
   definirAlteracoesPendentes: (pendentes) => { void window.stickboard!.definirAlteracoesPendentes(pendentes); },
@@ -87,8 +87,8 @@ const android: Plataforma = {
     try { await Share.share({ title: nome, files: [uri], dialogTitle: 'Salvar ou enviar o vídeo' }); } catch { /* o usuário fechou a folha */ }
     return `Arquivo pronto: ${nome} (${(video.size / 1e6).toFixed(1)} MB)`;
   },
-  abrirPacoteSprites: web.abrirPacoteSprites,
-  async salvarPacoteSprites(zip, nome) {
+  abrirZip: web.abrirZip,
+  async salvarZip(zip, nome) {
     const data = await blobParaBase64(new Blob([zip as BlobPart]));
     await Filesystem.writeFile({ path: nome, data, directory: Directory.Cache });
     const { uri } = await Filesystem.getUri({ path: nome, directory: Directory.Cache });
@@ -117,8 +117,8 @@ const vscodePlatform: Plataforma = {
     }
     return web.salvarVideo(video, nome);
   },
-  abrirPacoteSprites: web.abrirPacoteSprites,
-  salvarPacoteSprites: web.salvarPacoteSprites,
+  abrirZip: web.abrirZip,
+  salvarZip: web.salvarZip,
 };
 
 export function obterPlataforma(): Plataforma {

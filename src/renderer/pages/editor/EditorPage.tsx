@@ -9,9 +9,8 @@ import { LinhaDoTempoPanel } from '@renderer/features/linha-do-tempo';
 import { useAudioPreview } from '@renderer/features/audio';
 import { useReproducao, PalcoPanel } from '@renderer/features/palco';
 import { useAtalhos } from './useAtalhos';
-import { ImportarPacoteModal, PersonagemModal, EditorSpritesModal, EditorAnimacaoModal } from '@renderer/features/personagens';
+import { PersonagemModal, EditorAnimacaoModal } from '@renderer/features/personagens';
 import { IaModal } from '@renderer/features/ia';
-import { EditorImagemModal } from '@renderer/features/editor-imagem';
 import { useCargaInicial } from '@renderer/pages/editor/useCargaInicial';
 import { RoteiroPanel, useRoteiroDerivado } from '@renderer/features/roteiro';
 import { EditorMatematicaModal } from '@renderer/features/matematica';
@@ -84,10 +83,7 @@ export function EditorPage() {
         linhaDoTempo={<LinhaDoTempoPanel />}
         status={<BarraStatus />}
       />
-      <ImportarPacoteModal />
-      <EditorSpritesModal />
       <EditorAnimacaoModal />
-      <EditorImagemModal />
       <PersonagemModal />
       <IaModal />
       <EditorMatematicaModal />

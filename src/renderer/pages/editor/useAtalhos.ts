@@ -26,7 +26,7 @@ export function useAtalhos(menus: GrupoMenu[]) {
       const st = useEditor.getState();
       if (e.key === 'F1') { e.preventDefault(); st.set({ manualAberto: true }); return; }
       if (e.key === 'Escape' && st.manualAberto) { st.set({ manualAberto: false }); return; }
-      if (st.editorImagem || st.iaAberta || st.promptMestreAberto || st.fichaPersonagem || st.importacao || st.editorPersonagem || st.manualAberto || st.confirmarFecharProjetoAberto) return;
+      if (st.editorImagem || st.iaAberta || st.promptMestreAberto || st.fichaPersonagem || st.editorPersonagem || st.manualAberto || st.confirmarFecharProjetoAberto) return;
       const ctrl = e.ctrlKey || e.metaKey, k = e.key.toLowerCase();
       if (ctrl && !e.shiftKey && k === 'z') { if (desfazer()) { e.preventDefault(); st.set({ mensagem: 'Desfeito.' }); } return; }
       if (ctrl && (k === 'y' || (e.shiftKey && k === 'z'))) { if (refazer()) { e.preventDefault(); st.set({ mensagem: 'Refeito.' }); } return; }

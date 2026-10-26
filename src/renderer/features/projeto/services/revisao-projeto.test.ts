@@ -14,9 +14,9 @@ class Memoria { private m = new Map<string, string>(); getItem(k: string) { retu
 
 const criados: string[] = [];
 beforeEach(() => { (globalThis as { localStorage?: unknown }).localStorage = new Memoria(); definirClipesPersonalizados([]); definirExpressoesBoneco([]); });
-afterEach(() => { for (const id of criados.splice(0)) removerAtor(id); definirClipesPersonalizados([]); definirExpressoesBoneco([]); useEditor.setState({ skinPadrao: 'stickman', skins: {} }); });
+afterEach(() => { for (const id of criados.splice(0)) removerAtor(id); definirClipesPersonalizados([]); definirExpressoesBoneco([]); });
 
-const projetoMinimo = (extra: Record<string, unknown> = {}) => zipSync({ 'roteiro.txt': strToU8('# X\nProfessor acena.'), 'projeto.json': strToU8(JSON.stringify({ versao: 1, personagens: [], skinPadrao: 'stickman', skins: {}, fonteLousa: 'comic', fonteFala: 'comic', formato: '16:9', ...extra })) });
+const projetoMinimo = (extra: Record<string, unknown> = {}) => zipSync({ 'roteiro.txt': strToU8('# X\nProfessor acena.'), 'projeto.json': strToU8(JSON.stringify({ versao: 1, personagens: [], fonteLousa: 'comic', fonteFala: 'comic', formato: '16:9', ...extra })) });
 
 describe('projeto: salvar e abrir', () => {
   it('ida e volta preserva roteiro, personagens (com cor de pele), estilos, fontes, clipes e expressões', async () => {
@@ -25,13 +25,13 @@ describe('projeto: salvar e abrir', () => {
     definirClipesPersonalizados([{ ator: 'tia-marta', id: 'abraco', nome: 'abraço', categoria: 'Movimento', loop: true, estilo: 'ambos', passos: [{ tags: ['parado'], dur: 1, mov: 'balancar', amp: 4 }] }]);
     definirExpressoesBoneco([{ ator: 'tia-marta', nome: 'saudade', quadros: [{ olho: 'meia', sobr: 5, boca: 'triste' }] }]);
     const roteiro = '[papéis: professor=Tia Marta, aluno=BetaSon]\n\n# Ação ☃\nProfessor entra pela esquerda andando. Professor diz "Olá, “mundo”! 😀" feliz.\n';
-    useEditor.setState({ roteiro, skinPadrao: 'stickman', skins: {}, fonteLousa: 'caveat', fonteFala: 'kalam', formato: '9:16' });
+    useEditor.setState({ roteiro, fonteLousa: 'caveat', fonteFala: 'kalam', formato: '9:16' });
     const { zip } = await montarProjeto();
 
     // estado limpo, como num computador novo
     removerAtor('tia-marta'); definirClipesPersonalizados([]); definirExpressoesBoneco([]);
     (globalThis as { localStorage?: unknown }).localStorage = new Memoria();
-    useEditor.setState({ roteiro: '', skinPadrao: 'stickman', skins: {}, fonteLousa: 'comic', fonteFala: 'comic' });
+    useEditor.setState({ roteiro: '', fonteLousa: 'comic', fonteFala: 'comic' });
     const lido = await abrirProjeto(zip);
 
     expect(lido.personagens).toBe(1);
@@ -41,7 +41,6 @@ describe('projeto: salvar e abrir', () => {
     expect(acharClipe('tia-marta', 'abraco')?.passos[0]).toMatchObject({ mov: 'balancar', dur: 1 });
     expect(ehExpressao('tia-marta', 'saudade')).toBe(true);
     const s = useEditor.getState();
-    expect(s.skinPadrao).toBe('stickman');
     expect(s.fonteLousa).toBe('caveat');
     expect(s.fonteFala).toBe('kalam');
   });
@@ -61,7 +60,7 @@ describe('projeto: salvar e abrir', () => {
     expect(Object.keys(a)).toEqual(expect.arrayContaining(['roteiro.txt', 'projeto.json']));
     expect(new TextDecoder().decode(a['roteiro.txt'])).toBe('olá ção');
     const meta = JSON.parse(new TextDecoder().decode(a['projeto.json']));
-    expect(meta.versao).toBe(2);
+    expect(meta.versao).toBe(3);
     expect(meta.nome).toBe('Minha Aula de Física');
     expect(meta.modificadoEm).toBeDefined();
   });
@@ -110,12 +109,10 @@ describe('projeto: arquivos de fora', () => {
     await expect(abrirProjeto(strToU8('PK nada a ver'))).rejects.toThrow();
   });
   it('estilos e fontes inválidos viram os padrões; personagens hostis não derrubam a abertura', async () => {
-    const zip = projetoMinimo({ skinPadrao: 'holograma', skins: { betason: 'neon', erika: 'stickman', outro: 5 }, fonteLousa: 42, fonteFala: null, personagens: [{ nome: 'Ok', apelidos: 'x', modeloPalito: 'robo', altura: 'alta', corPele: 'rgb(1,2,3)' }, null, 7, { sem: 'nome' }] });
+    const zip = projetoMinimo({ fonteLousa: 42, fonteFala: null, personagens: [{ nome: 'Ok', apelidos: 'x', modeloPalito: 'robo', altura: 'alta', corPele: 'rgb(1,2,3)' }, null, 7, { sem: 'nome' }] });
     criados.push('ok');
     await abrirProjeto(zip);
     const s = useEditor.getState();
-    expect(s.skinPadrao).toBe('stickman');
-    expect(s.skins).toEqual({});
     expect(['string']).toContain(typeof s.fonteLousa);
     expect(ATORES['ok']).toMatchObject({ modeloPalito: 'aluno', altura: 440 });
     expect(ATORES['ok']!.corPele).toBeUndefined();

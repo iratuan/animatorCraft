@@ -1,20 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { construirTimeline, estadoEm, parseRoteiro, type ActorId } from '@shared/domain';
-import { definirSkins, renderizarCena, type Skin } from '@renderer/features/cena';
+import { construirTimeline, estadoEm, parseRoteiro } from '@shared/domain';
+import { renderizarCena } from '@renderer/features/cena';
 import { useEditor } from '@renderer/store/editor-store';
 
 interface Props {
-  ator: ActorId;
   /** trecho de roteiro tocado em repetição (a prévia usa o mesmo motor do vídeo) */
   roteiro: string;
-  /** força o estilo só durante a prévia (o estilo salvo do personagem volta ao fechar) */
-  estilo: Skin | null;
 }
 
 const L = 480, A = 270;
 
 /** Prévia ao vivo de uma expressão ou de um clipe: interpreta `roteiro` e toca em repetição num palco pequeno. */
-export function PreviaAnimacao({ ator, roteiro, estilo }: Props) {
+export function PreviaAnimacao({ roteiro }: Props) {
   const ref = useRef<HTMLCanvasElement>(null);
   const spritesOk = useEditor((s) => s.spritesOk);
   const [avisos, setAvisos] = useState<string[]>([]);
@@ -23,14 +20,6 @@ export function PreviaAnimacao({ ator, roteiro, estilo }: Props) {
     return { timeline: construirTimeline(r), avisosRoteiro: r.avisos };
   }, [roteiro]);
   useEffect(() => setAvisos(avisosRoteiro), [avisosRoteiro]);
-
-  // estilo só da prévia
-  useEffect(() => {
-    if (!estilo) return;
-    const { skinPadrao, skins } = useEditor.getState();
-    definirSkins(skinPadrao, { ...skins, [ator]: estilo });
-    return () => { const s = useEditor.getState(); definirSkins(s.skinPadrao, s.skins); };
-  }, [ator, estilo]);
 
   useEffect(() => {
     const c = ref.current;
@@ -49,7 +38,7 @@ export function PreviaAnimacao({ ator, roteiro, estilo }: Props) {
     };
     id = requestAnimationFrame(quadro);
     return () => cancelAnimationFrame(id);
-  }, [timeline, spritesOk, estilo]);
+  }, [timeline, spritesOk]);
 
   return (
     <div className="previa-animacao">

@@ -1,6 +1,5 @@
 import type { StateCreator } from 'zustand';
 import { TRILHA_PADRAO, sanearTrilhas, type EstadoTrilha } from '@shared/domain';
-import type { Skin } from '@renderer/features/cena';
 import { lerJson, lerTexto } from '@renderer/features/sistema';
 
 export interface MidiaState {
@@ -13,8 +12,6 @@ export interface MidiaState {
   trilhas: Record<string, EstadoTrilha>;
   versaoImagens: number;
   versaoPersonagens: number;
-  skinPadrao: Skin;
-  skins: Record<string, Skin>;
 }
 
 export interface MidiaActions {
@@ -37,8 +34,6 @@ export const createMidiaSlice: StateCreator<any, [], [], MidiaSlice> = (set) => 
   trilhas: sanearTrilhas(lerJson('stickboard.trilhas.v1', {})),
   versaoImagens: 0,
   versaoPersonagens: 0,
-  skinPadrao: 'stickman',
-  skins: {},
 
   definirTrilha: (id, parcial) => set((s: any) => ({
     trilhas: { ...s.trilhas, [id]: { ...TRILHA_PADRAO, ...s.trilhas[id], ...parcial } },

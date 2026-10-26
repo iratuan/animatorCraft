@@ -3,7 +3,7 @@ import {
   type ActorId, type AtorEstado, type ExpressaoId, type ModeloPalito, type PoseDef, type PoseId,
 } from '@shared/domain';
 
-/** Aparência do boneco de reserva (usado por personagens que ainda não têm ficha de sprites). */
+/** Aparência do boneco de reserva (usado por todos os personagens). */
 export interface VisualPalito { oculos?: boolean; dentesSeparados?: boolean; cilios?: boolean; altura: number; cabeca: number; postura?: { torso: number; cabeca: number } }
 const PALITO: Record<ModeloPalito, VisualPalito> = {
   professor: { oculos: true, altura: 1.0, cabeca: 1.2, postura: { torso: -3, cabeca: -6 } },

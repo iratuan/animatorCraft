@@ -4,7 +4,6 @@ import {
   expressoesDe, MAX_PASSOS_CLIPE, MAX_QUADROS_EXPRESSAO, MOVIMENTOS, NOME_EXPRESSAO, NOME_POSE, nomeDeClipe, nomeDeExpressao, OLHOS, ORDEM_ATORES, POSES,
   type ActorId, type ClipePersonalizado, type EstiloClipe, type ExpressaoBoneco, type Movimento, type PassoClipe, type PoseId, type RostoBoneco,
 } from '@shared/domain';
-import { listarSprites } from '@renderer/features/cena';
 import { Miniatura } from '@renderer/components/Miniatura';
 import { useEditor } from '@renderer/store/editor-store';
 import { carregarAnimacoesSalvas, salvarClipes, salvarExpressoes } from '../services/animacoes';
@@ -63,7 +62,6 @@ export function EditorAnimacaoModal() {
 
   const espec = ATORES[id]!;
   const ap = espec.apelidos[0]!;
-  const tem = listarSprites(id);
   void versaoBib; void lista;
 
   const fechar = () => { carregarAnimacoesSalvas(); setPrevia(null); setAbertoDe(null); set({ editorAnimacao: null }); novaVersaoPersonagens(); }; // ao reabrir, volta à aba pedida e sem rascunhos
@@ -88,7 +86,7 @@ export function EditorAnimacaoModal() {
     if (!exprRasc) return;
     if (!nomeExpr) { setMsg('Dê um nome à expressão (letras e números).'); return; }
     carregarAnimacoesSalvas(); // descarta a prévia do rascunho; o que vale é o que está salvo
-    // o nome pode coincidir com um sprite rosto_<nome> (a mesma expressão vale nos dois estilos), mas não com outra expressão do boneco
+    // o nome não pode repetir outra expressão do boneco
     const original = exprRasc.original;
     if (base.has(nomeExpr) || (exprRasc.existentes.includes(nomeExpr) && original !== nomeExpr)) { setMsg(`“${nomeExpr}” já existe para ${espec.nome}. Use outro nome.`); return; }
     const outras = expressoesBoneco().filter((e) => !(e.ator === id && (e.nome === nomeExpr || e.nome === original)));
@@ -100,7 +98,6 @@ export function EditorAnimacaoModal() {
     salvarExpressoes(expressoesBoneco().filter((e) => !(e.ator === id && e.nome === nome)));
     setMsg(`Expressão “${nome}” excluída.`); setExprRasc(null); atualizar();
   };
-  const editarSprite = (nome: string) => set({ editorImagem: { personagem: id, tipo: 'rosto', nome } });
   const mudarQuadro = (i: number, parte: Partial<RostoBoneco>) => {
     if (!exprRasc) return;
     const r = { ...exprRasc, quadros: exprRasc.quadros.map((q, k) => (k === i ? { ...q, ...parte } : q)) };
@@ -109,7 +106,6 @@ export function EditorAnimacaoModal() {
 
   // ---------------------------------------------------------------- clipes
   const meus = clipesPersonalizados(id);
-  const opcoesSprite = [...new Set(['parado', ...tem.poses])];
   const mudarClipe = (r: RascunhoClipe) => {
     setClipeRasc(r);
     carregarAnimacoesSalvas(); // volta ao que está salvo: sem isso, cada letra digitada deixaria um clipe-fantasma no registro
@@ -167,7 +163,7 @@ export function EditorAnimacaoModal() {
         <div className="anim-corpo">
           <div className="anim-esq">
             {aba === 'expressoes' && !exprRasc && (<>
-              <p className="dica">Clique em uma expressão para ver a prévia. No roteiro: <code>{espec.nome} faz cara de apaixonada.</code> No estilo <b>Stickman</b> a expressão é o rosto do boneco (abaixo); no <b>Chibi</b> é o sprite <code>rosto_&lt;nome&gt;.png</code>, desenhado no editor de imagem.</p>
+              <p className="dica">Clique em uma expressão para ver a prévia. No roteiro: <code>{espec.nome} faz cara de apaixonada.</code> A expressão é o rosto do boneco (abaixo).</p>
               <div className="grade-espacos">
                 {todas.map((n) => (
                   <div key={n} className="espaco-caixa">
@@ -179,17 +175,16 @@ export function EditorAnimacaoModal() {
                   </div>
                 ))}
               </div>
-              <h4>Expressões criadas <small>boneco e sprites de {espec.nome}</small></h4>
+              <h4>Expressões criadas <small>boneco de {espec.nome}</small></h4>
               <ul className="lista-anim">
                 {todas.filter((n) => !base.has(n)).map((n) => (
                   <li key={n}>
                     <b>{n}</b>
-                    <small>{[doBoneco.has(n) ? `boneco (${salvasBoneco.find((e) => e.nome === n)!.quadros.length} quadro(s))` : null, tem.rostos.includes(n) ? 'sprite chibi' : null].filter(Boolean).join(' + ')}</small>
+                    <small>{[doBoneco.has(n) ? `boneco (${salvasBoneco.find((e) => e.nome === n)!.quadros.length} quadro(s))` : null].filter(Boolean).join(' + ')}</small>
                     <span className="acoes-lista">
                       <button onClick={() => setPrevia(roteiroExpr(n))}>Prévia</button>
                       {doBoneco.has(n) && <button onClick={() => { const e = salvasBoneco.find((x) => x.nome === n) as ExpressaoBoneco; const r = { original: n, nome: n, quadros: e.quadros.map((q) => ({ ...q })), existentes: [...doBoneco] }; setExprRasc(r); setPrevia(roteiroExpr(n)); }}>Editar boneco</button>}
-                      <button onClick={() => editarSprite(n)}>{tem.rostos.includes(n) ? 'Editar sprite' : 'Criar sprite'}</button>
-                      {doBoneco.has(n) && <button className="perigo-leve" onClick={() => excluirExpr(n)}>Excluir</button>}
+                                      {doBoneco.has(n) && <button className="perigo-leve" onClick={() => excluirExpr(n)}>Excluir</button>}
                     </span>
                   </li>
                 ))}
@@ -268,11 +263,6 @@ export function EditorAnimacaoModal() {
               {clipeRasc.passos.map((p, i) => (
                 <div key={i} className="passo-clipe" data-passo={i + 1}>
                   <span className="n-passo">{i + 1}</span>
-                  <label className="campo">Sprite (Chibi)
-                    <select aria-label={`Sprite do passo ${i + 1}`} value={p.tags[0]} onChange={(e) => mudarPasso(i, { tags: [e.target.value, 'parado'] })}>
-                      {[...new Set([p.tags[0]!, ...opcoesSprite])].map((o) => <option key={o} value={o}>{o}</option>)}
-                    </select>
-                  </label>
                   <label className="campo">Pose (Stickman)
                     <select aria-label={`Pose do boneco no passo ${i + 1}`} value={p.poseBoneco ?? 'parado'} onChange={(e) => mudarPasso(i, { poseBoneco: e.target.value as PoseId })}>
                       {POSES.map((o) => <option key={o} value={o}>{NOME_POSE[o]}</option>)}
@@ -296,7 +286,7 @@ export function EditorAnimacaoModal() {
                 </div>
               ))}
               {clipeRasc.passos.length < MAX_PASSOS_CLIPE && <button onClick={() => mudarClipe({ ...clipeRasc, passos: [...clipeRasc.passos, { ...clipeRasc.passos[clipeRasc.passos.length - 1]! }] })}>＋ Passo</button>}
-              <p className="dica">Duração total: {clipeRasc.passos.reduce((s, p) => s + p.dur, 0).toFixed(1)} s. Os sprites vêm da ficha de {espec.nome} (poses importadas ou criadas no editor de sprites).</p>
+              <p className="dica">Duração total: {clipeRasc.passos.reduce((s, p) => s + p.dur, 0).toFixed(1)} s. As poses vêm do boneco de {espec.nome}.</p>
               <div className="modal-botoes">
                 <button onClick={() => { carregarAnimacoesSalvas(); setClipeRasc(null); setPrevia(null); atualizar(); }}>Cancelar</button>
                 <button className="primario" onClick={salvarClipe}>Salvar clipe</button>
@@ -306,7 +296,7 @@ export function EditorAnimacaoModal() {
 
           <div className="anim-dir">
             <b>Prévia (Stickman)</b>
-            {previa ? <PreviaAnimacao ator={id} roteiro={previa} estilo="stickman" /> : <p className="dica">Escolha uma expressão ou clipe para ver a prévia aqui.</p>}
+            {previa ? <PreviaAnimacao roteiro={previa} /> : <p className="dica">Escolha uma expressão ou clipe para ver a prévia aqui.</p>}
           </div>
         </div>
 

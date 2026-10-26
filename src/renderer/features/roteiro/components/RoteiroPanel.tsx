@@ -45,7 +45,10 @@ export function RoteiroPanel() {
   const gatilho = mencao ? `ator:${mencao.inicio}` : colch ? `colchete:${colch.inicio}` : null;
   const filtro = mencao?.filtro ?? colch?.filtro ?? '';
   const [dispensado, setDispensado] = useState<string | null>(null);
-  const [selecionado, setSelecionado] = useState(0);
+  // seleção do seletor, guardada junto do texto que a gerou: ao digitar outro filtro ela volta ao primeiro item sem depender de efeito
+  const [navegacao, setNavegacao] = useState<{ chave: string; i: number }>({ chave: '', i: 0 });
+  // espelho síncrono da seleção: duas teclas seguidas (seta, seta, Enter) chegam antes do re-render
+  const navegacaoRef = useRef(navegacao);
   const [posicao, setPosicao] = useState({ top: 0, left: 0, altura: 18 });
 
   // posição que o cursor deve ter depois da próxima atualização do texto (o React move o cursor para o fim ao trocar o valor)
@@ -82,7 +85,10 @@ export function RoteiroPanel() {
   const aberto = itens.length > 0;
 
   // ao digitar outro texto, volta para a primeira opção; ao sair do gatilho, esquece o Esc
-  useEffect(() => { setSelecionado(0); }, [gatilho, filtro]);
+  const chaveSel = `${gatilho}|${filtro}`;
+  const selecionado = navegacao.chave === chaveSel ? navegacao.i : 0;
+  const setSelecionado = (i: number) => { navegacaoRef.current = { chave: chaveSel, i }; setNavegacao(navegacaoRef.current); };
+  const selecaoAtual = () => (navegacaoRef.current.chave === chaveSel ? navegacaoRef.current.i : 0);
   useEffect(() => { if (!gatilho) setDispensado(null); }, [gatilho]);
   // a posição é medida depois que o texto novo está no DOM
   useLayoutEffect(() => {
@@ -99,9 +105,11 @@ export function RoteiroPanel() {
   const tecla = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (aberto) {
       const n = itens.length;
-      const sel = Math.min(selecionado, n - 1);
-      if (e.key === 'ArrowDown') { e.preventDefault(); setSelecionado((i) => (i + 1) % n); return; }
-      if (e.key === 'ArrowUp') { e.preventDefault(); setSelecionado((i) => (i - 1 + n) % n); return; }
+      const sel = Math.min(selecaoAtual(), n - 1);
+      // atualização funcional: duas setas em sequência rápida partem da seleção mais recente, não da que estava na tela
+      const mover = (passo: number) => setSelecionado((selecaoAtual() + passo + n) % n);
+      if (e.key === 'ArrowDown') { e.preventDefault(); mover(1); return; }
+      if (e.key === 'ArrowUp') { e.preventDefault(); mover(-1); return; }
       if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); itens[sel]!.escolher(); return; }
       if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); setDispensado(gatilho); return; }
     }

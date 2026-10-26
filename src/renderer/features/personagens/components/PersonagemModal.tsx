@@ -122,7 +122,7 @@ export function PersonagemModal() {
     }, aberta.id);
     if ('erro' in r) { setErro(r.erro); return; }
     novaVersao();
-    set({ fichaPersonagem: null, selecionado: r.id, mensagem: editando ? `${f.nome} atualizado.` : `${f.nome} criado. Abra “Editar / exportar sprites” para enviar os PNGs de cada pose e expressão; até lá aparece como boneco de palito.` });
+    set({ fichaPersonagem: null, selecionado: r.id, mensagem: editando ? `${f.nome} atualizado.` : `${f.nome} criado. Ele já aparece no roteiro como boneco de palito.` });
   };
 
   const exportarArquivoJson = () => {
@@ -169,7 +169,7 @@ export function PersonagemModal() {
   };
 
   const excluir = async () => {
-    if (!aberta.id || !window.confirm(`Excluir ${ATORES[aberta.id]!.nome} e os sprites dele? Isso não afeta os personagens originais.`)) return;
+    if (!aberta.id || !window.confirm(`Excluir ${ATORES[aberta.id]!.nome} e tudo o que você criou para ele? Isso não afeta os personagens originais.`)) return;
     await excluirPersonagem(aberta.id);
     novaVersao();
     set({ fichaPersonagem: null, selecionado: 'cringefather', mensagem: 'Personagem excluído.' });

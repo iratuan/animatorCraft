@@ -47,7 +47,7 @@ Professor escreve $(a+b)^2 = a^2 + 2ab + b^2$ no quadro.`}</Ex>
           <tr><td><C>X aponta</C></td><td>aponta para a lousa</td></tr>
           <tr><td><C>X faz cara de brava</C></td><td>muda a expressão (neutra, feliz, triste, brava, surpresa, confusa, sarcástica, assustada, empolgada, entediada)</td></tr>
           <tr><td><C>X dança por 5 segundos</C></td><td>dança padrão do personagem; também pula, cruza os braços, tropeça, acena…</td></tr>
-          <tr><td><C>X faz a pose pular-corda por 3 segundos</C></td><td>usa um sprite pelo nome (poses novas dos pacotes)</td></tr>
+          <tr><td><C>X faz a pose pular-corda por 3 segundos</C></td><td>usa uma pose do boneco pelo nome (poses novas dos clipes)</td></tr>
           <tr><td><C>Espera 2 segundos.</C></td><td>pausa</td></tr>
           <tr><td><C>Apaga o quadro.</C></td><td>limpa a lousa</td></tr>
           <tr><td><C>[nota: gravar com voz impaciente]</C></td><td>anotação para você; não aparece no vídeo</td></tr>
@@ -104,11 +104,10 @@ Erika entra pela direita na posição 60%.  (para de andar em 60%, em vez do pon
       <p>O elenco original traz CringeFather, BetaSon, Erika, Dario, Laura, Elizendra, Artur e Carol. Você pode criar quantos quiser:</p>
       <ol>
         <li><b>Arquivo ▸ Novo personagem…</b> (ou <i>＋ Novo personagem</i> na Biblioteca). Informe o nome, outros nomes que o roteiro pode usar, idade, altura no palco, o boneco de palito base e a dança padrão.</li>
-        <li>O personagem já pode ser usado no roteiro (<C>Tia Marta entra pela esquerda andando.</C>) e aparece como stickman.</li>
-        <li>Abra o <b>editor de sprites</b> para enviar os PNGs de cada pose e expressão (veja “Sprites”).</li>
+        <li>O personagem já pode ser usado no roteiro (<C>Tia Marta entra pela esquerda andando.</C>) e aparece como boneco de palito.</li>
       </ol>
-      <p>Em <i>Personagem</i> você edita a ficha dos personagens que criou, <b>duplica</b> qualquer personagem como ponto de partida e escolhe o estilo. Os do elenco original não podem ser excluídos. “Professor” e “Aluno” são papéis, não nomes, e não servem como apelido.</p>
-      <p><b>Estilo (skin):</b> cada personagem pode ser <b>Chibi</b> (sprites desenhados) ou <b>Stickman</b> (boneco de palito de traço fino, com rosto, cabelo e óculos). A aba <i>Aula</i> define o padrão de todos. Quem não tem sprites aparece como stickman.</p>
+      <p>Em <i>Personagem</i> você edita a ficha dos personagens que criou, <b>duplica</b> qualquer personagem como ponto de partida. Os do elenco original não podem ser excluídos. “Professor” e “Aluno” são papéis, não nomes, e não servem como apelido.</p>
+      <p><b>Estilo:</b> todos os personagens são bonecos de palito, com traço preto, rosto, cabelo, óculos e roupas de cor de destaque. Cada um tem a sua personalidade: o humor vem das expressões, das poses e das danças.</p>
     </>),
   },
   {
@@ -117,52 +116,14 @@ Erika entra pela direita na posição 60%.  (para de andar em 60%, em vez do pon
       <p>Cada personagem pode ter <b>expressões próprias</b> e <b>clipes de animação</b> próprios. Abra em <b>Personagem ▸ Expressões e clipes de …</b> (ou <i>Arquivo ▸ Expressões e clipes do personagem…</i>); a <b>prévia</b> toca ao vivo, com o mesmo motor do vídeo.</p>
       <h4>Expressões</h4>
       <ul>
-        <li><b>Stickman:</b> monte o rosto do boneco (olhos, boca, inclinação das sobrancelhas). Com mais de um quadro (até 4) a expressão é <b>animada</b>, 4 quadros por segundo.</li>
-        <li><b>Chibi:</b> a expressão é o sprite <C>rosto_nome.png</C>. Desenhe no editor de imagem (<i>Desenhar no editor de imagem</i>) ou importe o PNG. Com <C>rosto_nome_1.png</C>, <C>_2</C>… ela também é <b>animada</b> (8 quadros por segundo).</li>
-        <li>O mesmo nome vale nos dois estilos. No roteiro: <C>Erika faz cara de apaixonada.</C> Nome que o personagem não tem gera um aviso.</li>
+        <li><b>Rosto do boneco:</b> monte o rosto (olhos, boca, inclinação das sobrancelhas). Com mais de um quadro (até 4) a expressão é <b>animada</b>, 4 quadros por segundo.</li>
+        <li>No roteiro: <C>Erika faz cara de apaixonada.</C> Nome que o personagem não tem gera um aviso.</li>
       </ul>
       <h4>Clipes</h4>
-      <p>Um clipe é uma sequência de <b>passos</b>; cada passo tem o sprite do Chibi, a pose do Stickman, um movimento (balançar, pular, girar…), a duração, a intensidade (1 = normal) e se espelha. O clipe pode valer só para um estilo. Pode também <b>substituir uma pose padrão</b> só para aquele personagem (por exemplo, a “Dança atual” do Dario).</p>
+      <p>Um clipe é uma sequência de <b>passos</b>; cada passo tem uma pose do boneco, um movimento (balançar, pular, girar…), a duração, a intensidade (1 = normal) e se espelha. O clipe pode valer só para um estilo. Pode também <b>substituir uma pose padrão</b> só para aquele personagem (por exemplo, a “Dança atual” do Dario).</p>
       <Ex>{`Dario faz o clipe tchau.
 Dario faz o clipe "dança do foguete" por 6 segundos.`}</Ex>
-      <p>Sem “por N segundos” o clipe toca uma vez; com ele, repete (se o clipe estiver marcado para repetir). Expressões e clipes vão no <b>zip de sprites</b> do personagem (<C>animacoes.json</C>) e no <b>projeto completo</b>, então passam para outro computador.</p>
-    </>),
-  },
-  {
-    id: 'sprites', titulo: 'Sprites: editar, exportar e importar',
-    corpo: (<>
-      <p><b>Arquivo ▸ Editar / exportar sprites dos personagens…</b> abre o editor: cada espaço padrão (poses, 10 expressões, bocas <C>a e o m</C>, piscada) aparece preenchido ou vazio. Clique para trocar ou criar o PNG daquele espaço; use <i>Criar a partir de um PNG</i> para poses e objetos novos.</p>
-      <p><b>Nomes dos arquivos</b> (minúsculas, sem acento, hífen no lugar de espaço):</p>
-      <ul>
-        <li><C>pose_parado.png</C> é obrigatória (corpo inteiro, de frente). Outras: <C>pose_andar</C>, <C>pose_correr</C>, <C>pose_sentado</C>… Quadros de animação: <C>pose_andar_1</C>, <C>pose_andar_2</C>… (8 quadros por segundo).</li>
-        <li><C>rosto_neutra</C>, <C>rosto_feliz</C>… (só a <b>cabeça</b>, com a mesma pele e cabelo). Fala: <C>rosto_boca-a</C>, <C>-e</C>, <C>-o</C>, <C>-m</C>. Piscada: <C>rosto_olhos-fechados</C>.</li>
-        <li><C>prop_skate.png</C>: objetos soltos.</li>
-      </ul>
-      <p><b>Para editar fora do programa:</b> <i>Exportar (.zip)</i>, edite os PNGs em Photoshop, Krita ou Photopea mantendo os nomes e importe o zip em <b>Arquivo ▸ Importar pacote de sprites</b>. Pode devolver só o que mudou. O zip também leva a ficha dos personagens criados por você, então serve para passar um personagem para outro computador.</p>
-      <p>Dicas: use PNG com fundo transparente (fundo branco é removido automaticamente); numa expressão nova copie <C>rosto_neutra</C> e mude só olhos e boca; o desenho final é convertido para escala de cinza.</p>
-    </>),
-  },
-  {
-    id: 'editor-imagem', titulo: 'Editor de imagem dos sprites',
-    corpo: (<>
-      <p>Clique num espaço do editor de sprites (Arquivo ▸ Editar / exportar sprites…) para abrir o <b>editor de imagem integrado</b>. Ele carrega o sprite atual (ou uma tela em branco do tamanho certo, se o espaço estiver vazio). <b>Salvar no sprite</b> grava o PNG achatado, com fundo transparente, no mesmo espaço; <b>Cancelar</b> descarta. O botão <b>PNG</b> no canto do espaço continua enviando um arquivo pronto.</p>
-      <table>
-        <tbody>
-          <tr><td>Mover / transformar (V)</td><td>move a seleção (ou o conteúdo da camada); as alças dos cantos escalam, a bolinha de cima gira (Shift: passos de 15°). Enter confirma, Esc cancela</td></tr>
-          <tr><td>Seleção retangular (M), elíptica (S), laço (L), varinha mágica (W)</td><td>Shift soma à seleção, Alt subtrai. Tudo (Ctrl+A), nenhuma (Ctrl+D), inverter (Ctrl+Shift+I)</td></tr>
-          <tr><td>Pincel (B), lápis (P), borracha (E)</td><td>tamanho, dureza e opacidade; a opacidade vale para o traço inteiro. A caneta usa a pressão; <C>[</C> e <C>]</C> mudam o tamanho</td></tr>
-          <tr><td>Balde (G), conta-gotas (I)</td><td>o balde tem tolerância e pode olhar todas as camadas; Alt + clique pega a cor com qualquer pincel</td></tr>
-          <tr><td>Linha (Q), retângulo (R), elipse (O), texto (T)</td><td>Shift: 45°, quadrado, círculo. Formas podem ser preenchidas. O texto vira um item solto que você move, escala e gira</td></tr>
-          <tr><td>Mão (H) ou Espaço</td><td>move a tela; roda do mouse (ou pinça com dois dedos) dá zoom; Ctrl+0 ajusta à janela</td></tr>
-        </tbody>
-      </table>
-      <ul>
-        <li><b>Camadas:</b> nova, duplicar (Ctrl+J), excluir, subir/descer, mesclar para baixo, ocultar (olho), renomear (duplo clique) e opacidade de cada uma. Você pode abrir outra imagem como camada ou colar (Ctrl+V) uma imagem da área de transferência.</li>
-        <li><b>Imagem:</b> espelhar, girar 90°, cortar ao conteúdo, redimensionar a imagem toda ou só a tela.</li>
-        <li><b>Desfazer / refazer:</b> Ctrl+Z e Ctrl+Y valem para tudo (traços, seleções, camadas, tamanho). O histórico é mais curto em imagens muito grandes.</li>
-        <li><b>Ajudas para sprites:</b> <i>Original</i> sobrepõe o sprite de antes para comparar; <i>Guias</i> mostra a caixa da cabeça (laranja) e o chão (verde) nas poses e um corpo de apoio, no ponto de encaixe, ao editar rostos. As “cores do personagem” vêm do próprio sprite, para pintar sem mudar o tom.</li>
-        <li><b>Cuidados:</b> em rostos, mantenha o tamanho da tela para o encaixe da cabeça continuar valendo. No <C>pose_parado</C>, mudar o tamanho exige remedir o encaixe dos rostos (o app volta a usar a caixa da cabeça). Poses animadas aparecem quadro a quadro (<C>correr 1</C>, <C>correr 2</C>…).</li>
-      </ul>
+      <p>Sem “por N segundos” o clipe toca uma vez; com ele, repete (se o clipe estiver marcado para repetir). Expressões e clipes vão no <b>projeto completo</b> (e no arquivo do personagem, <C>animacoes.json</C>), então passam para outro computador.</p>
     </>),
   },
   {
@@ -222,9 +183,8 @@ Professor desenha um gráfico de pizza: Sim=70, Não=30 no quadro.`}</Ex>
   {
     id: 'barra', titulo: 'Barra de ferramentas e painéis',
     corpo: (<>
-      <p>Logo abaixo dos menus fica a <b>barra de ferramentas</b>, com os atalhos mais usados: <i>Início, Novo, Abrir, Salvar</i> (projeto), <i>Desfazer/Refazer</i>, <i>Personagem</i> (novo), <i>Clipes</i> (expressões e clipes), <i>Sprites</i> (editor), <i>Exportar</i>/<i>Importar</i> (zip de sprites do personagem selecionado), <i>Prompt IA</i>, <i>MP4</i>, <i>Legendas</i>, <i>PNG</i> e <i>Manual</i>. Todo botão também está num menu, com o mesmo ícone.</p>
+      <p>Logo abaixo dos menus fica a <b>barra de ferramentas</b>, com os atalhos mais usados: <i>Início, Novo, Abrir, Salvar</i> (projeto), <i>Desfazer/Refazer</i>, <i>Personagem</i> (novo), <i>Clipes</i> (expressões e clipes), <i>Prompt IA</i>, <i>MP4</i>, <i>Legendas</i>, <i>PNG</i> e <i>Manual</i>. Todo botão também está num menu, com o mesmo ícone. Quando a janela é estreita, os botões que não cabem ficam no menu <i>Mais</i>.</p>
       <p><b>Painéis redimensionáveis:</b> arraste a divisória entre o roteiro e o palco, entre o palco e o painel lateral, e acima da linha do tempo. Duplo clique restaura o tamanho; com a divisória focada, as setas movem de 10 em 10 px (Shift = 50). Os tamanhos ficam guardados.</p>
-      <p><b>Corrigir sprites fora do app:</b> selecione o personagem, clique em <i>Exportar</i>, edite os PNGs (mantendo os nomes) e use <i>Importar</i>. Pode mandar só os arquivos que mudaram; o resto do personagem permanece.</p>
     </>),
   },
   {
@@ -245,7 +205,7 @@ Professor desenha um gráfico de pizza: Sim=70, Não=30 no quadro.`}</Ex>
         <li><b>Copiar o prompt:</b> informe o assunto, a matéria, a série, a duração e quem faz o Professor e o Aluno; clique em <i>Copiar prompt</i> (ou <i>Salvar como arquivo</i>) e cole na IA que preferir.</li>
         <li><b>Colar o roteiro da IA:</b> cole a resposta na segunda aba. O app ignora conversa e cercas de código, confere cada frase com o interpretador e lista o que não entendeu — cole esses avisos de volta na IA pedindo a correção. Quando estiver sem avisos, <i>Substituir</i> ou <i>Acrescentar</i> ao roteiro (Ctrl+Z desfaz).</li>
       </ol>
-      <p>O prompt <b>carrega tudo dentro dele</b>, gerado na hora a partir da sua biblioteca: o formato do arquivo, todas as frases aceitas (entrar, falar, estados, poses, danças, lousa, fórmulas, gráficos, imagens com efeitos, câmera, áudio e ações simultâneas), as armadilhas mais comuns, sequências prontas, um exemplo completo e <b>os seus personagens</b> com apelidos, expressões extras, poses de sprite, clipes, e os nomes das <b>imagens</b> e <b>áudios</b> que você importou. Ao criar um personagem, um clipe ou importar um arquivo, o prompt seguinte já os inclui.</p>
+      <p>O prompt <b>carrega tudo dentro dele</b>, gerado na hora a partir da sua biblioteca: o formato do arquivo, todas as frases aceitas (entrar, falar, estados, poses, danças, lousa, fórmulas, gráficos, imagens com efeitos, câmera, áudio e ações simultâneas), as armadilhas mais comuns, sequências prontas, um exemplo completo e <b>os seus personagens</b> com apelidos, expressões extras, poses, clipes, e os nomes das <b>imagens</b> e <b>áudios</b> que você importou. Ao criar um personagem, um clipe ou importar um arquivo, o prompt seguinte já os inclui.</p>
       <p>“Melhorar o roteiro atual” gera um prompt que leva o seu roteiro junto, para a IA reescrevê-lo seguindo o seu pedido.</p>
     </>),
   },  {
@@ -261,7 +221,7 @@ Professor desenha um gráfico de pizza: Sim=70, Não=30 no quadro.`}</Ex>
     corpo: (<>
       <ul>
         <li><b>Desfazer / Refazer:</b> <b>Ctrl+Z</b> e <b>Ctrl+Y</b> (menu Editar) desfazem qualquer edição do roteiro: digitar, arrastar na linha do tempo ou no palco, inserir da biblioteca, aplicar IA.</li>
-        <li><b>Arquivo ▸ Salvar projeto completo (.zip)</b> guarda roteiro, personagens criados, estilos, sprites trocados, áudios e preferências. <b>Abrir projeto</b> restaura tudo, inclusive em outro computador.</li>
+        <li><b>Arquivo ▸ Salvar projeto completo (.zip)</b> guarda roteiro, personagens criados, estilos, áudios e preferências. <b>Abrir projeto</b> restaura tudo, inclusive em outro computador.</li>
         <li><b>Exportar ▸ Vídeo MP4 nos dois formatos</b> gera o 16:9 e o 9:16 em sequência.</li>
         <li><b>Exportar ▸ Legendas das falas (.srt)</b> cria as legendas a partir das falas (e dos áudios) para enviar ao YouTube.</li>
         <li>Clique no nome de uma cena na régua da linha do tempo para pular até ela.</li>
@@ -281,9 +241,7 @@ Professor desenha um gráfico de pizza: Sim=70, Não=30 no quadro.`}</Ex>
       <ul>
         <li><b>“Ação não entendida”:</b> use um verbo conhecido (veja a tabela do roteiro) e ponha o texto falado entre aspas.</li>
         <li><b>Personagem aparece como palito:</b> ele ainda não tem <C>pose_parado.png</C>, ou o estilo está em Stickman.</li>
-        <li><b>“Não tem a pose …”:</b> importe um pacote com esse <C>pose_nome.png</C>; enquanto isso ele fica parado.</li>
         <li><b>O conteúdo ultrapassa a lousa:</b> resuma, ou divida em outra cena com <C># Título</C>.</li>
-        <li><b>Voltar aos sprites originais:</b> <i>Arquivo ▸ Remover pacotes importados</i> e reabra o programa.</li>
       </ul>
     </>),
   },
@@ -291,7 +249,7 @@ Professor desenha um gráfico de pizza: Sim=70, Não=30 no quadro.`}</Ex>
     id: 'sobre', titulo: 'Sobre o StickBoard',
     corpo: (<>
       <p><b>StickBoard {VERSAO}</b> — gerador de vídeos de quadro branco com personagens animados, para aulas de ciências, matemática e inglês.</p>
-      <p>Os personagens do elenco (CringeFather, BetaSon, Erika, Dario, Laura) têm sprites completos; Elizendra, Artur e Carol aparecem como stickman até ganharem sprites. Tudo o que você cria (roteiros, personagens, áudios, imagens) fica no seu computador; nada é enviado a lugar nenhum, exceto o pedido à IA que você mesmo configurar em <i>Gerar roteiro com IA</i>.</p>
+      <p>Os personagens do elenco (CringeFather, BetaSon, Erika, Dario, Laura, Elizendra, Artur, Carol, Véia, Véio, Paraíba e Mingau) são todos bonecos de palito. Tudo o que você cria (roteiros, personagens, áudios, imagens) fica no seu computador; nada é enviado a lugar nenhum, exceto o pedido à IA que você mesmo configurar em <i>Gerar roteiro com IA</i>.</p>
       <p>Atalhos: <b>F1</b> manual · <b>Espaço</b> tocar/pausar · <b>Ctrl+Z / Ctrl+Y</b> desfazer/refazer.</p>
     </>),
   },];

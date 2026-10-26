@@ -73,7 +73,7 @@ console.log('E1 MP4 16:9');
 await carregar(ROTEIRO);
 const durRoteiro = await duracaoDoRoteiro();
 const e1 = await exportar('Vídeo MP4 (YouTube', `${dest}/aula-16x9.mp4`);
-v.igual(e1.nome, 'stickboard-video.mp4', 'nome do arquivo do vídeo horizontal');
+v.igual(e1.nome, 'Sem_título-video.mp4', 'nome do arquivo do vídeo horizontal');
 const m1 = lerMp4(readFileSync(`${dest}/aula-16x9.mp4`));
 console.log(`  ${e1.seg.toFixed(1)} s para exportar ${durRoteiro.toFixed(1)} s de vídeo; ${(m1.tamanho / 1e6).toFixed(2)} MB; codec ${m1.video?.codec}; marca ${m1.marca}`);
 v.ok(m1.moovAntesDeMdat, 'moov antes do mdat (começa a tocar sem baixar tudo: exigência de YouTube/Instagram)');
@@ -117,7 +117,7 @@ const [dl1, dl2] = await (async () => {
 })();
 v.ok(!!dl1 && !!dl2, 'os dois formatos geram dois arquivos');
 if (dl1 && dl2) {
-  v.igual([dl1.suggestedFilename(), dl2.suggestedFilename()], ['stickboard-video.mp4', 'stickboard-short.mp4'], 'nomes dos dois arquivos');
+  v.igual([dl1.suggestedFilename(), dl2.suggestedFilename()], ['Sem_título-video.mp4', 'Sem_título-short.mp4'], 'nomes dos dois arquivos');
   await dl1.saveAs(`${dest}/dois-16x9.mp4`); await dl2.saveAs(`${dest}/dois-9x16.mp4`);
   const a = lerMp4(readFileSync(`${dest}/dois-16x9.mp4`)), c = lerMp4(readFileSync(`${dest}/dois-9x16.mp4`));
   v.igual([a.video.w, a.video.h, c.video.w, c.video.h], [1920, 1080, 1080, 1920], 'resoluções 1920×1080 e 1080×1920');
@@ -133,7 +133,7 @@ const narr = wav(2.5, 330), musica = wav(8, 220), efeito = wav(0.6, 880);
 writeFileSync(`${dest}/narracao.wav`, narr); writeFileSync(`${dest}/musica.wav`, musica); writeFileSync(`${dest}/efeito.wav`, efeito);
 const comAudio = `[papéis: professor=CringeFather, aluno=BetaSon]\n\n# Som\n[música: musica.wav, volume 30%]\nProfessor entra pela esquerda andando.\nProfessor diz "Bem-vindos à aula!". [áudio: narracao.wav]\n[efeito: efeito.wav]\nAluno entra correndo pela direita. Aluno acena.\nEspera 2 segundos.\n[música: parar]`;
 await carregar(comAudio);
-await p.getByRole('button', { name: 'Áudio', exact: true }).click();
+await p.getByRole('tab', { name: 'Áudio', exact: true }).click();
 await p.locator('input[type=file][accept*="audio"]').setInputFiles([`${dest}/narracao.wav`, `${dest}/musica.wav`, `${dest}/efeito.wav`]);
 await p.waitForTimeout(1500);
 v.igual(await p.locator('.item-audio .topo').count(), 3, 'três áudios importados');
@@ -181,7 +181,11 @@ await p.waitForTimeout(1500); p.off('download', contar);
 v.igual(await p.evaluate(() => window.__inicios), 1, 'cliques repetidos durante a exportação iniciam uma exportação só');
 // roteiro com avisos ainda exporta
 await carregar('# X\nProfessor entra pela esquerda andando.\nProfessor flutua misteriosamente.\nProfessor acena.');
-await exportar('Vídeo MP4 (YouTube', `${dest}/com-aviso.mp4`);
+// a exportação pergunta antes de deixar de fora a frase que o app não entende
+await menu('Vídeo MP4 (YouTube');
+await p.getByRole('button', { name: 'Exportar mesmo assim' }).waitFor({ timeout: 60000 });
+const [dlAviso] = await Promise.all([p.waitForEvent('download', { timeout: 280000 }), p.getByRole('button', { name: 'Exportar mesmo assim' }).click()]);
+await dlAviso.saveAs(`${dest}/com-aviso.mp4`);
 v.ok(lerMp4(readFileSync(`${dest}/com-aviso.mp4`)).video.amostras > 30, 'roteiro com frase não entendida exporta mesmo assim (a frase é ignorada)');
 
 // =================================================================== E5: legendas, quadro e prompt
@@ -200,7 +204,7 @@ const quadro = await exportar('Quadro atual (PNG)', `${dest}/quadro.png`);
 const png = readFileSync(`${dest}/quadro.png`);
 v.ok(png[0] === 137 && png.toString('latin1', 1, 4) === 'PNG' && quadro.nome === 'quadro.png', 'quadro atual é um PNG válido');
 v.igual([png.readUInt32BE(16), png.readUInt32BE(20)], [1920, 1080], 'PNG com a resolução do vídeo');
-const [dlmd] = await Promise.all([p.waitForEvent('download'), (async () => { await p.getByText('Arquivo').first().click(); await p.getByText('Prompt mestre para IA (copiar e colar)…').click(); await p.waitForSelector('.prompt-mestre'); await p.waitForFunction(() => !document.body.innerText.includes('Carregando a biblioteca'), null, { timeout: 60000 }); await p.getByRole('button', { name: 'Salvar como arquivo (.md)' }).click(); })()]);
+const [dlmd] = await Promise.all([p.waitForEvent('download'), (async () => { await p.getByText('Arquivo').first().click(); await p.getByText('Ferramentas & IA', { exact: true }).first().click(); await p.getByText('Prompt mestre para IA (copiar e colar)…').click(); await p.waitForSelector('.prompt-mestre'); await p.waitForFunction(() => !document.body.innerText.includes('Carregando a biblioteca'), null, { timeout: 60000 }); await p.getByRole('button', { name: 'Salvar como arquivo (.md)' }).click(); })()]);
 await dlmd.saveAs(`${dest}/prompt-mestre.md`);
 const md = readFileSync(`${dest}/prompt-mestre.md`, 'utf8');
 v.ok(md.startsWith('# PROMPT MESTRE DO STICKBOARD') && md.length > 10000 && md.includes('CringeFather') && md.includes('## 3. TODAS AS FRASES'), `prompt mestre salvo em .md (${md.length} caracteres)`);

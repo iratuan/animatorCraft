@@ -225,7 +225,7 @@ code { background: #111; padding: 1px 5px; border-radius: 3px; font-size: 12px; 
 .novo-sprite input { flex: 1; padding: 6px 8px; background: var(--bg1); border: 1px solid #000; border-radius: 4px; color: var(--txt); }
 .novo-sprite select, .novo-sprite button { padding: 6px 10px; background: var(--bg3); border-radius: 4px; color: var(--txt); }
 .novo-sprite button:disabled { opacity: .5; }
-.botao-editar-sprites { margin-top: 10px; width: 100%; padding: 8px; border-radius: 4px; background: var(--bg3); color: var(--txt); }
+.botao-editar-clipes { margin-top: 10px; width: 100%; padding: 8px; border-radius: 4px; background: var(--bg3); color: var(--txt); }
 
 /* preview svg do personagem */
 .modal-personagem-grid { display: grid; grid-template-columns: 1.15fr 0.95fr; gap: 18px; align-items: start; margin-top: 8px; }

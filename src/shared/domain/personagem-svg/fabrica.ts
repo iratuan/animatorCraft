@@ -242,12 +242,22 @@ export function gerarSvgCompleto(id: ActorId, opcoes: OpcoesRenderizacaoSVG = {}
   // Coordenadas esqueléticas cinemáticas
   if (eQuadrupede) {
     // -------------------------------- Quadrupedes (Paraíba cão / Mingau gato)
+    // Antes, o quadrúpede ignorava a pose (todas as poses saíam iguais). Agora estas poses mudam o passo, o salto e a cabeça;
+    // as demais continuam como "parado", até ganharem ajuste próprio.
+    const AJUSTE_QUADRUPEDE: Partial<Record<PoseId, { dy: number; dianteira: number; traseira: number; cabeca: number }>> = {
+      andar: { dy: 0, dianteira: 5, traseira: -5, cabeca: 0 },
+      correr: { dy: -4, dianteira: 12, traseira: -12, cabeca: 2 },
+      pular: { dy: -22, dianteira: 8, traseira: -8, cabeca: 4 },
+      rindo: { dy: 0, dianteira: 0, traseira: 0, cabeca: -6 },
+    };
+    const aj = AJUSTE_QUADRUPEDE[poseId] ?? { dy: 0, dianteira: 0, traseira: 0, cabeca: 0 };
+    corpoPartes.push(`<g transform="translate(0,${aj.dy})">`);
     const oX = 22, oY = 46;
     const qX = -32, qY = 46;
     const chaoY = 98;
 
     // Patas de trás (T e F)
-    for (const pX of [qX - 6, qX + 8]) {
+    for (const pX of [qX - 6 + aj.traseira, qX + 8 + aj.traseira]) {
       const joe = { x: pX - 8, y: (qY + chaoY) / 2 };
       const pe = { x: pX, y: chaoY };
       desenharMembroTubo([{ x: qX, y: qY }, joe, pe], 9, corFundo);
@@ -278,7 +288,7 @@ export function gerarSvgCompleto(id: ActorId, opcoes: OpcoesRenderizacaoSVG = {}
     }
 
     // Patas da frente (T e F)
-    for (const pX of [oX - 6, oX + 8]) {
+    for (const pX of [oX - 6 + aj.dianteira, oX + 8 + aj.dianteira]) {
       const joe = { x: pX + 4, y: (oY + chaoY) / 2 };
       const pe = { x: pX, y: chaoY };
       desenharMembroTubo([{ x: oX, y: oY }, joe, pe], 9, corFundo);
@@ -288,8 +298,9 @@ export function gerarSvgCompleto(id: ActorId, opcoes: OpcoesRenderizacaoSVG = {}
     }
 
     // Cabeça acoplada no ombro dianteiro
-    const cabX = oX + 16, cabY = oY - 26;
+    const cabX = oX + 16, cabY = oY - 26 + aj.cabeca;
     corpoPartes.push(`<g id="${id}-cabeca" transform="translate(${cabX}, ${cabY})">${cabecaConteudo}</g>`);
+    corpoPartes.push('</g>');
 
   } else {
     // -------------------------------- Humanoides (10 personagens)
@@ -354,8 +365,9 @@ export function gerarSvgCompleto(id: ActorId, opcoes: OpcoesRenderizacaoSVG = {}
 
     // 4. Vestido / Saia ampla se for o caso
     if (molde.roupa.tipoInferior === 'saia' || molde.roupa.tipoInferior === 'vestido') {
-      const saiaHemY = (peF.y + peT.y) / 2 - 10;
-      const saiaD = `M ${qX - 16},${qY - 4} L ${qX + 16},${qY - 4} L ${Math.max(peF.x, peT.x) + 24},${saiaHemY} L ${Math.min(peF.x, peT.x) - 24},${saiaHemY} Z`;
+      // A bainha fica presa ao quadril (altura e largura fixas): não depende de onde os pés estão, então a saia não se solta nem vira triângulo em poses de ar, queda ou corrida
+      const saiaHemY = qY + 0.9 * (lenCoxa + lenCanela);
+      const saiaD = `M ${qX - 16},${qY - 4} L ${qX + 16},${qY - 4} L ${qX + 34},${saiaHemY} L ${qX - 34},${saiaHemY} Z`;
       corpoPartes.push(`<path d="${saiaD}" fill="#ffffff" stroke="${corTraco}" stroke-width="${lw * 1.3}" stroke-linejoin="round" />`);
     }
 

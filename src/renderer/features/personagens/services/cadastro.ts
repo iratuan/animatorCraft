@@ -2,28 +2,14 @@ import {
   registrarAtor, removerAtor, restaurarAtores, type ActorId, type NovoAtor,
   desserializarPersonagemJSON, aplicarConfigPersonagem, personagemParaJSON,
 } from '@shared/domain';
-import { definirSkins, removerSprites, type Skin } from '@renderer/features/cena';
-import { removerSpritesSalvos } from './spritesSalvos';
-import { gravarJson, lerJson } from '@renderer/features/sistema';
 import { gravarFichas, lerFichas } from './fichas';
 import { carregarAnimacoesSalvas, removerAnimacoesDe } from './animacoes';
 
-/** Personagens criados pelo usuário e a skin de cada um: guardados no navegador/app (localStorage). */
-const CHAVE_SKINS = 'stickboard.skins.v1';
-
-
-export interface PreferenciasSkin { padrao: Skin; porPersonagem: Record<string, Skin> }
-
-/** Chamado antes de abrir a interface: reinstala os personagens e as skins. */
-export function carregarPersonagensSalvos(): PreferenciasSkin {
+/** Chamado antes de abrir a interface: reinstala os personagens criados pelo usuário e os clipes/expressões deles. */
+export function carregarPersonagensSalvos(): void {
   restaurarAtores(lerFichas());
   carregarAnimacoesSalvas();
-  const skins = lerJson<PreferenciasSkin>(CHAVE_SKINS, { padrao: 'stickman', porPersonagem: {} });
-  definirSkins(skins.padrao, skins.porPersonagem);
-  return skins;
 }
-
-export function gravarSkins(p: PreferenciasSkin): void { definirSkins(p.padrao, p.porPersonagem); gravarJson(CHAVE_SKINS, p); }
 
 /** Cria (ou atualiza, com `idExistente`) um personagem e guarda a lista. */
 export function salvarPersonagem(n: NovoAtor, idExistente?: ActorId): { id: ActorId } | { erro: string } {
@@ -41,15 +27,10 @@ export function importarPersonagemConfig(conteudoJson: string): { id: ActorId } 
   return r;
 }
 
-/** Exclui um personagem criado pelo usuário, com os sprites dele. */
+/** Exclui um personagem criado pelo usuário, com os clipes e expressões dele. */
 export async function excluirPersonagem(id: ActorId): Promise<boolean> {
   if (!removerAtor(id)) return false;
   gravarFichas();
-  removerSprites(id);
-  await removerSpritesSalvos(id);
   removerAnimacoesDe(id);
   return true;
 }
-
-
-

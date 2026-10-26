@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ATORES, DURACAO_AULA, MODELOS, ORDEM_ATORES, extrairRoteiro, gerarPromptMestre, parseRoteiro, type DuracaoAula, type FormatoProducao, type OpcoesPromptMestre } from '@shared/domain';
 import { useEditor } from '@renderer/store/editor-store';
-import { carregarImagensEAudios, carregarSprites } from '@renderer/bootstrap';
+import { carregarElenco, carregarImagensEAudios } from '@renderer/bootstrap';
 import { plataforma } from '@renderer/features/sistema';
 import { bibliotecaAtual } from '../services/biblioteca';
 import { copiarTexto } from '../services/area-de-transferencia';
@@ -53,7 +53,7 @@ const OPCOES_PAPEIS: Record<FormatoProducao, { principal: string; secundario: st
 
 /**
  * Prompt mestre: o texto que se cola em QUALQUER IA (Claude, ChatGPT, Gemini...) para ela escrever um roteiro que o StickBoard entende.
- * Ele leva dentro tudo o que a IA precisa: o formato, cada frase aceita, os personagens, sprites, clipes, imagens e áudios da biblioteca.
+ * Ele leva dentro tudo o que a IA precisa: o formato, cada frase aceita, os personagens, clipes, imagens e áudios da biblioteca.
  * A segunda aba recebe a resposta da IA, confere com o interpretador do app e a aplica no editor.
  */
 export function PromptMestreModal() {
@@ -88,7 +88,7 @@ export function PromptMestreModal() {
   useEffect(() => {
     if (!aberto) return;
     setCarregando(true);
-    void Promise.all([carregarSprites(), carregarImagensEAudios()]).catch(() => undefined).finally(() => setCarregando(false));
+    void Promise.all([carregarElenco(), carregarImagensEAudios()]).catch(() => undefined).finally(() => setCarregando(false));
   }, [aberto]);
 
   const opcoes: OpcoesPromptMestre = useMemo(() => ({ ...op, formato, roteiroAtual }), [op, formato, roteiroAtual]);
@@ -240,7 +240,7 @@ export function PromptMestreModal() {
             ) : (
               <label className="campo">O que melhorar<textarea rows={3} value={op.instrucao} onChange={(e) => campo('instrucao', e.target.value)} placeholder="Em branco = acrescentar reações e gestos enquanto os outros falam, sem mudar a aula" /></label>
             )}
-            {carregando && <p className="dica">Carregando a biblioteca (sprites, imagens e áudios)…</p>}
+            {carregando && <p className="dica">Carregando a biblioteca (imagens e áudios)…</p>}
             <textarea className="previa-ia" readOnly aria-label="Prompt mestre gerado" value={prompt} rows={10} onFocus={(e) => e.currentTarget.select()} />
             <p className="dica" style={{ marginTop: 4 }}>{prompt.length.toLocaleString('pt-BR')} caracteres · ≈ {tokens(prompt).toLocaleString('pt-BR')} tokens{falta ? ' · escreva o assunto acima ou complete o trecho <<…>> na própria IA' : ''}</p>
           </>

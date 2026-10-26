@@ -14,7 +14,7 @@ Gerador de vídeos whiteboard com personagens animados (ensino de ciências, mat
 │   │   │                   personagens, editor-imagem, audio, imagens, ia, exportacao, projeto, aula, ajuda, sistema…)
 │   │   ├── components/  layouts/  routes/  store/  assets/
 │   └── shared/      domínio puro (roteiro, linha do tempo, personagens, expressões, clipes, editor de imagem) + util
-├── tools/           sprites/ (recorte de fichas), e2e/ (baterias), captura/, auditoria/, verificação de arquitetura
+├── tools/           e2e/ (baterias), captura/, auditoria/, verificação de arquitetura
 └── docs/  referencias/  evidencias/
 ```
 
@@ -39,11 +39,11 @@ Android: use o JDK do Android Studio (`JAVA_HOME=C:\Ambiente\Android Studio\jbr`
 - O renderer **nunca** usa Node: tudo que precisa de disco passa por `plataforma` (`features/arquivos`), que fala com o Electron pelo IPC, com o Capacitor no Android ou com o navegador.
 - O preload expõe só funções específicas (`window.stickboard`); `contextIsolation` e `sandbox` ligados.
 - `shared/domain` é código puro e testável; o desenho (canvas) fica no renderer.
-- Documentos: `docs/ROTEIRO.md` (sintaxe), `docs/SPRITES.md` (nomes dos sprites), `docs/FICHAS.md` (como gerar fichas), `PLANO.md`.
+- Documentos: `docs/ROTEIRO.md` (sintaxe), `PLANO.md`.
 
 ## Testes
 - `npm test`: testes de domínio (roteiro, timeline, áudio, gráficos, IA, personagens, desfazer).
-- `npm run e2e`: testes de tela no navegador (com `npm run dev:web` rodando): simultâneas, posição no palco, áudio com MP4, gráficos, IA (servidor simulado), projeto, editor de sprites.
+- `npm run e2e`: testes de tela no navegador (com `npm run dev:web` rodando): simultâneas, posição no palco, áudio com MP4, gráficos, IA (servidor simulado), projeto, menções e colchetes do roteiro, diagnósticos, exportação e tela inicial.
 
 ## 0.7.0
 - **Tela inicial** leve (o editor carrega em segundo plano): continuar, novo, modelos, abrir roteiro/projeto, criar personagem, manual.

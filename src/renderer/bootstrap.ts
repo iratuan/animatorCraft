@@ -2,32 +2,30 @@ import { useEditor } from '@renderer/store/editor-store';
 import { carregarFontes } from '@renderer/features/fontes';
 import { carregarAudiosSalvos } from '@renderer/features/audio';
 import { carregarImagensSalvas } from '@renderer/features/imagens';
-import { carregarPacotesSalvos, carregarPersonagens, carregarPersonagensSalvos } from '@renderer/features/personagens';
+import { carregarPersonagensSalvos } from '@renderer/features/personagens';
 
 /**
  * Preparação do app, feita só quando alguma tela precisa dela (o editor ou o prompt mestre), nunca na tela inicial:
- * assim a tela inicial abre sem baixar sprites nem fontes. Cada etapa roda uma vez; chamar de novo devolve a mesma promessa.
+ * assim a tela inicial abre sem carregar fontes nem personagens. Cada etapa roda uma vez; chamar de novo devolve a mesma promessa.
  */
 
 let personagens = false;
-/** Reinstala os personagens criados pelo usuário e as skins. Síncrono: precisa existir antes da primeira interpretação do roteiro. */
+/** Reinstala os personagens criados pelo usuário. Síncrono: precisa existir antes da primeira interpretação do roteiro. */
 export function prepararPersonagens(): void {
   if (personagens) return;
   personagens = true;
-  const skins = carregarPersonagensSalvos();
-  useEditor.setState({ skinPadrao: skins.padrao, skins: skins.porPersonagem });
+  carregarPersonagensSalvos();
 }
 
-let sprites: Promise<number> | null = null;
-/** Carrega os sprites originais e reaplica os pacotes importados. Devolve quantos sprites vieram de pacotes. */
-export function carregarSprites(): Promise<number> {
+let elenco: Promise<void> | null = null;
+/** Elenco pronto: todos os personagens são bonecos de palito e já estão no código, então basta reinstalar os criados pelo usuário. */
+export function carregarElenco(): Promise<void> {
   prepararPersonagens();
-  sprites ??= carregarPersonagens().then(() => carregarPacotesSalvos()).then((n) => {
+  elenco ??= Promise.resolve().then(() => {
     useEditor.setState({ spritesOk: true });
     useEditor.getState().novaVersaoBib();
-    return n;
   });
-  return sprites;
+  return elenco;
 }
 
 let biblioteca: Promise<void> | null = null;

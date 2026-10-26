@@ -1,7 +1,7 @@
 import { dialog } from 'electron';
 import { readFile, writeFile } from 'node:fs/promises';
 import { basename } from 'node:path';
-import type { PacoteEscolhido, RoteiroAberto } from '@shared/types/ipc';
+import type { ArquivoEscolhido, RoteiroAberto } from '@shared/types/ipc';
 
 export async function abrirRoteiro(): Promise<RoteiroAberto | null> {
   const r = await dialog.showOpenDialog({ title: 'Abrir roteiro', filters: [{ name: 'Roteiro', extensions: ['txt', 'stk'] }], properties: ['openFile'] });
@@ -24,8 +24,8 @@ export async function salvarRoteiro(texto: string, nomeSugerido: string): Promis
   return r.filePath;
 }
 
-export async function abrirPacote(): Promise<PacoteEscolhido | null> {
-  const r = await dialog.showOpenDialog({ title: 'Importar pacote de sprites', filters: [{ name: 'Pacote de sprites (.zip)', extensions: ['zip'] }], properties: ['openFile'] });
+export async function abrirZip(): Promise<ArquivoEscolhido | null> {
+  const r = await dialog.showOpenDialog({ title: 'Abrir projeto', filters: [{ name: 'Projeto StickBoard (.zip)', extensions: ['zip'] }], properties: ['openFile'] });
   const caminho = r.filePaths[0];
   if (r.canceled || !caminho) return null;
   return { nome: basename(caminho), dados: new Uint8Array(await readFile(caminho)) };

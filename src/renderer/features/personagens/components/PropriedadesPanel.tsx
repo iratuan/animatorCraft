@@ -1,8 +1,7 @@
 import {
-  ATORES, expressoesDe, FRASE_POSE, NOME_EXPRESSAO, NOME_POSE, POSES, POSES_CONHECIDAS, POSES_DE_DANCA, ROSTOS_ESPECIAIS,
+  ATORES, expressoesDe, FRASE_POSE, NOME_EXPRESSAO, NOME_POSE, POSES, POSES_DE_DANCA,
   type ExpressaoId, type PoseId,
 } from '@shared/domain';
-import { listarSprites, possuiSprites } from '@renderer/features/cena';
 import { Miniatura } from '@renderer/components/Miniatura';
 import { useEditor } from '@renderer/store/editor-store';
 import { useRoteiroDerivado } from '@renderer/features/roteiro';
@@ -12,7 +11,6 @@ export function PropriedadesPanel() {
   const selecionado = useEditor((s) => s.selecionado);
   const inserir = useEditor((s) => s.inserir);
   const set = useEditor((s) => s.set);
-  const versaoBib = useEditor((s) => s.versaoBib);
   const { estado, roteiro } = useRoteiroDerivado();
 
   if (!selecionado) {
@@ -45,8 +43,6 @@ export function PropriedadesPanel() {
         <button onClick={() => set({ fichaPersonagem: { duplicarDe: selecionado } })}>Duplicar como novo</button>
       </div>
 
-      {espec.temSprites || possuiSprites(selecionado) || espec.personalizado ? (
-        <>
           <h4>Danças <small>clique para inserir no roteiro</small></h4>
           <div className="grade">
             {POSES_DE_DANCA.map((p: PoseId) => (
@@ -63,13 +59,6 @@ export function PropriedadesPanel() {
               </button>
             ))}
           </div>
-          <PacoteDoPersonagem ator={selecionado} versao={versaoBib} nome={nome} />
-          <button className="botao-editar-sprites" onClick={() => set({ editorPersonagem: selecionado })}>Editar / exportar sprites de {nome}</button>
-          <button className="botao-editar-sprites" onClick={() => set({ editorAnimacao: { ator: selecionado } })}>Expressões e clipes de {nome}…</button>
-        </>
-      ) : (
-        <>
-          <p className="dica">Ficha de sprites pendente: este personagem aparece como boneco de reserva. Importe um pacote (Arquivo → Importar pacote de sprites).</p>
           <h4>Expressão <small>clique para inserir no roteiro</small></h4>
           <div className="grade">
             {expressoesDe(selecionado).map((x) => (
@@ -78,51 +67,11 @@ export function PropriedadesPanel() {
               </button>
             ))}
           </div>
-          <button className="botao-editar-sprites" onClick={() => set({ editorAnimacao: { ator: selecionado } })}>Expressões e clipes de {nome}…</button>
-        </>
-      )}
+          <button className="botao-editar-clipes" onClick={() => set({ editorAnimacao: { ator: selecionado } })}>Expressões e clipes de {nome}…</button>
     </div>
   );
 }
 
-/** O que o pacote de sprites do personagem trouxe além do básico (poses novas, expressões, fonemas, animações). */
-function PacoteDoPersonagem({ ator, versao, nome }: { ator: Parameters<typeof listarSprites>[0]; versao: number; nome: string }) {
-  const inserir = useEditor((s) => s.inserir);
-  const tem = listarSprites(ator);
-  const extras = tem.poses.filter((p) => !POSES_CONHECIDAS.includes(p));
-  const rostos = tem.rostos.filter((r) => !ROSTOS_ESPECIAIS.includes(r)); // as padrão e as criadas para o personagem
-  const fonemas = tem.rostos.filter((r) => r.startsWith('boca-')).length;
-  return (
-    <>
-      {extras.length > 0 && (<>
-        <h4>Poses do pacote <small>“{nome} faz a pose …”</small></h4>
-        <div className="grade">
-          {extras.map((p) => (
-            <button key={`${p}-${versao}`} title={p} onClick={() => inserir(`${nome} faz a pose ${p}.`)}>
-              <Miniatura ator={ator} etiqueta={p} tamanho={72} /><span>{p}</span>
-            </button>
-          ))}
-        </div>
-      </>)}
-      {rostos.length > 0 && (<>
-        <h4>Expressões do pacote</h4>
-        <div className="grade">
-          {rostos.map((r) => (
-            <button key={`${r}-${versao}`} onClick={() => inserir(`${nome} faz cara de ${r}.`)}>
-              <Miniatura ator={ator} expressao={r} tamanho={72} modo="rosto" /><span>{NOME_EXPRESSAO[r as ExpressaoId] ?? r}</span>
-            </button>
-          ))}
-        </div>
-      </>)}
-      <p className="dica">
-        {Object.keys(tem.quadros).length > 0 && `Animações por quadros: ${Object.entries(tem.quadros).map(([n, q]) => `${n} (${q})`).join(', ')}. `}
-        {fonemas >= 4 ? 'Boca em sincronia com a fala: ativa. ' : 'Boca em sincronia: faltam rosto_boca-a, -e, -o e -m no pacote. '}
-        {tem.rostos.includes('olhos-fechados') ? 'Piscada: ativa. ' : 'Piscada: falta rosto_olhos-fechados. '}
-        Novos sprites entram por Arquivo → Importar pacote (padrão em docs/SPRITES.md).
-      </p>
-    </>
-  );
-}
 
 
 

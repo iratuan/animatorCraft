@@ -2,10 +2,10 @@ import { create } from 'zustand';
 import { gravarJson, gravarTexto } from '@renderer/features/sistema';
 import { createProjetoSlice, type ProjetoSlice, type AcaoInicial } from './slices/projetoSlice';
 import { createReproducaoSlice, type ReproducaoSlice } from './slices/reproducaoSlice';
-import { createUiSlice, type UiSlice, type AbaLateral, type ImportacaoPendente } from './slices/uiSlice';
+import { createUiSlice, type UiSlice, type AbaLateral } from './slices/uiSlice';
 import { createMidiaSlice, type MidiaSlice } from './slices/midiaSlice';
 
-export type { AbaLateral, AcaoInicial, ImportacaoPendente };
+export type { AbaLateral, AcaoInicial };
 
 export type EditorStore = ProjetoSlice & ReproducaoSlice & UiSlice & MidiaSlice & {
   set: (parcial: Partial<EditorStore>) => void;
@@ -26,7 +26,7 @@ export const useEditor = create<EditorStore>()((set, get, api) => ({
     ...parcial,
     modificado: parcial.modificado !== undefined
       ? parcial.modificado
-      : (parcial.roteiro !== undefined || parcial.skins !== undefined || parcial.trilhas !== undefined || parcial.formato !== undefined ? true : s.modificado),
+      : (parcial.roteiro !== undefined || parcial.trilhas !== undefined || parcial.formato !== undefined ? true : s.modificado),
   })),
 }));
 

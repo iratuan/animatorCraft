@@ -136,7 +136,6 @@ export function HomePage() {
           <button onClick={() => abrir(undefined, undefined, 'abrir-projeto')} data-teste="abrir-projeto">Abrir projeto (.zip)…</button>
           <button onClick={() => abrir(ROTEIRO_EXEMPLO, 'Exemplo carregado.')} data-teste="exemplo">Ver o exemplo pronto</button>
           <button onClick={() => abrir(undefined, undefined, 'novo-personagem')} data-teste="novo-personagem">Criar personagem</button>
-          <button onClick={() => abrir(undefined, undefined, 'editar-sprites')} data-teste="sprites">Sprites e biblioteca</button>
           <button onClick={() => set({ manualAberto: true })} data-teste="manual">Manual</button>
         </div>
       </section>

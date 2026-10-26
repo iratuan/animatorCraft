@@ -33,7 +33,7 @@ Atores: o nome (ou apelido) de qualquer personagem (CringeFather, BetaSon, Erika
 - `[close na lousa]` · `[close em Erika]` (ou `[close no professor]`) · `[plano aberto]`.
 - `Professor diz "Bem-vindos!". [áudio: abertura.wav]` (a boca acompanha a voz) · `[música: fundo.mp3, volume 25%]` · `[música: parar]` · `[efeito: palmas.wav]`.
 - `Professor desenha o gráfico de y = x^2 - 2 no quadro.` · `... um gráfico de barras: A=5, B=8 no quadro.` · `... um gráfico de pizza: Sim=70, Não=30 no quadro.`
-- `Professor faz a pose pular-corda por 3 segundos.` usa um sprite do pacote pelo nome.
+- `Professor faz a pose pular-corda por 3 segundos.` usa uma pose do boneco pelo nome.
 
 ## Ações simultâneas
 
@@ -49,7 +49,7 @@ Atores: o nome (ou apelido) de qualquer personagem (CringeFather, BetaSon, Erika
 
 ## Personagens criados pelo usuário
 
-Arquivo > Novo personagem cria nome, apelidos, idade, altura, boneco de palito base e dança padrão; os sprites entram pelo editor de sprites. A lista fica no armazenamento do app; o zip exportado leva `ficha.json`.
+Arquivo > Personagens > Novo personagem cria nome, apelidos, idade, altura, boneco de palito base e dança padrão; as expressões e os clipes entram pelo botão "Expressões e clipes". A lista fica no armazenamento do app; o zip exportado leva `ficha.json`.
 
 ## Imagens na lousa
 
@@ -60,7 +60,7 @@ Arquivo > Novo personagem cria nome, apelidos, idade, altura, boneco de palito b
 
 ## Expressões e clipes do personagem
 
-- `Erika faz cara de apaixonada.` · qualquer expressão que o personagem tenha (as 10 padrão, as criadas para o boneco e os sprites `rosto_<nome>.png`).
+- `Erika faz cara de apaixonada.` · qualquer expressão que o personagem tenha (as 10 padrão e as criadas para o boneco).
 - `Dario faz o clipe tchau.` (toca uma vez) · `Dario faz o clipe "dança do foguete" por 6 segundos.` · clipes criados em Personagem ▸ Expressões e clipes. Nome desconhecido gera aviso.
 - Durações escritas no roteiro têm teto de 10 minutos.
 
@@ -74,7 +74,7 @@ Arquivo > Novo personagem cria nome, apelidos, idade, altura, boneco de palito b
 
 ## Prompt mestre (roteiro por qualquer IA)
 
-Arquivo ▸ Prompt mestre para IA (ou a tela inicial) gera um texto único com o formato, todas as frases aceitas, os personagens, sprites, clipes, imagens e áudios da sua biblioteca. Cole-o em qualquer IA, traga a resposta de volta na segunda aba e o app a confere frase a frase. Um exemplo gerado está em `docs/prompt-mestre-exemplo.md`. O código fica em `src/shared/domain/prompt-mestre.ts` e os testes garantem que toda frase documentada no prompt é entendida pelo interpretador.
+Arquivo ▸ Prompt mestre para IA (ou a tela inicial) gera um texto único com o formato, todas as frases aceitas, os personagens, poses, clipes, imagens e áudios da sua biblioteca. Cole-o em qualquer IA, traga a resposta de volta na segunda aba e o app a confere frase a frase. Um exemplo gerado está em `docs/prompt-mestre-exemplo.md`. O código fica em `src/shared/domain/prompt-mestre.ts` e os testes garantem que toda frase documentada no prompt é entendida pelo interpretador.
 
 ## Trilhas de áudio
 

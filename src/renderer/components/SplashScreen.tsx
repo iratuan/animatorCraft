@@ -33,7 +33,7 @@ export function SplashScreen({ duracaoMinimaMs = 1000, onFinalizar }: SplashScre
 
         // Etapa 3: Elenco e Personagens
         setProgresso(85);
-        setEtapaTexto('Preparando elenco e sprites…');
+        setEtapaTexto('Preparando o elenco…');
         prepararPersonagens();
 
         if (!montado) return;
@@ -114,10 +114,10 @@ export function SplashScreen({ duracaoMinimaMs = 1000, onFinalizar }: SplashScre
         </div>
 
         <div className="splash-identidade">
-          <h1 className="splash-titulo">
+          <div className="splash-titulo" aria-hidden="true">
             <span className="splash-titulo-stick">Stick</span>
             <span className="splash-titulo-board">Board</span>
-          </h1>
+          </div>
           <p className="splash-assinatura">
             Gerador de vídeos whiteboard com personagens animados
           </p>
