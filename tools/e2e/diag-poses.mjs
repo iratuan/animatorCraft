@@ -12,7 +12,10 @@ await p.goto('http://127.0.0.1:5173/#/editor');
 await p.evaluate(() => localStorage.clear());
 for (const pose of poses) {
   const verbo = { andar: 'anda pela esquerda', correr: 'entra pela esquerda correndo', pular: 'pula', tropecar: 'tropeça', sentar: 'senta', cair: 'cai' }[pose] ?? pose;
-  const roteiro = `# Pose ${pose}\n${ator} ${verbo} por 3 segundos.\n`;
+  // a entrada correndo dura menos de 1 s: depois dela, o personagem fica parado e a pose aparece na janela de captura
+  const roteiro = pose === 'correr'
+    ? `# Pose ${pose}\n${ator} ${verbo}.\n${ator} fica parado por 3 segundos.\n`
+    : `# Pose ${pose}\n${ator} ${verbo} por 3 segundos.\n`;
   await p.evaluate((r) => localStorage.setItem('stickboard.roteiro.v2', r), roteiro);
   await p.goto(`http://127.0.0.1:5173/?pose=${pose}#/editor`);
   await p.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });

@@ -64,10 +64,21 @@ export function reescreverDuracao(texto: string, alvo: Origem, segundos: number)
   const s = Math.max(0.5, Math.round(segundos * 10) / 10);
   const frase = texto.slice(alvo.ini, alvo.fim);
   const numero = String(s).replace('.', ',');
-  const pausa = /(\d+(?:[.,]\d+)?)(\s*segundos?)/i;
+  // o que está entre aspas é falado, não é o tempo da ação: a busca ignora as aspas
+  const mascara = frase.replace(/"[^"]*"/g, (m) => ' '.repeat(m.length));
+  const porN = /\bpor\s+\d+(?:[.,]\d+)?\s*segundos?\b/i.exec(mascara);
+  const pausa = /\b(?:espera|pausa|aguarda)\b.*?\d+(?:[.,]\d+)?\s*segundos?\b/i.exec(mascara);
+  const achado = porN ?? pausa;
   let nova: string;
-  if (/\bpor\s+\d/i.test(frase) || /\b(espera|pausa|aguarda)\b/i.test(frase)) nova = frase.replace(pausa, `${numero}$2`);
-  else nova = frase.replace(/([.!?])$/, ` por ${numero} segundos$1`);
+  if (achado) {
+    // troca só o número, mantendo o "por" e a palavra "segundo(s)"
+    const trecho = achado[0];
+    const numeroNoTrecho = /\d+(?:[.,]\d+)?/.exec(trecho)!;
+    const trocado = trecho.slice(0, numeroNoTrecho.index) + numero + trecho.slice(numeroNoTrecho.index + numeroNoTrecho[0].length);
+    nova = frase.slice(0, achado.index) + trocado + frase.slice(achado.index + trecho.length);
+  } else {
+    nova = frase.replace(/([.!?])$/, ` por ${numero} segundos$1`);
+  }
   return texto.slice(0, alvo.ini) + nova + texto.slice(alvo.fim);
 }
 

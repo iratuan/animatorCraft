@@ -180,7 +180,8 @@ function Trilhos() {
     for (const k of Object.keys(mudanca) as (keyof typeof novo)[]) if (novo[k] === undefined) delete novo[k];
     aplicar(reescreverImagem(roteiro, selEvento.origem, ATORES[imagemSel.ator]!.nome, novo), 'Imagem atualizada.');
   };
-  const redimensionavel = (e: Evento) => !!e.origem && ((e.acao.tipo === 'pose' && !!e.acao.duracao) || e.acao.tipo === 'esperar');
+  // a borda muda o "por N segundos" da frase: vale para tudo que dura no tempo, menos a fala com áudio (o áudio manda na duração)
+  const redimensionavel = (e: Evento) => !!e.origem && e.acao.tipo !== 'nota' && e.acao.tipo !== 'apagar' && !(e.acao.tipo === 'fala' && !!e.acao.audio);
 
   return (
     <div className="timeline-geral">
