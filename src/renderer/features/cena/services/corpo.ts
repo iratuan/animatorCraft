@@ -79,7 +79,7 @@ function pataCao(ctx: CanvasRenderingContext2D, pe: Pt, s: number, lw: number) {
 
 interface Look { manga: 'curta' | 'longa'; calca: 'longa' | 'curta' | 'nua'; calcaPreta: boolean; sapato: 'social' | 'tenis' | 'sandalia' | 'sapatilha' }
 const LOOK: Record<ModeloPalito, Look> = {
-  professor: { manga: 'longa', calca: 'longa', calcaPreta: true, sapato: 'social' },
+  professor: { manga: 'longa', calca: 'longa', calcaPreta: false, sapato: 'social' },
   aluno: { manga: 'curta', calca: 'longa', calcaPreta: false, sapato: 'tenis' },
   mae: { manga: 'longa', calca: 'nua', calcaPreta: false, sapato: 'sandalia' },
   cacula: { manga: 'curta', calca: 'curta', calcaPreta: false, sapato: 'tenis' },
@@ -87,13 +87,12 @@ const LOOK: Record<ModeloPalito, Look> = {
 };
 
 function sapato(ctx: CanvasRenderingContext2D, pe: Pt, f: number, s: number, tipo: Look['sapato'], lw: number) {
-  const preto = tipo === 'social' || tipo === 'sapatilha';
   ctx.save(); ctx.strokeStyle = COR; ctx.lineWidth = lw; ctx.lineJoin = 'round';
   const y0 = pe.y - 0.5 * s;
   const pts = tipo === 'sandalia'
     ? [P(pe.x - f * 6 * s, y0 - 4 * s), P(pe.x + f * 18 * s, y0 - 2 * s), P(pe.x + f * 18 * s, y0), P(pe.x - f * 6 * s, y0)]
     : [P(pe.x - f * 7 * s, y0 - 11 * s), P(pe.x + f * 6 * s, y0 - 12 * s), P(pe.x + f * 22 * s, y0 - 4 * s), P(pe.x + f * 22 * s, y0), P(pe.x - f * 7 * s, y0)];
-  poli(ctx, pts, preto ? COR : '#fff');
+  poli(ctx, pts, '#fff');
   if (tipo === 'tenis') {
     fio(ctx, lw * 0.7, P(pe.x - f * 7 * s, y0 - 3.5 * s), P(pe.x + f * 22 * s, y0 - 3.5 * s));
     fio(ctx, lw * 0.6, P(pe.x + f * 4 * s, y0 - 11 * s), P(pe.x + f * 9 * s, y0 - 6 * s));
@@ -371,9 +370,9 @@ export function desenharCorpo(ctx: CanvasRenderingContext2D, e: Esqueleto, id: M
   } else if (atorId === 'dario') {
     look = { manga: 'curta', calca: 'curta', calcaPreta: false, sapato: 'tenis' };
   } else if (atorId === 'laura') {
-    look = { manga: 'longa', calca: 'longa', calcaPreta: true, sapato: 'tenis' };
+    look = { manga: 'longa', calca: 'longa', calcaPreta: false, sapato: 'tenis' };
   } else if (atorId === 'cringefather') {
-    look = { manga: 'longa', calca: 'longa', calcaPreta: true, sapato: 'social' };
+    look = { manga: 'longa', calca: 'longa', calcaPreta: false, sapato: 'social' };
   } else if (atorId === 'betason') {
     look = { manga: 'curta', calca: 'longa', calcaPreta: false, sapato: 'tenis' };
   } else if (atorId === 'erika') {
@@ -381,7 +380,7 @@ export function desenharCorpo(ctx: CanvasRenderingContext2D, e: Esqueleto, id: M
   } else if (atorId === 'veia') {
     look = { manga: 'longa', calca: 'nua', calcaPreta: false, sapato: 'sapatilha' };
   } else if (atorId === 'veio') {
-    look = { manga: 'longa', calca: 'longa', calcaPreta: true, sapato: 'social' };
+    look = { manga: 'longa', calca: 'longa', calcaPreta: false, sapato: 'social' };
   }
   ctx.save();
   braco(ctx, e, 'T', look, lw, atorId);

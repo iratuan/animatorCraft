@@ -79,3 +79,14 @@ Arquivo ▸ Prompt mestre para IA (ou a tela inicial) gera um texto único com o
 ## Trilhas de áudio
 
 A voz de cada personagem, os efeitos e a música ficam em trilhas separadas (uma faixa para cada na linha do tempo, com M = mudo e S = solo; o volume fica na aba Áudio e tudo vale no MP4). Para tocar mais de uma música ou efeito ao mesmo tempo, dê nome à trilha: `[música: chuva.wav, volume 20%, trilha ambiente]`, `[efeito: passos.wav, trilha passos]`. `[música: parar trilha ambiente]` para só aquela; `[música: parar]` para todas as músicas. Na mesma trilha de música, a nova substitui a anterior.
+
+## Tempo: "às N s" e "por N segundos"
+
+- `Aluno acena às 3 s.` começa a ação em 3 segundos, sem esperar a anterior. Sem `às`, a ação segue a anterior.
+- `Professor diz "Olá, turma!" por 4 segundos.` dá a duração da ação (fala, entrada, saída, pose). Nas imagens, `por N segundos` é o tempo que a imagem fica na lousa.
+- O que está entre aspas é texto a ser dito: `"vamos às 5 s"` não é lido como horário.
+- Ainda não há arrastar a borda do bloco na linha do tempo: para mudar o tempo, edite o roteiro.
+
+## Expressões de fábrica do elenco
+
+Além das 10 padrão (feliz, triste, brava...), cada personagem novo tem duas expressões próprias: Paraíba (pidindo, faminto), Mingau (manhoso, desconfiado), Véio (teatral, indignado), Véia (desconfiada, implicando), Elizendra (orgulhosa, atrapalhada), Artur (concentrado, vitoria) e Carol (atitude, animada). Ex.: `Mingau faz cara de manhoso.`

@@ -152,7 +152,30 @@ function interpretarCamera(frase: string, avisos: string[], papeis: Papeis): Aca
   return [];
 }
 
+/** Tudo o que está entre aspas ou em $...$ é texto a ser dito/desenhado: não é lido como "às N s" nem "por N segundos". Mantém o tamanho, para que as posições batam. */
+const mascararLiteral = (s: string): string => s.replace(/"[^"]*"/g, (m) => ' '.repeat(m.length)).replace(/\$\$[^$]+\$\$|\$[^$]+\$/g, (m) => ' '.repeat(m.length));
+
+/**
+ * Lê a temporização escrita no fim (ou no meio) da frase: "às 3 s" fixa o início e "por 3 segundos" dá a duração.
+ * O resto da frase é interpretado como antes; a temporização vale para todas as ações que a frase gerar.
+ */
 function interpretarFrase(fraseOriginal: string, avisos: string[], presentes: Set<ActorId>, papeis: Papeis): Acao[] {
+  const mascara = mascararLiteral(fraseOriginal);
+  // \b não serve para "às" (o "à" não é letra ASCII): a marca começa no início da frase ou depois de um espaço
+  const inicio = /(?:^|\s)às\s+(\d+(?:[.,]\d+)?)\s*(?:s|segundos?)\b\.?/i.exec(mascara);
+  const duracao = /\bpor\s+(\d+(?:[.,]\d+)?)\s+segundos?\b/i.exec(mascara)?.[1];
+  const semInicio = inicio ? fraseOriginal.slice(0, inicio.index) + fraseOriginal.slice(inicio.index + inicio[0].length) : fraseOriginal;
+  const acoes = interpretarFraseBruta(semInicio, avisos, presentes, papeis);
+  // em "mostra a imagem X ... por N segundos" o N é o tempo que a imagem fica na lousa (exibirPor), não a duração da ação
+  const ehImagem = acoes.some((a) => a.tipo === 'escrever' && a.conteudo.tipo === 'imagem');
+  const extra: { inicioFixo?: number; duracao?: number } = {
+    ...(inicio ? { inicioFixo: lerSegundos(inicio[1]!) } : {}),
+    ...(duracao && !ehImagem ? { duracao: lerSegundos(duracao) } : {}),
+  };
+  return Object.keys(extra).length ? acoes.map((a) => ({ ...a, ...extra })) : acoes;
+}
+
+function interpretarFraseBruta(fraseOriginal: string, avisos: string[], presentes: Set<ActorId>, papeis: Papeis): Acao[] {
   const frase = desembrulharColchetes(fraseOriginal);
   const nota = /^\[\s*nota\s*:\s*(.*?)\s*\]$/i.exec(frase);
   if (nota) return [{ tipo: 'nota', texto: nota[1]! }];

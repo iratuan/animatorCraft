@@ -16,6 +16,10 @@ export type Conteudo =
 export type Acao = AcaoBase & {
   /** Começa junto com a ação anterior (ex.: "Professor e Aluno dançam juntos"). */
   junto?: boolean;
+  /** Início fixo, em segundos, escrito como "às 3 s": a ação começa ali, sem esperar a anterior. */
+  inicioFixo?: number;
+  /** Duração escrita como "por 3 segundos": vale para qualquer ação que dure no tempo (fala, entrada, saída, pose...). */
+  duracao?: number;
 };
 
 type AcaoBase =

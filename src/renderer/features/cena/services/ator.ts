@@ -17,6 +17,7 @@ const rad = (g: number) => (g * Math.PI) / 180;
 const COR = '#14161a';
 
 import { desenharCorpo, flor } from './corpo';
+import { desenharAnimal, ehAnimal, poseDeAnimal, resolverAnimal } from './animal';
 import { circuloTremido, tracoTremido, tremerPt, type Pt } from './tremor';
 export interface Esqueleto {
   quadril: Pt; ombro: Pt; cabeca: Pt; raio: number;
@@ -690,7 +691,8 @@ export function desenharAtor(ctx: CanvasRenderingContext2D, a: AtorEstado, x: nu
     }
   }
   if (spec.visual.postura) { pose.torso += spec.visual.postura.torso; pose.cabeca += spec.visual.postura.cabeca; }
-  const e = resolver(pose, x, chao, s, spec.visual.cabeca, a.facing);
+  const animal = ehAnimal(a.id);
+  const e = animal ? resolverAnimal(poseDeAnimal(pose), x, chao, s, spec.visual.cabeca, a.facing) : resolver(pose, x, chao, s, spec.visual.cabeca, a.facing);
   const lw = Math.max(1.2, 5.4 * Math.pow(s, 0.6));
   const expr = o.t - a.expressaoDesde < 0.15 ? a.expressaoDe : a.expressao;
 
@@ -714,7 +716,8 @@ export function desenharAtor(ctx: CanvasRenderingContext2D, a: AtorEstado, x: nu
   }
 
   // corpo com volume (tubos com contorno duplo, mãos, sapatos, roupa) + pescoço, orelha de trás e cabeça
-  desenharCorpo(ctx, e, modelo, lw, a.id);
+  if (animal) desenharAnimal(ctx, e, lw, a.id);
+  else desenharCorpo(ctx, e, modelo, lw, a.id);
   ctx.strokeStyle = COR;
   if (a.id !== 'paraiba' && a.id !== 'mingau') {
     linha(ctx, e.ombro, { x: e.ombro.x + (e.cabeca.x - e.ombro.x) * 0.75, y: e.ombro.y + (e.cabeca.y - e.ombro.y) * 0.75 });
@@ -723,7 +726,7 @@ export function desenharAtor(ctx: CanvasRenderingContext2D, a: AtorEstado, x: nu
   }
   ctx.lineWidth = lw;  ctx.fillStyle = '#fff';
   desenharCabeca(ctx, e);
-  desenharCabelo(ctx, e, modelo, a.id);
+  if (!animal) desenharCabelo(ctx, e, modelo, a.id);
   desenharNariz(ctx, e, a.id);
   desenharRosto(ctx, e, ROSTOS[expr as ExpressaoId] ?? rostoBonecoDe(a.id, expr, o.t) ?? ROSTOS.neutra, a.fala?.boca ? 1 : 0, o.t, modelo === 'professor', spec.visual, a.id);
   if (spec.visual.oculos) desenharOculos(ctx, e, a.id);

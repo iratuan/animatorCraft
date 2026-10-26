@@ -1,2 +1,2 @@
-abertura da tela inicial (ms): 175, 190, 197, 139, 135
-média: 167
+abertura da tela inicial (ms): 120, 123, 123, 112, 117
+média: 119
