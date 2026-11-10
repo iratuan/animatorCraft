@@ -7,10 +7,11 @@ const api: StickboardApi = {
   abrirRoteiro: () => ipcRenderer.invoke(CANAIS_IPC.roteiroAbrir),
   salvarRoteiro: (texto, nomeSugerido) => ipcRenderer.invoke(CANAIS_IPC.roteiroSalvar, texto, nomeSugerido),
   salvarVideo: (pedido) => ipcRenderer.invoke(CANAIS_IPC.videoSalvar, pedido),
-  abrirPacoteSprites: () => ipcRenderer.invoke(CANAIS_IPC.pacoteAbrir),
-  salvarPacoteSprites: (pedido) => ipcRenderer.invoke(CANAIS_IPC.pacoteSalvar, pedido),
+  abrirZip: () => ipcRenderer.invoke(CANAIS_IPC.zipAbrir),
+  salvarZip: (pedido) => ipcRenderer.invoke(CANAIS_IPC.zipSalvar, pedido),
   info: () => ipcRenderer.invoke(CANAIS_IPC.infoApp),
   copiarTexto: (texto) => ipcRenderer.invoke(CANAIS_IPC.copiarTexto, texto),
+  definirAlteracoesPendentes: (pendentes) => ipcRenderer.invoke(CANAIS_IPC.alteracoesPendentes, pendentes),
 };
 
 contextBridge.exposeInMainWorld('stickboard', api);

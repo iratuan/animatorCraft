@@ -20,11 +20,22 @@ export function PainelLateral() {
   return (
     <Painel
       className="props"
-      titulo={<div className="abas">{ABAS.map((a) => <button key={a.id} className={aba === a.id ? 'on' : ''} onClick={() => set({ aba: a.id })}>{a.rotulo}</button>)}</div>}
+      titulo={
+        <>
+          {/* janela larga: abas lado a lado */}
+          <div className="abas" role="tablist" aria-label="Painel de propriedades">
+            {ABAS.map((a) => (
+              <button key={a.id} role="tab" aria-selected={aba === a.id} className={aba === a.id ? 'on' : ''} onClick={() => set({ aba: a.id })}>{a.rotulo}</button>
+            ))}
+          </div>
+          {/* janela estreita: as mesmas abas num seletor compacto, para nenhuma ficar cortada */}
+          <select className="abas-compacto" aria-label="Aba do painel" value={aba} onChange={(e) => set({ aba: e.target.value as AbaLateral })}>
+            {ABAS.map((a) => <option key={a.id} value={a.id}>{a.rotulo}</option>)}
+          </select>
+        </>
+      }
     >
       {aba === 'aula' ? <AulaPanel /> : aba === 'imagens' ? <ImagensPanel /> : aba === 'audio' ? <AudioPanel /> : aba === 'biblioteca' ? <BibliotecaPanel /> : <PropriedadesPanel />}
     </Painel>
   );
 }
-
-

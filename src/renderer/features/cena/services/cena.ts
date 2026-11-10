@@ -2,7 +2,7 @@ import { ATORES, ORDEM_ATORES, quebrarLinhasFala, type ActorId, type Estado } fr
 import { desenharAtor } from './ator';
 import { interpolarRect, retanguloDaCamera, visibilidadeDaCamera } from './camera';
 import { desenharItemPlanejado, FONTE_MANUSCRITA, fonteCSS, planejarLousa } from './lousa';
-import { type Rect } from './sprites';
+import { type Rect } from './geometria';
 import { tracoTremido } from './tremor';
 import { obterEstrategiaCenario } from './cenarios/registro';
 

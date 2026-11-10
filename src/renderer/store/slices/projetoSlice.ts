@@ -3,7 +3,7 @@ import { ATORES, ROTEIRO_EXEMPLO, inserirNoCursor as inserirNoCursorTexto, type 
 import type { FormatoVideo } from '@shared/constants/video';
 import { lerTexto } from '@renderer/features/sistema';
 
-export type AcaoInicial = 'abrir-projeto' | 'novo-personagem' | 'editar-sprites';
+export type AcaoInicial = 'abrir-projeto' | 'novo-personagem';
 
 export interface ProjetoState {
   roteiro: string;

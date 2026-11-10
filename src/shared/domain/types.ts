@@ -16,6 +16,10 @@ export type Conteudo =
 export type Acao = AcaoBase & {
   /** Começa junto com a ação anterior (ex.: "Professor e Aluno dançam juntos"). */
   junto?: boolean;
+  /** Início fixo, em segundos, escrito como "às 3 s": a ação começa ali, sem esperar a anterior. */
+  inicioFixo?: number;
+  /** Duração escrita como "por 3 segundos": vale para qualquer ação que dure no tempo (fala, entrada, saída, pose...). */
+  duracao?: number;
 };
 
 type AcaoBase =
@@ -63,7 +67,14 @@ export interface Cena {
   /** Se a cena oculta a lousa escolar (ex.: [sem lousa]) */
   semLousa?: boolean;
 }
-export interface Roteiro { cenas: Cena[]; avisos: string[]; papeis: Papeis; }
+/**
+ * Problema encontrado numa frase do roteiro, com a posição dela no texto (para sublinhar).
+ * `erro`: o app não consegue executar a frase. `aviso`: executa, mas pode não ser o que você quis.
+ * `sugestoes`: frases inteiras que podem substituir o trecho `[ini, fim)`.
+ */
+export interface Diagnostico { mensagem: string; ini: number; fim: number; gravidade: 'erro' | 'aviso'; sugestoes: string[] }
+
+export interface Roteiro { cenas: Cena[]; avisos: string[]; diagnosticos: Diagnostico[]; papeis: Papeis; }
 
 
 

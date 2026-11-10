@@ -143,8 +143,9 @@ const DEFINICOES: Record<PoseId, Gerador> = {
     cabeca: 3 * sin(t * 8),
     bracoF: [155, 14],
     bracoT: [-155, 14],
-    pernaF: [16, -55],
-    pernaT: [-16, -55],
+    // no ar: coxa da frente para cima e para a frente, canela recolhida para trás; a de trás fica esticada
+    pernaF: [58, -92],
+    pernaT: [-22, -38],
     salto: 34 + 14 * sin(t * 7.5),
   }),
 

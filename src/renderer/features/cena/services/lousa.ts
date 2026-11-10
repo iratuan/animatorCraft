@@ -1,6 +1,6 @@
 import { amostrarFuncao, encontrarRaizes, calcularIntegral, infoDaImagem, paramsDoEfeito, textoDoConteudo, rotuloDoGrafico, type Estado, type GraficoDef, type ItemQuadro } from '@shared/domain';
 import { clamp01 } from '@shared/util';
-import type { Rect } from './sprites';
+import type { Rect } from './geometria';
 import { imagemDoQuadro } from './imagens';
 
 /** Fontes do vídeo: uma para a lousa e outra para as falas (balões). O app escolhe quais; aqui só se guarda e se usa. */

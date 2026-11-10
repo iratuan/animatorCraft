@@ -3,10 +3,11 @@ export const CANAIS_IPC = {
   roteiroAbrir: 'roteiro:abrir',
   roteiroSalvar: 'roteiro:salvar',
   videoSalvar: 'video:salvar',
-  pacoteAbrir: 'pacote:abrir',
-  pacoteSalvar: 'pacote:salvar',
+  zipAbrir: 'zip:abrir',
+  zipSalvar: 'zip:salvar',
   infoApp: 'app:info',
   copiarTexto: 'area-de-transferencia:copiar',
+  alteracoesPendentes: 'janela:alteracoes-pendentes',
 } as const;
 
 export type CanalIpc = (typeof CANAIS_IPC)[keyof typeof CANAIS_IPC];

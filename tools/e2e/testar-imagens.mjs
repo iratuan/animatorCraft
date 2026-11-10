@@ -24,7 +24,7 @@ await p.waitForFunction(() => document.querySelector('.app') && !document.body.i
 // 1) cursor dentro da frase da fala
 await p.evaluate(() => { const ta = document.querySelector('#campo-roteiro'); ta.focus(); const pos = ta.value.indexOf('Vamos ver') + 4; ta.setSelectionRange(pos, pos); ta.dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowRight', bubbles: true })); });
 // 2) importa e insere
-await p.getByRole('button', { name: 'Imagens', exact: true }).click();
+await p.getByRole('tab', { name: 'Imagens', exact: true }).click();
 await p.locator('input[type=file][accept*="png"]').setInputFiles(`${dest}/ciclo-da-agua.png`);
 await p.waitForTimeout(800);
 await p.getByRole('button', { name: 'Inserir no roteiro' }).click();
@@ -86,17 +86,19 @@ const [dlv] = await Promise.all([q.waitForEvent('download', { timeout: 240000 })
 await dlv.saveAs(`${dest}/saida-com-imagem.mp4`);
 console.log('MP4 com imagem gerado:', (await import('node:fs')).statSync(`${dest}/saida-com-imagem.mp4`).size, 'bytes');
 await q.getByText('Arquivo').first().click();
-const [dlp] = await Promise.all([q.waitForEvent('download'), q.getByText('Salvar projeto completo (.zip)…').click()]);
+await q.getByText('Projeto', { exact: true }).first().click();
+const [dlp] = await Promise.all([q.waitForEvent('download'), (async () => { await q.getByText('Salvar projeto (.zip)', { exact: true }).click(); await q.locator('input[aria-label="Nome com que deseja salvar o projeto (.zip)"]').last().fill('projeto-com-imagem'); await q.getByRole('button', { name: 'Salvar', exact: true }).click(); })()]);
 await dlp.saveAs(`${dest}/projeto-com-imagem.zip`);
 const novo = await b.newContext({ viewport: { width: 1600, height: 900 } });
 const r = await novo.newPage(); r.on('pageerror', (e) => erros.push(String(e)));
 await r.goto('http://127.0.0.1:5173/#/editor');
 await r.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
 await r.getByText('Arquivo').first().click();
+await r.getByText('Projeto', { exact: true }).first().click();
 const [fc] = await Promise.all([r.waitForEvent('filechooser'), r.getByText('Abrir projeto (.zip)…').click()]);
 await fc.setFiles(`${dest}/projeto-com-imagem.zip`);
 await r.waitForTimeout(2500);
-await r.getByRole('button', { name: 'Imagens', exact: true }).click();
+await r.getByRole('tab', { name: 'Imagens', exact: true }).click();
 console.log('imagens no projeto aberto:', await r.locator('.item-imagem b').allInnerTexts());
 console.log('avisos do roteiro:', await r.locator('.roteiro .badge').innerText());console.log('erros', erros);
 await b.close();

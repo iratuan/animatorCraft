@@ -5,10 +5,9 @@ import { FORMATOS } from '@shared/constants/video';
 import type { GrupoMenu } from '@renderer/components/BarraMenu';
 import { desfazer, refazer, useEditor, limparHistorico } from '@renderer/store/editor-store';
 import { useRoteiroEstatico } from '@renderer/features/roteiro';
-import { limparPacotesSalvos, lerPacote, montarPacoteExportacao, nomeDoZip } from '@renderer/features/personagens';
 import { gerarSrt, estadoEm, ATORES, gerarRoteiroGravacaoMarkdown } from '@shared/domain';
 import { renderizarCena } from '@renderer/features/cena';
-import { abrirProjeto, montarProjeto } from '@renderer/features/projeto';
+import { abrirProjeto, montarProjeto, pedirTexto } from '@renderer/features/projeto';
 import { escolherEInserirImagem } from '@renderer/features/imagens';
 import { useExportar } from '@renderer/features/exportacao';
 import { baixarArquivo, plataforma } from '@renderer/features/sistema';
@@ -34,15 +33,6 @@ export function useMenus(): GrupoMenu[] {
     const caminho = await plataforma.salvarRoteiro(roteiro, 'roteiro.stk.txt');
     if (caminho) set({ mensagem: `Roteiro salvo: ${caminho}` });
   };
-  const importarPacote = async () => {
-    const escolhido = await plataforma.abrirPacoteSprites();
-    if (!escolhido) return;
-    try {
-      const pacote = lerPacote(escolhido.dados);
-      const fichaCompleta = Object.values(pacote.relatorio.resumo).some((r) => r.poses.length >= 3);
-      set({ importacao: { pacote, substituir: fichaCompleta, nome: escolhido.nome } });
-    } catch (e) { set({ mensagem: `Não consegui ler o zip: ${(e as Error).message}` }); }
-  };
   const novoProjetoComAviso = () => {
     const { modificado, novoProjeto } = useEditor.getState();
     if (modificado && typeof window !== 'undefined') {
@@ -56,18 +46,17 @@ export function useMenus(): GrupoMenu[] {
   const salvarProjetoComo = async () => {
     const { nomeProjeto, marcarSalvo } = useEditor.getState();
     const nomeAtual = nomeProjeto || 'meu-projeto';
-    const nomeDigitado = typeof window !== 'undefined'
-      ? window.prompt('Qual o nome com que deseja salvar o projeto (.zip)?', nomeAtual)
-      : nomeAtual;
+    // pergunta dentro do app: o window.prompt não é suportado no Electron
+    const nomeDigitado = await pedirTexto('Nome com que deseja salvar o projeto (.zip)', nomeAtual);
     if (nomeDigitado === null) return;
     const nomeLimpo = nomeDigitado.trim() || nomeAtual;
     set({ nomeProjeto: nomeLimpo });
     set({ mensagem: 'Montando o projeto…' });
-    const { zip, sprites, audios } = await montarProjeto();
+    const { zip, audios } = await montarProjeto();
     const nomeSugerido = `${nomeLimpo.replace(/[\s/\\?%*:|"<>]+/g, '_')}.zip`;
-    const resultado = await plataforma.salvarPacoteSprites(zip, nomeSugerido);
+    const resultado = await plataforma.salvarZip(zip, nomeSugerido);
     marcarSalvo(null, nomeLimpo);
-    set({ mensagem: `${resultado} (${sprites} sprites, ${audios} áudios)` });
+    set({ mensagem: `${resultado} (${audios} áudios)` });
   };
 
   const salvarProjeto = async () => {
@@ -92,7 +81,7 @@ export function useMenus(): GrupoMenu[] {
       const confirmou = window.confirm('O projeto atual possui alterações não salvas. Deseja descartá-las e abrir outro projeto?');
       if (!confirmou) return;
     }
-    const escolhido = await plataforma.abrirPacoteSprites();
+    const escolhido = await plataforma.abrirZip();
     if (!escolhido) return;
     try {
       const r = await abrirProjeto(escolhido.dados);
@@ -101,26 +90,18 @@ export function useMenus(): GrupoMenu[] {
       set({ mensagem: `Projeto aberto: ${r.personagens} personagem(ns), ${r.sprites} sprites, ${r.audios} áudio(s).` });
     } catch (e) { set({ mensagem: `Não consegui abrir o projeto: ${(e as Error).message}` }); }
   };
-  // pedidos da tela inicial que precisam dos sprites carregados (abrir projeto, criar personagem, editar sprites)
+  // pedidos da tela inicial que precisam do elenco carregado (abrir projeto, criar personagem)
   useEffect(() => {
     if (!acaoInicial || !spritesOk) return;
     set({ acaoInicial: null });
     if (acaoInicial === 'abrir-projeto') void abrirProjetoZip();
     else if (acaoInicial === 'novo-personagem') set({ fichaPersonagem: {} });
-    else set({ editorPersonagem: useEditor.getState().selecionado ?? 'cringefather' });
   }, [acaoInicial, spritesOk]);
   // o quadro sai na resolução do vídeo (1920×1080 ou 1080×1920), não no tamanho que o palco tem na janela
   const quadroAtualPng = () => {
     const c = document.createElement('canvas'); c.width = dim.w; c.height = dim.h;
     renderizarCena(c.getContext('2d')!, estadoEm(timeline, useEditor.getState().t), dim.w, dim.h);
     c.toBlob((b) => b && baixarArquivo(b, 'quadro.png'));
-  };
-  // exporta o personagem selecionado direto, sem abrir o editor de sprites: edite os PNGs fora e importe o zip de volta
-  const exportarSelecionado = async () => {
-    const id = useEditor.getState().selecionado ?? 'cringefather';
-    set({ mensagem: 'Montando o zip de sprites…' });
-    const { zip, total } = await montarPacoteExportacao([id]);
-    set({ mensagem: total ? await plataforma.salvarPacoteSprites(zip, nomeDoZip([id])) : 'Nada para exportar: esse personagem ainda não tem sprites.' });
   };
   const carregarModelo = (texto: string, nome: string) => { setRoteiro(texto); set({ t: 0, mensagem: `Modelo “${nome}” carregado. Troque o que está entre {chaves}.` }); };
 
@@ -161,16 +142,11 @@ export function useMenus(): GrupoMenu[] {
         ],
       },
       {
-        rotulo: 'Personagens & Sprites',
+        rotulo: 'Personagens',
         icone: 'personagemNovo',
         itens: [
           { rotulo: 'Novo personagem…', icone: 'personagemNovo', barra: { grupo: 2, rotulo: 'Personagem' }, acao: () => set({ fichaPersonagem: {} }) },
           { rotulo: 'Expressões e clipes do personagem…', icone: 'clipes', barra: { grupo: 2, rotulo: 'Clipes' }, acao: () => set({ editorAnimacao: { ator: useEditor.getState().selecionado ?? 'cringefather' } }) },
-          { rotulo: 'Editar / exportar sprites dos personagens…', icone: 'sprites', barra: { grupo: 2, rotulo: 'Sprites' }, acao: () => set({ editorPersonagem: useEditor.getState().selecionado ?? 'cringefather' }) },
-          { separador: true, rotulo: '' },
-          { rotulo: 'Exportar sprites do personagem selecionado (.zip)…', icone: 'exportarZip', barra: { grupo: 2, rotulo: 'Exportar' }, acao: () => void exportarSelecionado() },
-          { rotulo: 'Importar pacote de sprites (.zip)…', icone: 'importarZip', barra: { grupo: 2, rotulo: 'Importar' }, acao: importarPacote },
-          { rotulo: 'Remover pacotes importados', icone: 'lixo', acao: async () => { await limparPacotesSalvos(); set({ mensagem: 'Pacotes removidos. Recarregue o app para voltar aos sprites originais.' }); } },
         ],
       },
       {

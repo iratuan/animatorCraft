@@ -16,7 +16,7 @@ await p.goto('http://127.0.0.1:5173/#/editor');
 await p.evaluate((r) => { localStorage.clear(); localStorage.setItem('stickboard.roteiro.v2', r); }, roteiro);
 await p.goto('http://127.0.0.1:5173/?t=3.4#/editor');
 await p.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
-await p.getByRole('button', { name: 'Áudio', exact: true }).click();
+await p.getByRole('tab', { name: 'Áudio', exact: true }).click();
 await p.locator('input[type=file][accept*="audio"]').setInputFiles(`${dest}/narracao-teste.wav`);
 await p.waitForTimeout(1200);
 await p.screenshot({ path: `${dest}/01-painel-audio.png` });

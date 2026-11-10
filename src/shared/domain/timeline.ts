@@ -46,6 +46,8 @@ export function textoDoConteudo(c: Conteudo): string {
 }
 
 function duracaoDe(a: Acao): number {
+  // "por N segundos" escrito no roteiro tem prioridade sobre a duração padrão do tipo
+  if (a.duracao !== undefined) return a.duracao;
   switch (a.tipo) {
     case 'entrar': case 'sair': return a.pose === 'correr' ? 0.9 : 1.6;
     case 'posicionar': return a.andando ? 1.2 : 0;
@@ -99,8 +101,9 @@ export function construirTimeline(roteiro: Roteiro): Timeline {
     const origens: (Origem | undefined)[] = ci > 0 ? [undefined, ...cena.origens] : cena.origens;
     for (const [ai, acao] of acoes.entries()) {
       const d = duracaoDe(acao);
-      const inicio = acao.junto ? inicioGrupo : t;
-      if (!acao.junto) inicioGrupo = t;
+      // "às N s" fixa o início; senão a ação segue a anterior (ou começa junto com ela, se "junto")
+      const inicio = acao.inicioFixo ?? (acao.junto ? inicioGrupo : t);
+      if (!acao.junto) inicioGrupo = inicio;
       eventos.push({ indice: eventos.length, inicio, fim: inicio + d, acao, rotulo: rotuloDe(acao), cena: ci, origem: origens[ai] });
       t = Math.max(t, inicio + d);
     }

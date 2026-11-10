@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import { useEditor } from '@renderer/store/editor-store';
-import { carregarFontesDoApp, carregarImagensEAudios, carregarSprites } from '@renderer/bootstrap';
+import { carregarElenco, carregarFontesDoApp, carregarImagensEAudios } from '@renderer/bootstrap';
 
-/** Ao abrir o editor: carrega os sprites, reaplica os pacotes importados antes e espera as fontes. */
+/** Ao abrir o editor: carrega o elenco de boneco de palito, as imagens e áudios salvos e espera as fontes. */
 export function useCargaInicial() {
   const set = useEditor((s) => s.set);
   useEffect(() => {
-    carregarSprites()
-      .then((n) => set({ spritesOk: true, mensagem: n ? `Pronto. ${n} sprites de pacotes importados foram reaplicados.` : 'Pronto.' }))
+    carregarElenco()
+      .then(() => set({ mensagem: 'Pronto.' }))
       .catch((e: Error) => set({ mensagem: `Falha ao carregar personagens: ${e.message}` }));
     void carregarImagensEAudios();
     void carregarFontesDoApp();

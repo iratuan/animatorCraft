@@ -66,6 +66,23 @@ export const Icones = {
   paleta: <svg {...base}><circle cx="12" cy="12" r="9" /><path d="M12 3a9 9 0 000 18c1.5 0 2.5-1 2.5-2.5 0-.7-.3-1.3-.8-1.7-.5-.5-.7-1.1-.7-1.8 0-1.4 1.1-2.5 2.5-2.5h1.5A4 4 0 0021 8.5C21 5.5 17 3 12 3z" /></svg>,
   animacao: <svg {...base}><polygon points="5 3 19 12 5 21 5 3" /><line x1="19" y1="5" x2="19" y2="19" /></svg>,
   fechar: <svg {...base}><path d="M18 6L6 18M6 6l12 12" /></svg>,
+  // formatos de produção (tela inicial, roteiro com IA, prompt mestre)
+  formatoAula: <svg {...base}><rect x="3" y="4" width="18" height="12" rx="1.5" /><path d="M8 20h8M12 16v4M7 9h7M7 12h4" /></svg>,
+  formatoPodcast: <svg {...base}><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0014 0M12 18v3M9 21h6" /></svg>,
+  formatoTelejornal: <svg {...base}><rect x="3" y="6" width="18" height="13" rx="2" /><path d="M8 3l4 3 4-3M7 15h4M7 12h10" /></svg>,
+  formatoDebate: <svg {...base}><path d="M12 3v18M5 7h14M5 7l-3 6h6zM19 7l-3 6h6z" /></svg>,
+  formatoPapoLivre: <svg {...base}><path d="M4 12h16v3H4zM6 15v4M18 15v4M6 12V9a6 6 0 0112 0v3" /></svg>,
+  formatoLivre: <svg {...base}><path d="M4 4c2.5 2 5.5 2 8 0 2.5 2 5.5 2 8 0v8c0 4-3.5 7-8 7s-8-3-8-7z" /><path d="M8.5 10.5h.01M15.5 10.5h.01M8 15c1.2 1.3 2.5 2 4 2s2.8-.7 4-2" /></svg>,
+};
+
+/** Ícone de cada formato de produção: o mesmo nome em todas as telas, em vez de emojis espalhados. */
+export const ICONE_DO_FORMATO: Record<string, NomeIcone> = {
+  aula: 'formatoAula',
+  podcast: 'formatoPodcast',
+  telejornal: 'formatoTelejornal',
+  debate: 'formatoDebate',
+  papo_livre: 'formatoPapoLivre',
+  livre: 'formatoLivre',
 };
 
 export type NomeIcone = keyof typeof Icones;

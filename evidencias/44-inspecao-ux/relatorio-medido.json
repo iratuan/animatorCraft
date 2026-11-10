@@ -1,0 +1,242 @@
+{
+  "telas": {
+    "inicio@1280x720": {
+      "botoesSemNome": [],
+      "campos": [],
+      "pequenos": [],
+      "totalPequenos": 0,
+      "alvosPequenos": [],
+      "totalAlvosPequenos": 0,
+      "estouroHorizontal": 0
+    },
+    "editor@1280x720": {
+      "botoesSemNome": [],
+      "campos": [],
+      "pequenos": [
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9.35,
+          "texto": "🎙️+"
+        }
+      ],
+      "totalPequenos": 6,
+      "alvosPequenos": [
+        "input \"Zoom da linha do tempo\" 70x16",
+        "select \"PersonagemBibliotecaImagensÁud\" 93x22"
+      ],
+      "totalAlvosPequenos": 2,
+      "estouroHorizontal": 0
+    },
+    "modal-personagem@1280x720": {
+      "botoesSemNome": [],
+      "campos": [],
+      "pequenos": [
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9.35,
+          "texto": "🎙️+"
+        }
+      ],
+      "totalPequenos": 6,
+      "alvosPequenos": [
+        "input \"Zoom da linha do tempo\" 70x16",
+        "select \"PersonagemBibliotecaImagensÁud\" 93x22"
+      ],
+      "totalAlvosPequenos": 2,
+      "estouroHorizontal": 0
+    },
+    "modal-prompt-mestre@1280x720": {
+      "botoesSemNome": [],
+      "campos": [],
+      "pequenos": [
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9.35,
+          "texto": "🎙️+"
+        }
+      ],
+      "totalPequenos": 6,
+      "alvosPequenos": [
+        "input \"Zoom da linha do tempo\" 70x16",
+        "select \"PersonagemBibliotecaImagensÁud\" 93x22"
+      ],
+      "totalAlvosPequenos": 2,
+      "estouroHorizontal": 0
+    },
+    "inicio@1600x900": {
+      "botoesSemNome": [],
+      "campos": [],
+      "pequenos": [],
+      "totalPequenos": 0,
+      "alvosPequenos": [],
+      "totalAlvosPequenos": 0,
+      "estouroHorizontal": 0
+    },
+    "editor@1600x900": {
+      "botoesSemNome": [],
+      "campos": [],
+      "pequenos": [
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9.35,
+          "texto": "🎙️+"
+        }
+      ],
+      "totalPequenos": 6,
+      "alvosPequenos": [
+        "input \"Zoom da linha do tempo\" 90x16"
+      ],
+      "totalAlvosPequenos": 1,
+      "estouroHorizontal": 0
+    },
+    "modal-personagem@1600x900": {
+      "botoesSemNome": [],
+      "campos": [],
+      "pequenos": [
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9.35,
+          "texto": "🎙️+"
+        }
+      ],
+      "totalPequenos": 6,
+      "alvosPequenos": [
+        "input \"Zoom da linha do tempo\" 90x16"
+      ],
+      "totalAlvosPequenos": 1,
+      "estouroHorizontal": 0
+    },
+    "modal-prompt-mestre@1600x900": {
+      "botoesSemNome": [],
+      "campos": [],
+      "pequenos": [
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9,
+          "texto": "●"
+        },
+        {
+          "px": 9.35,
+          "texto": "🎙️+"
+        }
+      ],
+      "totalPequenos": 6,
+      "alvosPequenos": [
+        "input \"Zoom da linha do tempo\" 90x16"
+      ],
+      "totalAlvosPequenos": 1,
+      "estouroHorizontal": 0
+    }
+  },
+  "erros": []
+}

@@ -114,10 +114,8 @@ await voltar(); await p.locator('[data-teste=novo-personagem]').click(); await p
 await p.waitForSelector('[aria-label="Novo personagem"], .modal', { timeout: 60000 });
 ok(await p.getByPlaceholder('ex.: Tia Marta').count() === 1, 'Criar personagem abre a ficha');
 await p.keyboard.press('Escape'); await p.getByRole('button', { name: 'Cancelar' }).click().catch(() => {});
-await voltar(); await p.locator('[data-teste=sprites]').click(); await p.waitForSelector('.app');
-await p.waitForSelector('.modal', { timeout: 60000 });
-ok((await p.locator('.modal').first().innerText()).toLowerCase().includes('sprite'), 'Sprites e biblioteca abre o editor de sprites');
-await p.keyboard.press('Escape'); await p.getByRole('button', { name: /Fechar/ }).first().click().catch(() => {});
+// (o botão "Sprites e biblioteca" saiu com a remoção do chibi: a tela inicial não tem mais esse atalho)
+ok(await p.locator('[data-teste=sprites]').count() === 0, 'a tela inicial não tem mais o atalho de sprites');
 // abrir roteiro de arquivo
 writeFileSync(`${dest}/roteiro-de-arquivo.stk.txt`, '# Do arquivo\nProfessor entra pela esquerda andando.\n');
 await voltar();

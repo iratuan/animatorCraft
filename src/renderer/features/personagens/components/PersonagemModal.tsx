@@ -6,6 +6,8 @@ import {
   type ActorId, type ExpressaoId, type ModeloPalito, type PoseId,
 } from '@shared/domain';
 import { useEditor } from '@renderer/store/editor-store';
+import { Modal, fecharSeguro } from '@renderer/components/Modal';
+import { useAlterado } from '@renderer/components/useAlterado';
 import { excluirPersonagem, salvarPersonagem, importarPersonagemConfig } from '../services/cadastro';
 
 const MODELOS: { id: ModeloPalito; nome: string }[] = [
@@ -45,6 +47,10 @@ export function PersonagemModal() {
   const [posePrevia, setPosePrevia] = useState<PoseId>('parado');
   const [modoVisao, setModoVisao] = useState<'corpo' | 'cabeca'>('corpo');
   const [copiado, setCopiado] = useState(false);
+  // o que foi carregado na ficha: referência para saber se o usuário mudou algo (e perguntar antes de descartar)
+  const [carregado, setCarregado] = useState<Form | null>(null);
+  const alterado = useAlterado(f, carregado);
+  const carregar = (v: Form) => { setF(v); setCarregado(v); };
 
   useEffect(() => {
     setErro('');
@@ -52,7 +58,7 @@ export function PersonagemModal() {
     const base = aberta.id ?? aberta.duplicarDe;
     const a = base ? ATORES[base] : undefined;
     if (a) {
-      setF({
+      carregar({
         nome: aberta.duplicarDe ? `${a.nome} 2` : a.nome,
         apelidos: aberta.duplicarDe ? '' : a.apelidos.slice(1).join(', '),
         idade: a.idade,
@@ -65,7 +71,7 @@ export function PersonagemModal() {
       setExpressaoPrevia(a.expressaoPadrao);
       setPosePrevia('parado');
     } else {
-      setF(VAZIO);
+      carregar(VAZIO);
       setExpressaoPrevia('feliz');
       setPosePrevia('parado');
     }
@@ -116,7 +122,7 @@ export function PersonagemModal() {
     }, aberta.id);
     if ('erro' in r) { setErro(r.erro); return; }
     novaVersao();
-    set({ fichaPersonagem: null, selecionado: r.id, mensagem: editando ? `${f.nome} atualizado.` : `${f.nome} criado. Abra “Editar / exportar sprites” para enviar os PNGs de cada pose e expressão; até lá aparece como boneco de palito.` });
+    set({ fichaPersonagem: null, selecionado: r.id, mensagem: editando ? `${f.nome} atualizado.` : `${f.nome} criado. Ele já aparece no roteiro como boneco de palito.` });
   };
 
   const exportarArquivoJson = () => {
@@ -163,30 +169,29 @@ export function PersonagemModal() {
   };
 
   const excluir = async () => {
-    if (!aberta.id || !window.confirm(`Excluir ${ATORES[aberta.id]!.nome} e os sprites dele? Isso não afeta os personagens originais.`)) return;
+    if (!aberta.id || !window.confirm(`Excluir ${ATORES[aberta.id]!.nome} e tudo o que você criou para ele? Isso não afeta os personagens originais.`)) return;
     await excluirPersonagem(aberta.id);
     novaVersao();
     set({ fichaPersonagem: null, selecionado: 'cringefather', mensagem: 'Personagem excluído.' });
   };
 
   return (
-    <div className="modal-fundo" onClick={fechar}>
-      <div className="modal largo" role="dialog" aria-label="Ficha do personagem" onClick={(e) => e.stopPropagation()}>
+    <Modal titulo="Ficha do personagem" classe="largo" sujo={alterado} onFechar={fechar}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
           <h3 style={{ margin: 0 }}>
             {canonico
-              ? `Ficha & Vetores SVG: ${atorBase?.nome}`
+              ? `Ficha de ${atorBase?.nome}`
               : editando
                 ? `Editar ${atorBase?.nome}`
                 : aberta.duplicarDe
                   ? `Duplicar ${atorBase?.nome}`
                   : 'Novo personagem'}
           </h3>
-          <span className="badge-svg">🎨 100% Vetorial SVG / Path2D</span>
+          <span className="badge-svg">🎨 Desenho vetorial</span>
         </div>
         <p className="dica" style={{ marginTop: 0 }}>
           {canonico
-            ? 'Personagens canônicos possuem moldes vetoriais SVG paramétricos de corpo inteiro, articulações e aceleração Canvas Path2D.'
+            ? 'Os personagens do elenco original só podem ser vistos. Para mudar algo, use Duplicar para editar. O desenho é vetorial: fica nítido em qualquer tamanho.'
             : 'O nome (e os apelidos) é como o roteiro chama o personagem. Os moldes SVG garantem renderização vetorial nítida em qualquer resolução.'}
         </p>
 
@@ -278,7 +283,7 @@ export function PersonagemModal() {
           {/* Coluna 2: Pré-visualização Vetorial SVG e Exportador */}
           <div className="painel-preview-svg">
             <div className="painel-preview-topo">
-              <strong style={{ fontSize: 13, color: 'var(--txt)' }}>Vetor SVG ao Vivo</strong>
+              <strong style={{ fontSize: 13, color: 'var(--txt)' }}>Pré-visualização</strong>
               <div className="preview-svg-abas">
                 <button
                   type="button"
@@ -308,7 +313,7 @@ export function PersonagemModal() {
               {modoVisao === 'corpo' && (
                 <>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <small style={{ color: 'var(--txt2)', fontSize: 11 }}>Testar Movimento / Pose:</small>
+                    <small style={{ color: 'var(--txt2)', fontSize: 11 }}>Pose:</small>
                     <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--azul)' }}>
                       {POSES_PREVIA.find((p) => p.id === posePrevia)?.label ?? posePrevia}
                     </span>
@@ -330,7 +335,7 @@ export function PersonagemModal() {
 
               {/* Seletor de Expressão Facial */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 2 }}>
-                <small style={{ color: 'var(--txt2)', fontSize: 11 }}>Testar Expressão Vetorial:</small>
+                <small style={{ color: 'var(--txt2)', fontSize: 11 }}>Expressão:</small>
                 <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--azul)', textTransform: 'capitalize' }}>
                   {expressaoPrevia}
                 </span>
@@ -342,8 +347,9 @@ export function PersonagemModal() {
                     type="button"
                     className={expressaoPrevia === x ? 'on' : ''}
                     onClick={() => setExpressaoPrevia(x)}
+                    title={`Ver a expressão ${x}`}
                   >
-                    {x.slice(0, 4)}
+                    {x}
                   </button>
                 ))}
               </div>
@@ -382,20 +388,19 @@ export function PersonagemModal() {
               >
                 Duplicar para editar
               </button>
-              <button type="button" onClick={fechar}>Fechar</button>
+              <button type="button" onClick={() => fecharSeguro(alterado, fechar)}>Fechar</button>
             </>
           ) : (
             <>
               {editando && <button type="button" className="perigo" onClick={() => void excluir()}>Excluir</button>}
-              <button type="button" onClick={fechar}>Cancelar</button>
+              <button type="button" onClick={() => fecharSeguro(alterado, fechar)}>Cancelar</button>
               <button type="button" className="primario" disabled={!f.nome.trim()} onClick={salvar}>
                 {editando ? 'Salvar' : 'Criar personagem'}
               </button>
             </>
           )}
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }
 

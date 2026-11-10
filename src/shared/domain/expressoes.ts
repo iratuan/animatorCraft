@@ -61,15 +61,51 @@ export function definirExpressoesBoneco(lista: ExpressaoBoneco[]): void {
 }
 export const expressoesBoneco = (ator?: string): ExpressaoBoneco[] => (ator ? deBoneco.filter((e) => e.ator === ator) : [...deBoneco]);
 
-/** Todas as expressões que o personagem aceita: as padrão, as do boneco e as dos sprites. */
+/**
+ * Expressões próprias de cada personagem do elenco, de fábrica (não aparecem na lista de quem o usuário criou).
+ * Cada um tem duas, com o jeito do personagem: a fala "faz cara de faminto" usa o nome daqui.
+ */
+const DO_ELENCO: Record<string, ExpressaoBoneco[]> = {
+  paraiba: [
+    { ator: 'paraiba', nome: 'pidindo', quadros: [{ olho: 'grande', sobr: 8, boca: 'sorriso' }] },
+    { ator: 'paraiba', nome: 'faminto', quadros: [{ olho: 'grande', sobr: 6, boca: 'aberta' }] },
+  ],
+  mingau: [
+    { ator: 'mingau', nome: 'manhoso', quadros: [{ olho: 'estreito', sobr: -2, boca: 'lado' }] },
+    { ator: 'mingau', nome: 'desconfiado', quadros: [{ olho: 'meia', sobr: -7, boca: 'reta' }] },
+  ],
+  veio: [
+    { ator: 'veio', nome: 'teatral', quadros: [{ olho: 'grande', sobr: 10, boca: 'o' }] },
+    { ator: 'veio', nome: 'indignado', quadros: [{ olho: 'normal', sobr: -10, sobrAssimetrica: true, boca: 'reta' }] },
+  ],
+  veia: [
+    { ator: 'veia', nome: 'desconfiada', quadros: [{ olho: 'estreito', sobr: -8, boca: 'lado' }] },
+    { ator: 'veia', nome: 'implicando', quadros: [{ olho: 'meia', sobr: -4, boca: 'dentes' }] },
+  ],
+  elizendra: [
+    { ator: 'elizendra', nome: 'orgulhosa', quadros: [{ olho: 'normal', sobr: 4, boca: 'sorriso' }] },
+    { ator: 'elizendra', nome: 'atrapalhada', quadros: [{ olho: 'grande', sobr: 8, boca: 'o' }] },
+  ],
+  artur: [
+    { ator: 'artur', nome: 'concentrado', quadros: [{ olho: 'estreito', sobr: -3, boca: 'reta' }] },
+    { ator: 'artur', nome: 'vitoria', quadros: [{ olho: 'normal', sobr: 6, boca: 'dentes' }] },
+  ],
+  carol: [
+    { ator: 'carol', nome: 'atitude', quadros: [{ olho: 'estreito', sobr: -6, boca: 'lado' }] },
+    { ator: 'carol', nome: 'animada', quadros: [{ olho: 'grande', sobr: 5, boca: 'sorriso' }] },
+  ],
+};
+const doElenco = (ator: string): ExpressaoBoneco[] => DO_ELENCO[ator] ?? [];
+
+/** Todas as expressões que o personagem aceita: as padrão, as de fábrica do elenco, as do boneco e as dos sprites. */
 export function expressoesDe(ator: string): string[] {
-  return [...new Set<string>([...EXPRESSOES, ...expressoesBoneco(ator).map((e) => e.nome), ...(deSprites.get(ator) ?? [])])];
+  return [...new Set<string>([...EXPRESSOES, ...doElenco(ator).map((e) => e.nome), ...expressoesBoneco(ator).map((e) => e.nome), ...(deSprites.get(ator) ?? [])])];
 }
 export const ehExpressao = (ator: string, nome: string): boolean => expressoesDe(ator).includes(nome);
 
 /** Receita de rosto do boneco para uma expressão criada pelo usuário, no instante t (anima entre os quadros). */
 export function rostoBonecoDe(ator: string, nome: string, t = 0): RostoBoneco | undefined {
-  const e = deBoneco.find((x) => x.ator === ator && x.nome === nome);
+  const e = deBoneco.find((x) => x.ator === ator && x.nome === nome) ?? doElenco(ator).find((x) => x.nome === nome);
   if (!e) return undefined;
   return e.quadros[Math.floor(Math.max(0, t) * QUADROS_EXPRESSAO_POR_SEGUNDO) % e.quadros.length];
 }

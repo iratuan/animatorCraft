@@ -4,6 +4,7 @@ import { MODELOS, ROTEIRO_EXEMPLO, resumirRoteiro, type FormatoProducao } from '
 import { useEditor, type AcaoInicial } from '@renderer/store/editor-store';
 import { plataforma } from '@renderer/features/sistema';
 import { precarregarEditor } from '@renderer/routes/editor-lazy';
+import { Icones, ICONE_DO_FORMATO, type NomeIcone } from '@renderer/components/Icones';
 import './home.css';
 
 declare const __APP_VERSION__: string;
@@ -13,21 +14,21 @@ const ROTEIRO_EM_BRANCO = '[papéis: professor=CringeFather, aluno=BetaSon]\n\n#
 
 const FILTROS_FORMATO: { id: 'todos' | FormatoProducao; rotulo: string }[] = [
   { id: 'todos', rotulo: 'Todos os modelos' },
-  { id: 'aula', rotulo: '📚 Aulas com Lousa' },
-  { id: 'podcast', rotulo: '🎙️ Podcasts' },
-  { id: 'telejornal', rotulo: '📺 Telejornais' },
-  { id: 'debate', rotulo: '⚖️ Debates' },
-  { id: 'papo_livre', rotulo: '🛋️ Papo Livre' },
-  { id: 'livre', rotulo: '🎭 Esquetes Livres' },
+  { id: 'aula', rotulo: 'Aulas com Lousa' },
+  { id: 'podcast', rotulo: 'Podcasts' },
+  { id: 'telejornal', rotulo: 'Telejornais' },
+  { id: 'debate', rotulo: 'Debates' },
+  { id: 'papo_livre', rotulo: 'Papo Livre' },
+  { id: 'livre', rotulo: 'Esquetes Livres' },
 ];
 
 const ROTULOS_FORMATO: Record<FormatoProducao, string> = {
-  aula: '📚 Aula',
-  podcast: '🎙️ Podcast',
-  telejornal: '📺 Telejornal',
-  debate: '⚖️ Debate',
-  papo_livre: '🛋️ Papo Livre',
-  livre: '🎭 Esquete',
+  aula: 'Aula',
+  podcast: 'Podcast',
+  telejornal: 'Telejornal',
+  debate: 'Debate',
+  papo_livre: 'Papo Livre',
+  livre: 'Esquete',
 };
 
 function Boneco() {
@@ -110,7 +111,7 @@ export function HomePage() {
               className={`home-filtro-btn ${filtro === f.id ? 'ativo' : ''}`}
               onClick={() => setFiltro(f.id)}
             >
-              {f.rotulo}
+              {f.id !== 'todos' && <span className="ico-formato">{Icones[ICONE_DO_FORMATO[f.id] as NomeIcone]}</span>}{f.rotulo}
             </button>
           ))}
         </div>
@@ -119,7 +120,7 @@ export function HomePage() {
             <button key={m.id} className="home-modelo" onPointerEnter={precarregarEditor} onClick={() => abrir(m.roteiro, `Modelo “${m.nome}” carregado. Troque o que está entre {chaves}.`)} data-teste={`modelo-${m.id}`}>
               <small>
                 <span>{m.area}</span>
-                <span className="home-modelo-formato">{ROTULOS_FORMATO[m.formato]}</span>
+                <span className="home-modelo-formato"><span className="ico-formato">{Icones[ICONE_DO_FORMATO[m.formato] as NomeIcone]}</span>{ROTULOS_FORMATO[m.formato]}</span>
               </small>
               <b>{m.nome}</b>
               <span>{m.descricao}</span>
@@ -135,7 +136,6 @@ export function HomePage() {
           <button onClick={() => abrir(undefined, undefined, 'abrir-projeto')} data-teste="abrir-projeto">Abrir projeto (.zip)…</button>
           <button onClick={() => abrir(ROTEIRO_EXEMPLO, 'Exemplo carregado.')} data-teste="exemplo">Ver o exemplo pronto</button>
           <button onClick={() => abrir(undefined, undefined, 'novo-personagem')} data-teste="novo-personagem">Criar personagem</button>
-          <button onClick={() => abrir(undefined, undefined, 'editar-sprites')} data-teste="sprites">Sprites e biblioteca</button>
           <button onClick={() => set({ manualAberto: true })} data-teste="manual">Manual</button>
         </div>
       </section>

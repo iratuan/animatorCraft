@@ -1,11 +1,9 @@
 import type { StateCreator } from 'zustand';
 import type { ActorId } from '@shared/domain';
-import type { PacoteLido } from '@renderer/features/personagens';
 
 const consulta = new URLSearchParams(typeof location === 'undefined' ? '' : location.search);
 
 export type AbaLateral = 'props' | 'biblioteca' | 'imagens' | 'audio' | 'aula';
-export interface ImportacaoPendente { pacote: PacoteLido; substituir: boolean; nome: string }
 
 export interface UiState {
   selecionado: ActorId | null;
@@ -13,7 +11,6 @@ export interface UiState {
   menuAberto: string | null;
   exportando: number | null;
   mensagem: string;
-  importacao: ImportacaoPendente | null;
   editorPersonagem: ActorId | null;
   editorAnimacao: { ator: ActorId; aba?: 'expressoes' | 'clipes' } | null;
   editorImagem: { personagem: ActorId; tipo: 'pose' | 'rosto' | 'prop'; nome: string } | null;
@@ -26,6 +23,10 @@ export interface UiState {
   abaMatematicaInicial: 'latex' | 'grafico';
   arrastoPalco: { id: ActorId; x: number } | null;
   confirmarFecharProjetoAberto: boolean;
+  /** pedido de um texto ao usuário (ex.: nome ao salvar o projeto); feito por `pedirTexto`, dentro do app */
+  pedidoTexto: { titulo: string; valor: string } | null;
+  /** frases com erro que a exportação encontrou; a resposta do usuário vai por `confirmarExportacao` */
+  pedidoExportacao: { erros: { mensagem: string; ini: number; fim: number }[] } | null;
 }
 
 export type UiSlice = UiState;
@@ -36,7 +37,6 @@ export const createUiSlice: StateCreator<any, [], [], UiSlice> = () => ({
   menuAberto: null,
   exportando: null,
   mensagem: 'Carregando personagens…',
-  importacao: null,
   editorPersonagem: null,
   editorAnimacao: null,
   editorImagem: null,
@@ -49,4 +49,6 @@ export const createUiSlice: StateCreator<any, [], [], UiSlice> = () => ({
   abaMatematicaInicial: 'latex',
   arrastoPalco: null,
   confirmarFecharProjetoAberto: false,
+  pedidoTexto: null,
+  pedidoExportacao: null,
 });

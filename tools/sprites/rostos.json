@@ -1,8 +1,0 @@
-{
-  "_leia-me": "Caixa da cabeça (frações 0..1 do sprite de frente, normalmente pose_parado): usada pelo [close no personagem] e para encaixar as cabeças rosto_* (expressões, fonemas e piscada). Pode ser sobrescrita pelo meta.json de um pacote de sprites. Medidas feitas a olho sobre uma grade.",
-  "cringefather": { "1": { "cabeca": { "x": 0.12, "y": 0.0, "w": 0.7, "h": 0.28 } } },
-  "betason": { "1": { "cabeca": { "x": 0.02, "y": 0.0, "w": 0.9, "h": 0.34 } } },
-  "erika": { "1": { "cabeca": { "x": 0.15, "y": 0.0, "w": 0.62, "h": 0.3 } } },
-  "dario": { "1": { "cabeca": { "x": 0.04, "y": 0.0, "w": 0.9, "h": 0.33 } } },
-  "laura": { "1": { "cabeca": { "x": 0.06, "y": 0.0, "w": 0.92, "h": 0.38 } } }
-}

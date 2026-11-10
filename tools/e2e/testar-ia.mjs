@@ -26,6 +26,7 @@ await p.evaluate(() => { localStorage.clear(); localStorage.setItem('stickboard.
 await p.goto('http://127.0.0.1:5173/?recarga=1#/editor');
 await p.waitForFunction(() => document.querySelector('.app') && !document.body.innerText.includes('Carregando personagens'), null, { timeout: 90000 });
 await p.getByText('Arquivo').first().click();
+await p.getByText('Ferramentas & IA', { exact: true }).first().click();
 await p.getByText('Gerar / melhorar roteiro com IA (direto no app)…').click();
 await p.getByPlaceholder(/produtos notáveis/).fill('produtos notáveis');
 await p.screenshot({ path: `${dest}/01-modal.png` });

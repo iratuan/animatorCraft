@@ -2,10 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ATORES, DURACAO_AULA, MODELOS, ORDEM_ATORES, extrairRoteiro, gerarPromptMestre, parseRoteiro, type DuracaoAula, type FormatoProducao, type OpcoesPromptMestre } from '@shared/domain';
 import { useEditor } from '@renderer/store/editor-store';
-import { carregarImagensEAudios, carregarSprites } from '@renderer/bootstrap';
+import { carregarElenco, carregarImagensEAudios } from '@renderer/bootstrap';
 import { plataforma } from '@renderer/features/sistema';
 import { bibliotecaAtual } from '../services/biblioteca';
 import { copiarTexto } from '../services/area-de-transferencia';
+import { Modal, fecharSeguro } from '@renderer/components/Modal';
+import { useAlterado } from '@renderer/components/useAlterado';
+import { Icones, type NomeIcone } from '@renderer/components/Icones';
 
 type Aba = 'prompt' | 'resposta';
 
@@ -13,12 +16,12 @@ type Aba = 'prompt' | 'resposta';
 const tokens = (t: string) => Math.round(t.length / 3.6);
 
 const FORMATOS: { id: FormatoProducao; rotulo: string; icone: string }[] = [
-  { id: 'aula', rotulo: 'Aula com Lousa', icone: '📚' },
-  { id: 'podcast', rotulo: 'Podcast / Mesa', icone: '🎙️' },
-  { id: 'telejornal', rotulo: 'Telejornal / Drops', icone: '📺' },
-  { id: 'debate', rotulo: 'Grande Debate', icone: '⚖️' },
-  { id: 'papo_livre', rotulo: 'Papo Livre / Lounge', icone: '🛋️' },
-  { id: 'livre', rotulo: 'Esquete Livre', icone: '🎭' },
+  { id: 'aula', rotulo: 'Aula com Lousa', icone: 'formatoAula' },
+  { id: 'podcast', rotulo: 'Podcast / Mesa', icone: 'formatoPodcast' },
+  { id: 'telejornal', rotulo: 'Telejornal / Drops', icone: 'formatoTelejornal' },
+  { id: 'debate', rotulo: 'Grande Debate', icone: 'formatoDebate' },
+  { id: 'papo_livre', rotulo: 'Papo Livre / Lounge', icone: 'formatoPapoLivre' },
+  { id: 'livre', rotulo: 'Esquete Livre', icone: 'formatoLivre' },
 ];
 
 const OPCOES_MATERIA: Record<FormatoProducao, { rotulo: string; opcoes: string[] }> = {
@@ -50,7 +53,7 @@ const OPCOES_PAPEIS: Record<FormatoProducao, { principal: string; secundario: st
 
 /**
  * Prompt mestre: o texto que se cola em QUALQUER IA (Claude, ChatGPT, Gemini...) para ela escrever um roteiro que o StickBoard entende.
- * Ele leva dentro tudo o que a IA precisa: o formato, cada frase aceita, os personagens, sprites, clipes, imagens e áudios da biblioteca.
+ * Ele leva dentro tudo o que a IA precisa: o formato, cada frase aceita, os personagens, clipes, imagens e áudios da biblioteca.
  * A segunda aba recebe a resposta da IA, confere com o interpretador do app e a aplica no editor.
  */
 export function PromptMestreModal() {
@@ -78,12 +81,14 @@ export function PromptMestreModal() {
   const [aviso, setAviso] = useState('');
   const [resposta, setResposta] = useState('');
   const [carregando, setCarregando] = useState(true);
+  // opções escolhidas e resposta colada da IA se perdem ao fechar: pergunta antes
+  const alterado = useAlterado({ op, resposta });
 
   // a biblioteca (sprites, imagens, áudios) precisa estar carregada para o prompt listar tudo; vindo da tela inicial ela ainda não está
   useEffect(() => {
     if (!aberto) return;
     setCarregando(true);
-    void Promise.all([carregarSprites(), carregarImagensEAudios()]).catch(() => undefined).finally(() => setCarregando(false));
+    void Promise.all([carregarElenco(), carregarImagensEAudios()]).catch(() => undefined).finally(() => setCarregando(false));
   }, [aberto]);
 
   const opcoes: OpcoesPromptMestre = useMemo(() => ({ ...op, formato, roteiroAtual }), [op, formato, roteiroAtual]);
@@ -138,8 +143,7 @@ export function PromptMestreModal() {
   const modelosDoFormato = MODELOS.filter((m) => m.formato === formato);
 
   return (
-    <div className="modal-fundo" onClick={fechar}>
-      <div className="modal largo prompt-mestre" role="dialog" aria-label="Prompt mestre" onClick={(e) => e.stopPropagation()}>
+    <Modal titulo="Prompt mestre" classe="largo prompt-mestre" sujo={alterado} onFechar={fechar}>
         <h3>Prompt mestre para qualquer IA</h3>
         <p className="dica" style={{ marginTop: 0 }}>Copie o prompt, cole numa IA (Claude, ChatGPT, Gemini, Llama…), peça o roteiro e traga a resposta de volta. O prompt já leva tudo: formato, frases aceitas, seus personagens, sprites, clipes, imagens e áudios.</p>
         <div className="abas-modal">
@@ -175,7 +179,7 @@ export function PromptMestreModal() {
                         }}
                         onClick={() => trocarFormato(f.id)}
                       >
-                        <span>{f.icone}</span>
+                        <span>{Icones[f.icone as NomeIcone]}</span>
                         <strong>{f.rotulo}</strong>
                       </button>
                     ))}
@@ -236,7 +240,7 @@ export function PromptMestreModal() {
             ) : (
               <label className="campo">O que melhorar<textarea rows={3} value={op.instrucao} onChange={(e) => campo('instrucao', e.target.value)} placeholder="Em branco = acrescentar reações e gestos enquanto os outros falam, sem mudar a aula" /></label>
             )}
-            {carregando && <p className="dica">Carregando a biblioteca (sprites, imagens e áudios)…</p>}
+            {carregando && <p className="dica">Carregando a biblioteca (imagens e áudios)…</p>}
             <textarea className="previa-ia" readOnly aria-label="Prompt mestre gerado" value={prompt} rows={10} onFocus={(e) => e.currentTarget.select()} />
             <p className="dica" style={{ marginTop: 4 }}>{prompt.length.toLocaleString('pt-BR')} caracteres · ≈ {tokens(prompt).toLocaleString('pt-BR')} tokens{falta ? ' · escreva o assunto acima ou complete o trecho <<…>> na própria IA' : ''}</p>
           </>
@@ -256,7 +260,7 @@ export function PromptMestreModal() {
 
         {aviso && <p className="dica" role="status">{aviso}</p>}
         <div className="modal-botoes">
-          <button onClick={fechar}>Fechar</button>
+          <button onClick={() => fecharSeguro(alterado, fechar)}>Fechar</button>
           {aba === 'prompt' ? (
             <>
               <button onClick={() => void salvar()}>Salvar como arquivo (.md)</button>
@@ -269,7 +273,6 @@ export function PromptMestreModal() {
             </>
           )}
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }

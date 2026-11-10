@@ -109,7 +109,7 @@ console.log('T4 trilhas de áudio');
 writeFileSync(`${dest}/voz-erika.wav`, wav(2, 300)); writeFileSync(`${dest}/voz-dario.wav`, wav(2, 520)); writeFileSync(`${dest}/musica.wav`, wav(8, 220)); writeFileSync(`${dest}/chuva.wav`, wav(8, 700)); writeFileSync(`${dest}/palmas.wav`, wav(0.6, 880));
 const ROT = '[papéis: professor=Erika, aluno=Dario]\n\n# Som\n[música: musica.wav, volume 40%]\n[música: chuva.wav, volume 40%, trilha ambiente]\nErika entra pela esquerda andando. Dario entra correndo pela direita.\nErika diz "Oi, Dario!". [áudio: voz-erika.wav]\nDario diz "Oi, mãe!". [áudio: voz-dario.wav]\n[efeito: palmas.wav]\nEspera 2 segundos.\n[música: parar trilha ambiente]\nEspera 1 segundos.';
 await p.evaluate((r) => window.__sb.store.getState().setRoteiro(r), ROT);
-await p.getByRole('button', { name: 'Áudio', exact: true }).click();
+await p.getByRole('tab', { name: 'Áudio', exact: true }).click();
 await p.locator('input[type=file][accept*="audio"]').setInputFiles(['voz-erika.wav', 'voz-dario.wav', 'musica.wav', 'chuva.wav', 'palmas.wav'].map((n) => `${dest}/${n}`));
 await p.waitForTimeout(2500);
 v.igual(await p.evaluate((r) => window.__sb.dominio.parseRoteiro(r).avisos, ROT), [], 'roteiro com trilhas sem avisos');

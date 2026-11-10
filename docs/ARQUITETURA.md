@@ -24,22 +24,22 @@ src/main       processo Electron: janela, IPC, arquivos, exportação de vídeo 
 
 | Feature | Responsabilidade |
 |---|---|
-| `cena` | motor de desenho (lousa, atores, câmera, sprites) em canvas — sem React |
+| `cena` | motor de desenho (lousa, atores de palito, câmera) em canvas — sem React |
 | `palco` | visualização, arraste de personagem, reprodução |
 | `roteiro` | editor de texto do roteiro e interpretação (`useRoteiroDerivado`) |
 | `linha-do-tempo` | linha do tempo editável |
-| `personagens` | cadastro, fichas, sprites, pacotes, editor de sprites |
+| `personagens` | cadastro, fichas, clipes e expressões dos bonecos |
 | `editor-imagem` | editor de imagem (camadas, pincel, seleção) sobre `shared/editor-imagem` |
 | `audio`, `imagens`, `ia`, `exportacao`, `projeto`, `aula`, `ajuda`, `fontes`, `ferramentas`, `biblioteca` | recursos do app |
 | `sistema` | plataforma (Electron/Android/web), arquivos, `localStorage` e IndexedDB com rede de segurança |
 
 ## Persistência
 
-`localStorage` via `sistema/lerJson|gravarJson|lerTexto|gravarTexto`; blobs (sprites, áudios, imagens) em IndexedDB via `sistema/criarLoja`.
+`localStorage` via `sistema/lerJson|gravarJson|lerTexto|gravarTexto`; blobs (áudios, imagens) em IndexedDB via `sistema/criarLoja`.
 
 ## Ferramentas (`tools/`)
 
-`sprites/` (recorte de fichas e pacotes), `e2e/` (baterias Playwright; `npm run e2e` com `npm run dev:web` ligado), `captura/` (evidências), `refatorar/`, `analisar-codigo.mjs`, `verificar-arquitetura.mjs`.
+`e2e/` (baterias Playwright; `npm run e2e` com `npm run dev:web` ligado), `captura/` (evidências), `refatorar/`, `analisar-codigo.mjs`, `verificar-arquitetura.mjs`.
 
 ## Segurança do Electron
 

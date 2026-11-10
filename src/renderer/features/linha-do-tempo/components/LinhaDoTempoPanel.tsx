@@ -180,7 +180,8 @@ function Trilhos() {
     for (const k of Object.keys(mudanca) as (keyof typeof novo)[]) if (novo[k] === undefined) delete novo[k];
     aplicar(reescreverImagem(roteiro, selEvento.origem, ATORES[imagemSel.ator]!.nome, novo), 'Imagem atualizada.');
   };
-  const redimensionavel = (e: Evento) => !!e.origem && ((e.acao.tipo === 'pose' && !!e.acao.duracao) || e.acao.tipo === 'esperar');
+  // a borda muda o "por N segundos" da frase: vale para tudo que dura no tempo, menos a fala com áudio (o áudio manda na duração)
+  const redimensionavel = (e: Evento) => !!e.origem && e.acao.tipo !== 'nota' && e.acao.tipo !== 'apagar' && !(e.acao.tipo === 'fala' && !!e.acao.audio);
 
   return (
     <div className="timeline-geral">
@@ -228,7 +229,17 @@ function Trilhos() {
         <div className="camadas">
           <div className="cabecalho-camadas">Camadas</div>
           {lista.map((f) => (
-            <div key={f.chave} style={{ height: altura(f) }} className={`camada ${selecionado === f.chave ? 'sel' : ''}`} onClick={() => ORDEM_ATORES.includes(f.chave) && set({ selecionado: f.chave })}>
+            <div
+              key={f.chave}
+              style={{ height: altura(f) }}
+              className={`camada ${selecionado === f.chave ? 'sel' : ''}`}
+              role="button"
+              tabIndex={0}
+              aria-pressed={selecionado === f.chave}
+              aria-label={`Camada ${f.nome}`}
+              onClick={() => ORDEM_ATORES.includes(f.chave) && set({ selecionado: f.chave })}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.click(); } }}
+            >
               <span className="cor" style={{ background: f.cor ?? '#94a3b8' }} />
               <span className="nome">{f.nome}</span>
               {f.trilha ? <ControleTrilha id={f.trilha} /> : <span className="olho" title="Visível">●</span>}
@@ -252,7 +263,7 @@ function Trilhos() {
                   const isFala = e.acao.tipo === 'fala';
                   const audioNome = e.acao.tipo === 'fala' ? e.acao.audio : undefined;
                   const temAudio = Boolean(audioNome);
-                  const badge = isFala ? (temAudio ? '🔊' : '🎙️+') : '';
+                  const badge = isFala ? (temAudio ? 'voz ✓' : 'voz +') : '';
                   const tooltip = isFala
                     ? `${e.rotulo} · ${audioNome ? `Áudio: “${audioNome}”` : 'Sem áudio (clique para gravar ou editar)'}`
                     : `${e.rotulo}${e.acao.junto ? ' (junto com a ação anterior)' : ''}`;

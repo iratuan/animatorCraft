@@ -22,7 +22,7 @@ export function Transporte() {
       <button className={repetir ? 'on' : ''} title="Repetir" onClick={() => set({ repetir: !repetir })}>{Icones.loop}</button>
       <span className="tempo">{fmtTempo(t)} / {fmtTempo(timeline.duracao)}</span>
       <div style={{ flex: 1 }} />
-      <label className="zoom">Zoom <input type="range" min={25} max={200} value={zoom} onChange={(e) => set({ zoom: Number(e.target.value) })} /></label>
+      <label className="zoom" title="Zoom da linha do tempo"><span className="zoom-rotulo">Zoom</span> <input type="range" min={25} max={200} value={zoom} aria-label="Zoom da linha do tempo" onChange={(e) => set({ zoom: Number(e.target.value) })} /></label>
       <button className="exportar" title="Exportar animação em vídeo MP4 (WebCodecs H.264/AAC)" onClick={() => void exportar()} disabled={exportando !== null || !podeExportar}>
         {exportando === null ? 'Exportar MP4' : `Exportando ${Math.round(exportando * 100)}%`}
       </button>

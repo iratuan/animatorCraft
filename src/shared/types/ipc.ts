@@ -7,7 +7,7 @@ export interface PedidoSalvarVideo {
   dados: Uint8Array;
 }
 
-export interface PacoteEscolhido { nome: string; dados: Uint8Array }
+export interface ArquivoEscolhido { nome: string; dados: Uint8Array }
 
 export interface InfoApp { versao: string; plataforma: string; electron: string }
 
@@ -17,10 +17,12 @@ export interface StickboardApi {
   /** devolve o caminho salvo, ou null se o usuário cancelou */
   salvarRoteiro(texto: string, nomeSugerido: string): Promise<string | null>;
   salvarVideo(pedido: PedidoSalvarVideo): Promise<string | null>;
-  abrirPacoteSprites(): Promise<PacoteEscolhido | null>;
-  /** grava o .zip de sprites exportado; devolve o caminho, ou null se o usuário cancelou */
-  salvarPacoteSprites(pedido: PedidoSalvarVideo): Promise<string | null>;
+  abrirZip(): Promise<ArquivoEscolhido | null>;
+  /** grava o .zip escolhido; devolve o caminho, ou null se o usuário cancelou */
+  salvarZip(pedido: PedidoSalvarVideo): Promise<string | null>;
   info(): Promise<InfoApp>;
   /** copia texto para a área de transferência do sistema (o navegador do Electron bloqueia a API web) */
   copiarTexto(texto: string): Promise<boolean>;
+  /** avisa o processo principal se há alterações não salvas: ao fechar a janela, ele pergunta antes */
+  definirAlteracoesPendentes(pendentes: boolean): Promise<void>;
 }
